@@ -1,0 +1,6 @@
+#kate/kwrite/vi backups filter
+*~
+*swp
+.*swp
+*bak
+.*bak
