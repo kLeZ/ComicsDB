@@ -27,12 +27,12 @@ public class Serie extends ArrayList<Volume>
 		this.complete = complete;
 	}
 
-	public boolean isComplete_in_country()
+	public boolean isCompleteInCountry()
 	{
 		return completeInCountry;
 	}
 
-	public void setComplete_in_country(boolean completeInCountry)
+	public void setCompleteInCountry(boolean completeInCountry)
 	{
 		this.completeInCountry = completeInCountry;
 	}
@@ -54,5 +54,27 @@ public class Serie extends ArrayList<Volume>
 			}
 		}
 		return ret != null;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append("Serie [complete=");
+		builder.append(complete);
+		builder.append(", completeInCountry=");
+		builder.append(completeInCountry);
+		builder.append(", size=");
+		builder.append(size());
+		builder.append(", elements:").append(System.getProperty("line.separator"));
+		for (Volume v : this)
+		{
+			builder.append(v).append(",").append(System.getProperty("line.separator"));
+		}
+		builder.append("]");
+		return builder.toString();
 	}
 }

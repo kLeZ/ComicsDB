@@ -18,20 +18,17 @@ public class MapEntry<K, V> implements Entry<K, V>
 		this.value = value;
 	}
 
-	@Override
 	public V setValue(V value)
 	{
 		this.value = value;
 		return this.value;
 	}
 
-	@Override
 	public V getValue()
 	{
 		return this.value;
 	}
 
-	@Override
 	public K getKey()
 	{
 		return this.key;

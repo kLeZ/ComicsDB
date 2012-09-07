@@ -7,6 +7,7 @@ import it.d4nguard.mangatracker.comicsimporter.xml.XmlUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -22,25 +23,33 @@ import org.xml.sax.SAXException;
 public class Comics extends ArrayList<Comic>
 {
 	private static final long serialVersionUID = 4652226828232257234L;
-	private final File xmlsource;
+	private final Document doc;
 	private int totalComics = 0;
 
-	public Comics(File xmlsource) throws IOException, ParserConfigurationException, SAXException
+	public Comics(File src) throws IOException, ParserConfigurationException, SAXException
 	{
-		this.xmlsource = xmlsource;
-		load();
+		this(src, -1);
 	}
 
-	public Comics(File xmlsource, int loadLimit) throws IOException, ParserConfigurationException, SAXException
+	public Comics(InputStream src) throws IOException, ParserConfigurationException, SAXException
 	{
-		this.xmlsource = xmlsource;
+		this(src, -1);
+	}
+
+	public Comics(File src, int loadLimit) throws IOException, ParserConfigurationException, SAXException
+	{
 		totalComics = loadLimit;
+		doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
+		doc.getDocumentElement().normalize();
 		load();
 	}
 
-	public File getXmlSource()
+	public Comics(InputStream src, int loadLimit) throws IOException, ParserConfigurationException, SAXException
 	{
-		return xmlsource;
+		totalComics = loadLimit;
+		doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
+		doc.getDocumentElement().normalize();
+		load();
 	}
 
 	public int getTotalComics()
@@ -50,7 +59,7 @@ public class Comics extends ArrayList<Comic>
 
 	private void setTotalComics(int totalComics)
 	{
-		if (totalComics == 0)
+		if (totalComics <= 0)
 		{
 			this.totalComics = totalComics;
 		}
@@ -58,8 +67,6 @@ public class Comics extends ArrayList<Comic>
 
 	private void load() throws SAXException, IOException, ParserConfigurationException
 	{
-		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlsource);
-		doc.getDocumentElement().normalize();
 		NodeList comics = doc.getElementsByTagName("fumetto");
 		setTotalComics(comics.getLength());
 		for (int i = 0; i < totalComics; i++)
@@ -89,7 +96,7 @@ public class Comics extends ArrayList<Comic>
 				Serie serie = new Serie(completa, completaInPatria);
 				if (serieElem.hasChildNodes())
 				{
-					NodeList volumes = doc.getElementsByTagName("volume");
+					NodeList volumes = serieElem.getElementsByTagName("volume");
 					for (int j = 0; j < volumes.getLength(); j++)
 					{
 						Element volumeElem = (Element) volumes.item(j);
@@ -105,5 +112,25 @@ public class Comics extends ArrayList<Comic>
 				add(comic);
 			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append("Comics [totalComics=");
+		builder.append(totalComics);
+		builder.append(", size=");
+		builder.append(size());
+		builder.append(", elements:").append(System.getProperty("line.separator"));
+		for (Comic c : this)
+		{
+			builder.append(c).append(",").append(System.getProperty("line.separator"));
+		}
+		builder.append("]");
+		return builder.toString();
 	}
 }
