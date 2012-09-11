@@ -1,6 +1,5 @@
 package it.d4nguard.mangatracker.comicsimporter.main;
 
-import it.d4nguard.mangatracker.comicsimporter.utils.Convert;
 import it.d4nguard.mangatracker.comicsimporter.xml.StreamUtils;
 
 import java.io.IOException;
@@ -16,31 +15,30 @@ import org.xml.sax.SAXException;
 
 public class ComicsImporter
 {
-	public static void main(final String[] args)
+	private InputStream src;
+
+	public ComicsImporter(InputStream src)
 	{
-		try
+		this.src = src;
+	}
+
+	public Comics getComics() throws IOException, ParserConfigurationException, SAXException
+	{
+		return getComics(-1);
+	}
+
+	public Comics getComics(int ncomics) throws IOException, ParserConfigurationException, SAXException
+	{
+		if (src == null)
 		{
 			String config = StreamUtils.getResourceAsString("animeclick-crawler.xml");
 			String mangaContents = scrap(config, "mangaxml");
-			InputStream is = StreamUtils.toInputStream(mangaContents);
-			Comics comics = new Comics(is, Convert.toInt((args.length > 0 ? args[0] : "-1")));
-			System.out.println(comics);
+			src = StreamUtils.toInputStream(mangaContents);
 		}
-		catch (final IOException e)
-		{
-			e.printStackTrace();
-		}
-		catch (final ParserConfigurationException e)
-		{
-			e.printStackTrace();
-		}
-		catch (final SAXException e)
-		{
-			e.printStackTrace();
-		}
+		return new Comics(src, ncomics);
 	}
 
-	public static String scrap(String config, String returnVar) throws IOException, ParserConfigurationException, SAXException
+	public String scrap(String config, String returnVar) throws IOException, ParserConfigurationException, SAXException
 	{
 		ScraperConfiguration configuration = new ScraperConfiguration(new InputSource(new StringReader(config)));
 		Scraper scraper = new Scraper(configuration, System.getProperty("work.dir"));
