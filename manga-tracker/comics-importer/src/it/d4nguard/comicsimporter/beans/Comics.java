@@ -2,12 +2,14 @@ package it.d4nguard.comicsimporter.beans;
 
 import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getElement;
 import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getGQName;
+import it.d4nguard.comicsimporter.feed.FeedParser;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -120,6 +122,14 @@ public class Comics extends ArrayList<Comic>
 				comic.setSeries(series);
 				add(comic);
 			}
+		}
+	}
+
+	public void syncFeeds(List<FeedParser> feeds) throws IOException, ParserConfigurationException, SAXException
+	{
+		for (FeedParser feed : feeds)
+		{
+			addAll(feed.parse(this));
 		}
 	}
 

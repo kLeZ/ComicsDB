@@ -16,12 +16,26 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.FeedException;
 
-public class JPOPFeedParser
+public class JPOPFeedParser extends FeedParser
 {
+	public static final String JPOP_RSS_URL = "file:///home/kLeZ-hAcK/Documenti/j-pop.rss";
+
+	/**
+	 * @param feedUrl
+	 * @throws IllegalArgumentException
+	 * @throws IOException
+	 * @throws FeedException
+	 */
+	public JPOPFeedParser(String feedUrl) throws IllegalArgumentException, IOException, FeedException
+	{
+		super(feedUrl);
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
-	public List<Comic> parse(SyndFeed feed, final Comics comics) throws IOException, ParserConfigurationException, SAXException
+	public List<Comic> parse(final Comics comics) throws IOException, ParserConfigurationException, SAXException
 	{
 		List<Comic> ret = new ArrayList<Comic>();
 		for (Iterator<SyndEntry> it = feed.getEntries().iterator(); it.hasNext();)
