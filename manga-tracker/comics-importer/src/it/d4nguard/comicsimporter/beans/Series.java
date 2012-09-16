@@ -4,13 +4,15 @@ import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getElements;
 import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getGQName;
 import it.d4nguard.comicsimporter.utils.Money;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.Element;
 
-public class Series extends ArrayList<Volume>
+public class Series extends HashSet<Volume> implements Serializable
 {
 	private static final long serialVersionUID = -5364853841641256846L;
 
@@ -73,6 +75,21 @@ public class Series extends ArrayList<Volume>
 			}
 		}
 		return ret != null;
+	}
+
+	public Volume get(int i)
+	{
+		int cnt = 0;
+		Volume ret = null;
+		for (Iterator<Volume> it = iterator(); it.hasNext() && (ret == null);)
+		{
+			Volume v = it.next();
+			if (cnt++ == i)
+			{
+				ret = v;
+			}
+		}
+		return ret;
 	}
 
 	public Volume searchSingle(Volume volume)
@@ -200,7 +217,7 @@ public class Series extends ArrayList<Volume>
 		if (size() > 0)
 		{
 			List<Volume> res = search(searcher);
-			ret = res.get(res.size() - 1);
+			ret = res.size() == 0 ? null : res.get(res.size() - 1);
 		}
 		return ret;
 	}

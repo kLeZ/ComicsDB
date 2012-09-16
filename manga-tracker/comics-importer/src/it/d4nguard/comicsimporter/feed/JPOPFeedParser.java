@@ -3,7 +3,11 @@ package it.d4nguard.comicsimporter.feed;
 import it.d4nguard.comicsimporter.beans.Comic;
 import it.d4nguard.comicsimporter.beans.Comics;
 import it.d4nguard.comicsimporter.beans.Volume;
-import it.d4nguard.comicsimporter.utils.*;
+import it.d4nguard.comicsimporter.utils.Convert;
+import it.d4nguard.comicsimporter.utils.StringUtils;
+import it.d4nguard.comicsimporter.utils.WebScraper;
+import it.d4nguard.comicsimporter.utils.io.DeepCopy;
+import it.d4nguard.comicsimporter.utils.io.StreamUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,7 +71,15 @@ public class JPOPFeedParser extends FeedParser
 									title = c.getSeries().adaptNextTitle(searcher, nvol);
 									searcher.setName(title);
 									v = new Volume(title);
-									v.setPrice(DeepCopy.copy(c.getSeries().last(searcher).getPrice()));
+									Volume last = c.getSeries().last(searcher);
+									if (last != null)
+									{
+										v.setPrice(DeepCopy.copy(last.getPrice()));
+									}
+									else
+									{
+										//TODO: Can I guess volume price from Jpop web site??
+									}
 									v.setEditor("JPOP");
 									v.setLast(false);
 								}

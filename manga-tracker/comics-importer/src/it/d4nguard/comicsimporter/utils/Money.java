@@ -1,11 +1,14 @@
 package it.d4nguard.comicsimporter.utils;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.*;
 
-public class Money
+public class Money implements Serializable
 {
+	private static final long serialVersionUID = -5968076616822313074L;
+
 	private final BigDecimal value;
 	private final Currency currency;
 	private final Locale locale;
@@ -113,13 +116,13 @@ public class Money
 		List<Map.Entry<Currency, Locale>> ret = new ArrayList<Map.Entry<Currency, Locale>>();
 		Locale[] locs = Locale.getAvailableLocales();
 
-		MapEntry<Currency, Locale> entry;
+		Pair<Currency, Locale> entry;
 		for (Locale loc : locs)
 		{
 			// Filters IllegalArgumentException given by passing Language Locales instead of Country ones.
 			if (loc.getCountry().length() == 2)
 			{
-				entry = new MapEntry<Currency, Locale>(Currency.getInstance(loc), loc);
+				entry = new Pair<Currency, Locale>(Currency.getInstance(loc), loc);
 				ret.add(entry);
 			}
 		}

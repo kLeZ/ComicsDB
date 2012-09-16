@@ -1,8 +1,8 @@
 package it.d4nguard.comicsimporter.main;
 
 import it.d4nguard.comicsimporter.beans.Comics;
-import it.d4nguard.comicsimporter.utils.StreamUtils;
 import it.d4nguard.comicsimporter.utils.WebScraper;
+import it.d4nguard.comicsimporter.utils.io.StreamUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

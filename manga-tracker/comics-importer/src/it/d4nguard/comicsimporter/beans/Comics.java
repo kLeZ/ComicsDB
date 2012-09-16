@@ -3,11 +3,13 @@ package it.d4nguard.comicsimporter.beans;
 import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getElement;
 import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getGQName;
 import it.d4nguard.comicsimporter.feed.FeedParser;
+import it.d4nguard.comicsimporter.utils.xml.XmlUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,7 +22,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class Comics extends ArrayList<Comic>
+public class Comics extends HashSet<Comic> implements Serializable
 {
 	private static final long serialVersionUID = 4652226828232257234L;
 	private final Document doc;
@@ -52,9 +54,12 @@ public class Comics extends ArrayList<Comic>
 		load();
 	}
 
-	public int getTotalComics()
+	private void setTotalComics(int totalComics)
 	{
-		return totalComics;
+		if (this.totalComics <= 0)
+		{
+			this.totalComics = totalComics;
+		}
 	}
 
 	public boolean contains(String comicTitle)
@@ -97,15 +102,6 @@ public class Comics extends ArrayList<Comic>
 			}
 		}
 		return ret;
-
-	}
-
-	private void setTotalComics(int totalComics)
-	{
-		if (this.totalComics <= 0)
-		{
-			this.totalComics = totalComics;
-		}
 	}
 
 	private void load() throws SAXException, IOException, ParserConfigurationException
@@ -151,5 +147,10 @@ public class Comics extends ArrayList<Comic>
 		}
 		builder.append("]");
 		return builder.toString();
+	}
+
+	public String toXml()
+	{
+		return XmlUtils.toString(doc, false, true);
 	}
 }

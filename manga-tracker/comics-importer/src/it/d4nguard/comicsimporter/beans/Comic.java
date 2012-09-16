@@ -5,6 +5,7 @@ import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getElementText;
 import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getGQName;
 import it.d4nguard.comicsimporter.utils.Convert;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -13,8 +14,10 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
 
-public class Comic
+public class Comic implements Serializable
 {
+	private static final long serialVersionUID = 1973643771157988169L;
+
 	private URL url;
 	private String originalTitle;
 	private String englishTitle;

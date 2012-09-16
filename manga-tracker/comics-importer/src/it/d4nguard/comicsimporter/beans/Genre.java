@@ -1,9 +1,12 @@
 package it.d4nguard.comicsimporter.beans;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Genre
+public class Genre implements Serializable
 {
+	private static final long serialVersionUID = -5242543259514817938L;
+
 	private final String name;
 	private static ArrayList<String> values = new ArrayList<String>();
 

@@ -3,10 +3,14 @@ package it.d4nguard.comicsimporter.beans;
 import it.d4nguard.comicsimporter.utils.Money;
 import it.d4nguard.comicsimporter.utils.StringUtils;
 
+import java.io.Serializable;
+
 import org.w3c.dom.Element;
 
-public class Volume
+public class Volume implements Serializable
 {
+	private static final long serialVersionUID = 1788104556294682013L;
+
 	private String name;
 	private String editor;
 	private boolean last;
