@@ -5,6 +5,9 @@ package it.d4nguard.comicsimporter.feed;
 
 import it.d4nguard.comicsimporter.beans.Comic;
 import it.d4nguard.comicsimporter.beans.Comics;
+import it.d4nguard.comicsimporter.utils.Pair;
+import it.d4nguard.comicsimporter.utils.WebScraper;
+import it.d4nguard.comicsimporter.utils.io.StreamUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -26,6 +29,7 @@ import com.sun.syndication.io.FeedException;
  */
 public abstract class FeedParser
 {
+	public static final String FEED_URL_VAR = "feedUrl";
 	public static final String RSS_URL_SUFFIX = "_RSS_URL";
 	protected final SyndFeed feed;
 
@@ -34,6 +38,17 @@ public abstract class FeedParser
 		FeedReader reader = new FeedReader(feedUrl);
 		feed = reader.read();
 	}
+
+	@SuppressWarnings("unchecked")
+	public String getFeedContent(String link) throws IOException, ParserConfigurationException, SAXException
+	{
+		String config = StreamUtils.getResourceAsString(getConfigFileName());
+		Pair<String, Object> var = new Pair<String, Object>("feedUrl", link);
+		String feedContent = WebScraper.scrap(config, "feed", var);
+		return feedContent;
+	}
+
+	public abstract String getConfigFileName();
 
 	public abstract List<Comic> parse(final Comics comics) throws IOException, ParserConfigurationException, SAXException;
 

@@ -3,15 +3,15 @@ package it.d4nguard.comicsimporter.beans;
 import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getElement;
 import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getGQName;
 import it.d4nguard.comicsimporter.feed.FeedParser;
+import it.d4nguard.comicsimporter.main.Main.ValueComparator;
+import it.d4nguard.comicsimporter.utils.Pair;
 import it.d4nguard.comicsimporter.utils.xml.XmlUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -152,5 +152,43 @@ public class Comics extends HashSet<Comic> implements Serializable
 	public String toXml()
 	{
 		return XmlUtils.toString(doc, false, true);
+	}
+
+	/**
+	 * This method orders the Comics list by Editors, counting all of the
+	 * publications and including the list of comics per editor.
+	 * 
+	 * @return a TreeMap of Comics ordered by editor, with a publications
+	 *         counter as 2nd param.
+	 *         The tree structure is the following:<br>
+	 *         TreeMap Of [Editors, Publications Count, List Of [Comics]]
+	 */
+	public TreeMap<String, Pair<Integer, List<Comic>>> toEditorsDetailsTree()
+	{
+		HashMap<String, Pair<Integer, List<Comic>>> editors;
+		editors = new HashMap<String, Pair<Integer, List<Comic>>>();
+		for (Comic c : this)
+		{
+			int i = 1;
+			ArrayList<Comic> list = new ArrayList<Comic>();
+			if (editors.get(c.getItalianEditor()) != null)
+			{
+				i = editors.get(c.getItalianEditor()).getKey() + 1;
+				list.addAll(editors.get(c.getItalianEditor()).getValue());
+			}
+			if (c.getItalianEditor() != null)
+			{
+				if (!c.getItalianEditor().isEmpty())
+				{
+					list.add(c);
+					editors.put(c.getItalianEditor(), new Pair<Integer, List<Comic>>(i, list));
+				}
+			}
+		}
+
+		TreeMap<String, Pair<Integer, List<Comic>>> tmap;
+		tmap = new TreeMap<String, Pair<Integer, List<Comic>>>(new ValueComparator(editors));
+		tmap.putAll(editors);
+		return tmap;
 	}
 }

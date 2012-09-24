@@ -5,15 +5,10 @@ import it.d4nguard.comicsimporter.beans.Comics;
 import it.d4nguard.comicsimporter.beans.Volume;
 import it.d4nguard.comicsimporter.utils.Convert;
 import it.d4nguard.comicsimporter.utils.StringUtils;
-import it.d4nguard.comicsimporter.utils.WebScraper;
 import it.d4nguard.comicsimporter.utils.io.DeepCopy;
-import it.d4nguard.comicsimporter.utils.io.StreamUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -24,7 +19,10 @@ import com.sun.syndication.io.FeedException;
 
 public class JPOPFeedParser extends FeedParser
 {
-	public static final String JPOP_RSS_URL = "file:///home/kLeZ-hAcK/Documenti/j-pop.rss";
+	//public static final String JPOP_RSS_URL = "file:///home/kLeZ-hAcK/Documenti/j-pop.rss";
+	public static final String JPOP_RSS_URL = "http://www.j-pop.it/searchRSS.php?section=news";
+	public static final String JPOP_EDITOR = "JPOP";
+	public static final int lilt = Calendar.DAY_OF_MONTH;
 
 	/**
 	 * @param feedUrl
@@ -47,9 +45,7 @@ public class JPOPFeedParser extends FeedParser
 			SyndEntry entry = it.next();
 			if (entry.getTitle().startsWith("USCITE J-POP "))
 			{
-				String config = StreamUtils.getResourceAsString("j-pop-feed-crawler.xml");
-				String feedContent = WebScraper.scrap(config, "jpopfeed");
-				Scanner scn = new Scanner(feedContent);
+				Scanner scn = new Scanner(getFeedContent(entry.getLink()));
 				while (scn.hasNext())
 				{
 					String current = scn.nextLine();
@@ -63,7 +59,7 @@ public class JPOPFeedParser extends FeedParser
 							{
 								String title = StringUtils.clean(split[0]);
 								Comic c = DeepCopy.copy(comics.get(title));
-								Volume searcher = new Volume("", "JPOP", false, null);
+								Volume searcher = new Volume("", JPOP_EDITOR, false, null);
 								int nvol = Convert.toInt(split[1]);
 								Volume v;
 								if (!c.getSeries().isEmpty())
@@ -80,7 +76,7 @@ public class JPOPFeedParser extends FeedParser
 									{
 										//TODO: Can I guess volume price from Jpop web site??
 									}
-									v.setEditor("JPOP");
+									v.setEditor(JPOP_EDITOR);
 									v.setLast(false);
 								}
 								else
@@ -88,7 +84,7 @@ public class JPOPFeedParser extends FeedParser
 									title = c.getEnglishTitle().concat(" ").concat(String.valueOf(nvol));
 									v = new Volume(title);
 									v.setPrice(null);
-									v.setEditor("JPOP");
+									v.setEditor(JPOP_EDITOR);
 									v.setLast(false);
 								}
 								c.getSeries().add(v);
@@ -105,5 +101,14 @@ public class JPOPFeedParser extends FeedParser
 			}
 		}
 		return ret;
+	}
+
+	/* (non-Javadoc)
+	 * @see it.d4nguard.comicsimporter.feed.FeedParser#getConfigFileName()
+	 */
+	@Override
+	public String getConfigFileName()
+	{
+		return "j-pop-feed-crawler.xml";
 	}
 }

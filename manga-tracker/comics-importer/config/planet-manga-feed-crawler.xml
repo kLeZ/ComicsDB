@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<!-- http://www.paninicomics.it/web/guest/planetmanga/checklist?year=2012&month=10&weekOfYear=45 -->
+	<var-def name="debug" overwrite="false">false</var-def>
+	<var-def name="feed">
+		<list>
+			<xpath
+				expression="//div[@class='inner1']/div[@class='article']/div[@class='detail']">
+				<html-to-xml omitcomments="true">
+					<case>
+						<if condition="${debug}">
+							<file action="read" type="text" charset="UTF-8"
+								path="/home/kLeZ-hAcK/Documenti/planet-manga-uscite-sett40.html" />
+						</if>
+						<else>
+							<http url="${feedUrl}" />
+						</else>
+					</case>
+				</html-to-xml>
+			</xpath>
+		</list>
+	</var-def>
+</config>

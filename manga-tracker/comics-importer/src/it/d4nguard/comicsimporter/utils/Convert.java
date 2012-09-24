@@ -1,5 +1,8 @@
 package it.d4nguard.comicsimporter.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Convert
 {
 	public static Boolean toBool(String s)
@@ -25,5 +28,15 @@ public class Convert
 	public static Long toLong(String s)
 	{
 		return Long.parseLong(StringUtils.filterDigits(s));
+	}
+
+	public static <K, V> Map<K, V> toMap(Pair<K, V>[] pairs)
+	{
+		HashMap<K, V> ret = new HashMap<K, V>();
+		for (Pair<K, V> pair : pairs)
+		{
+			ret.put(pair.getKey(), pair.getValue());
+		}
+		return ret;
 	}
 }
