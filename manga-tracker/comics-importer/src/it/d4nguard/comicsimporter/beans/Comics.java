@@ -2,20 +2,24 @@ package it.d4nguard.comicsimporter.beans;
 
 import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getElement;
 import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getGQName;
-import it.d4nguard.comicsimporter.feed.FeedParser;
-import it.d4nguard.comicsimporter.main.Main.ValueComparator;
+import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
+import it.d4nguard.comicsimporter.parsers.feed.FeedParser;
+import it.d4nguard.comicsimporter.parsers.plain.PlainParser;
 import it.d4nguard.comicsimporter.utils.Pair;
+import it.d4nguard.comicsimporter.utils.ValueComparator;
 import it.d4nguard.comicsimporter.utils.xml.XmlUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.util.*;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang.text.StrBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,30 +32,60 @@ public class Comics extends HashSet<Comic> implements Serializable
 	private final Document doc;
 	private int totalComics = 0;
 
-	public Comics(File src) throws IOException, ParserConfigurationException, SAXException
+	public Comics(File src) throws ComicsParseException
 	{
 		this(src, -1);
 	}
 
-	public Comics(InputStream src) throws IOException, ParserConfigurationException, SAXException
+	public Comics(InputStream src) throws ComicsParseException
 	{
 		this(src, -1);
 	}
 
-	public Comics(File src, int loadLimit) throws IOException, ParserConfigurationException, SAXException
+	public Comics(File src, int loadLimit) throws ComicsParseException
 	{
-		totalComics = loadLimit;
-		doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
-		doc.getDocumentElement().normalize();
-		load();
+		try
+		{
+			totalComics = loadLimit;
+			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
+			doc.getDocumentElement().normalize();
+			load();
+		}
+		catch (SAXException e)
+		{
+			throw new ComicsParseException(e);
+		}
+		catch (IOException e)
+		{
+			throw new ComicsParseException(e);
+		}
+		catch (ParserConfigurationException e)
+		{
+			throw new ComicsParseException(e);
+		}
 	}
 
-	public Comics(InputStream src, int loadLimit) throws IOException, ParserConfigurationException, SAXException
+	public Comics(InputStream src, int loadLimit) throws ComicsParseException
 	{
-		totalComics = loadLimit;
-		doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
-		doc.getDocumentElement().normalize();
-		load();
+		try
+		{
+			totalComics = loadLimit;
+			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
+			doc.getDocumentElement().normalize();
+			load();
+		}
+		catch (SAXException e)
+		{
+			throw new ComicsParseException(e);
+		}
+		catch (IOException e)
+		{
+			throw new ComicsParseException(e);
+		}
+		catch (ParserConfigurationException e)
+		{
+			throw new ComicsParseException(e);
+		}
 	}
 
 	private void setTotalComics(int totalComics)
@@ -104,7 +138,7 @@ public class Comics extends HashSet<Comic> implements Serializable
 		return ret;
 	}
 
-	private void load() throws SAXException, IOException, ParserConfigurationException
+	private void load() throws MalformedURLException
 	{
 		NodeList comics = doc.getElementsByTagName("fumetto");
 		setTotalComics(comics.getLength());
@@ -121,11 +155,19 @@ public class Comics extends HashSet<Comic> implements Serializable
 		}
 	}
 
-	public void syncFeeds(List<FeedParser> feeds) throws IOException, ParserConfigurationException, SAXException
+	public void syncFeeds(List<FeedParser> feeds) throws IOException
 	{
 		for (FeedParser feed : feeds)
 		{
 			addAll(feed.parse(this));
+		}
+	}
+
+	public void syncPlain(List<PlainParser> plainParsers) throws IOException
+	{
+		for (PlainParser plainParser : plainParsers)
+		{
+			addAll(plainParser.parse(this));
 		}
 	}
 
@@ -190,5 +232,15 @@ public class Comics extends HashSet<Comic> implements Serializable
 		tmap = new TreeMap<String, Pair<Integer, List<Comic>>>(new ValueComparator(editors));
 		tmap.putAll(editors);
 		return tmap;
+	}
+
+	public String toComicsString()
+	{
+		StrBuilder sb = new StrBuilder();
+		for (Comic c : this)
+		{
+			sb.appendln(c.getEnglishTitle());
+		}
+		return sb.toString();
 	}
 }

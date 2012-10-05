@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+	<!-- http://www.paninicomics.it/web/guest/planetmanga/checklist -->
+	<var-def name="debug" overwrite="false">false</var-def>
+	<var-def name="year"><case><if condition="sys.isVariableDefined(year)"><var name="year"/></if></case></var-def>
+	<var-def name="month"><case><if condition="sys.isVariableDefined(month)"><var name="month"/></if></case></var-def>
+	<var-def name="weekOfYear"><case><if condition="sys.isVariableDefined(weekOfYear)"><var name="weekOfYear"/></if></case></var-def>
+	<var-def name="startUrl" overwrite="false">
+		<![CDATA[ http://www.paninicomics.it/web/guest/planetmanga/checklist ]]>
+		<script return="queryString"><![CDATA[
+			List parts = new ArrayList();
+			if (year != null && !year.toString().isEmpty())
+			{
+				parts.add(year.toString());
+			}
+			if (month != null && !month.toString().isEmpty())
+			{
+				parts.add(month.toString());
+			}
+			if (weekOfYear != null && !weekOfYear.toString().isEmpty())
+			{
+				parts.add(weekOfYear.toString());
+			}
+			for(int i = 0; i < parts.size(); i++)
+			{
+				if (i == 0) queryString = "?";
+				else if (i < parts.size() - 1) queryString += "&";
+				queryString += parts[i];
+			}
+		]]>
+		</script>
+		<case>
+			<if condition="sys.isVariableDefined(dateFilters)">
+				<var name="dateFilters"/>
+			</if>
+		</case>
+	</var-def>
+	<var-def name="mangaxml">
+		<loop item="doc">
+			<list>
+				<xpath expression="//div[@class='article']/div[@class='detail']">
+					<html-to-xml omitcomments="true">
+						<case>
+							<if condition="${debug}">
+								<file action="read" type="text" charset="UTF-8" path="/home/kLeZ-hAcK/Documenti/planet-manga-uscite-sett40.html" />
+							</if>
+							<else>
+								<http method="post" url="${startUrl}"/>
+							</else>
+						</case>
+					</html-to-xml>
+				</xpath>
+			</list>
+			<body>
+				<try>
+					<body>
+						<xquery>
+							<xq-param name="doc">
+								<var name="doc" />
+							</xq-param>
+							<xq-expression><![CDATA[
+								declare variable $doc as node() external;
+								let $nomevolume := normalize-space(data($doc//div[@class='title']/h3/text())[1])
+								let $prezzo := fn:concat(normalize-space(data($doc//div[@class='price']/h4/em/text())[1]), normalize-space(data($doc//div[@class='price']/h4/text())[2]))
+								let $editore := normalize-space(data($doc//div[@class='title']/h4[2]/text())[1])
+								let $serie := normalize-space(data($doc//div[@class='title']/p[@class='collection']/text())[1])
+								let $ultimo := 'false'
+								(: contains($row//td[2]/strong/font/text(), 'Ultimo') :)
+								return <volume nome="{$nomevolume}" serie="{$serie}" prezzo="{$prezzo}" editore="{$editore}" ultimo="{$ultimo}"/>
+							]]></xq-expression>
+						</xquery>
+					</body>
+					<catch>
+					</catch>
+				</try>
+			</body>
+		</loop>
+	</var-def>
+</config>

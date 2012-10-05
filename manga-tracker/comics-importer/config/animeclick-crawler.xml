@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config charset="UTF-8">
 	<var-def name="debug" overwrite="false">false</var-def>
+	<var-def name="write" overwrite="false">false</var-def>
 	<var-def name="startUrl" overwrite="false">
 		<![CDATA[ http://www.animeclick.it ]]>
 	</var-def>
@@ -10,13 +11,11 @@
 		</template>
 		<loop item="mangaurl" index="i">
 			<list>
-				<xpath
-					expression="//td[@class='white10']/div[2]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td/a/@href">
+				<xpath expression="//td[@class='white10']/div[2]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td/a/@href">
 					<html-to-xml omitcomments="true">
 						<case>
 							<if condition="${debug}">
-								<file action="read" type="text" charset="UTF-8"
-									path="/home/kLeZ-hAcK/Documenti/MangaSlide.php" />
+								<file action="read" type="text" charset="UTF-8" path="/home/kLeZ-hAcK/Documenti/MangaSlide.php" />
 							</if>
 							<else>
 								<http method="post" url="${startUrl}/MangaSlide.php">
@@ -40,8 +39,7 @@
 						<html-to-xml>
 							<case>
 								<if condition="${debug}">
-									<file action="read" type="text" charset="UTF-8"
-										path="/home/kLeZ-hAcK/Documenti/manga.php" />
+									<file action="read" type="text" charset="UTF-8" path="/home/kLeZ-hAcK/Documenti/manga.php" />
 								</if>
 								<else>
 									<http url="${startUrl}/${mangaurl}" />
@@ -107,10 +105,8 @@
 					</body>
 					<catch>
 						<empty>
-							<file path="/home/kLeZ-hAcK/Documenti/manga.err" action="append"
-								charset="UTF-8" type="text">
-								<template> URL: ${startUrl}/${mangaurl} ${doc}${sys.lf}${sys.lf}
-								</template>
+							<file path="/home/kLeZ-hAcK/Documenti/manga.err" action="append" charset="UTF-8" type="text">
+								<template> URL: ${startUrl}/${mangaurl} ${doc}${sys.lf}${sys.lf} </template>
 							</file>
 						</empty>
 					</catch>
@@ -119,4 +115,11 @@
 		</loop>
 		<![CDATA[ </fumetti> ]]>
 	</var-def>
+	<case>
+		<if condition="${write}">
+			<file action="write" type="text" charset="UTF-8" path="/home/kLeZ-hAcK/Documenti/manga.xml">
+				<var name="mangaxml"/>
+			</file>
+		</if>
+	</case>
 </config>

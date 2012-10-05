@@ -1,19 +1,15 @@
 package it.d4nguard.comicsimporter.utils;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.webharvest.definition.ScraperConfiguration;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class WebScraper
 {
@@ -21,6 +17,9 @@ public class WebScraper
 	private final InputSource src;
 	private ScraperContext ctx;
 	private Map<String, Object> contextVars;
+
+	private static ProxyInfo proxy;
+	private static boolean useProxy;
 
 	public WebScraper(String config)
 	{
@@ -38,11 +37,11 @@ public class WebScraper
 		return (contextVars != null) && !contextVars.isEmpty();
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<String, String> getReturnContext()
 	{
 		HashMap<String, String> ret = new HashMap<String, String>();
-		for (Iterator<Entry<String, Object>> it = ctx.entrySet().iterator(); it.hasNext();)
+		for (@SuppressWarnings("unchecked")
+		Iterator<Entry<String, Object>> it = ctx.entrySet().iterator(); it.hasNext();)
 		{
 			Entry<String, Object> entry = it.next();
 			ret.put(entry.getKey(), entry.getValue().toString());
@@ -50,16 +49,31 @@ public class WebScraper
 		return ret;
 	}
 
-	public String scrap(String returnVar) throws IOException, ParserConfigurationException, SAXException
+	public static void setProxy(ProxyInfo proxy)
+	{
+		useProxy = true;
+		WebScraper.proxy = proxy;
+	}
+
+	public String scrap(String returnVar)
 	{
 		scrap();
 		return ctx.get(returnVar).toString();
 	}
 
-	public void scrap() throws IOException, ParserConfigurationException, SAXException
+	public void scrap()
 	{
 		ScraperConfiguration configuration = new ScraperConfiguration(src);
 		Scraper scraper = new Scraper(configuration, WORK_DIR);
+		if (useProxy)
+		{
+			scraper.getHttpClientManager().setHttpProxy(proxy.getHostName(), proxy.getHostPort());
+			if (proxy.isUseCredentials())
+			{
+				scraper.getHttpClientManager().setHttpProxyCredentials(proxy.getUsername(), proxy.getPassword(), proxy.getHost(), proxy.getDomain());
+			}
+		}
+
 		if (hasContextVars())
 		{
 			scraper.addVariablesToContext(contextVars);
@@ -68,12 +82,12 @@ public class WebScraper
 		ctx = scraper.getContext();
 	}
 
-	public static String scrap(String config, String returnVar) throws IOException, ParserConfigurationException, SAXException
+	public static String scrap(String config, String returnVar)
 	{
 		return new WebScraper(config).scrap(returnVar);
 	}
 
-	public static String scrap(String config, String returnVar, Pair<String, Object>... contextVars) throws IOException, ParserConfigurationException, SAXException
+	public static String scrap(String config, String returnVar, Pair<String, Object>... contextVars)
 	{
 		return new WebScraper(config, Convert.toMap(contextVars)).scrap(returnVar);
 	}

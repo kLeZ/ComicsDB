@@ -12,6 +12,7 @@ public class Volume implements Serializable
 	private static final long serialVersionUID = 1788104556294682013L;
 
 	private String name;
+	private String serie;
 	private String editor;
 	private boolean last;
 	private Money price;
@@ -37,6 +38,16 @@ public class Volume implements Serializable
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+	public String getSerie()
+	{
+		return serie;
+	}
+
+	public void setSerie(String serie)
+	{
+		this.serie = serie;
 	}
 
 	public String getEditor()
@@ -75,6 +86,11 @@ public class Volume implements Serializable
 		StringBuilder builder = new StringBuilder();
 		builder.append("Volume [name=");
 		builder.append(name);
+		if ((serie != null) && !serie.isEmpty())
+		{
+			builder.append(", serie=");
+			builder.append(serie);
+		}
 		builder.append(", editor=");
 		builder.append(editor);
 		builder.append(", last=");
@@ -88,6 +104,10 @@ public class Volume implements Serializable
 	public static Volume createVolume(Element volumeElem)
 	{
 		Volume volume = new Volume(StringUtils.clean(volumeElem.getAttribute("nome")));
+		if (volumeElem.hasAttribute("serie"))
+		{
+			volume.setSerie(volumeElem.getAttribute("serie"));
+		}
 		volume.setEditor(volumeElem.getAttribute("editore"));
 		volume.setPrice(new Money(volumeElem.getAttribute("prezzo")));
 		volume.setLast(new Boolean(volumeElem.getAttribute("ultimo")));

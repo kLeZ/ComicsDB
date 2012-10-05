@@ -2,18 +2,17 @@ package it.d4nguard.comicsimporter.main;
 
 import it.d4nguard.comicsimporter.beans.Comic;
 import it.d4nguard.comicsimporter.beans.Comics;
-import it.d4nguard.comicsimporter.feed.FeedParser;
+import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
+import it.d4nguard.comicsimporter.parsers.feed.FeedParser;
+import it.d4nguard.comicsimporter.parsers.plain.PlainParser;
 import it.d4nguard.comicsimporter.utils.Convert;
 import it.d4nguard.comicsimporter.utils.Pair;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
 
 import com.sun.syndication.io.FeedException;
 
@@ -25,9 +24,12 @@ public class Main
 		boolean printTitles = Convert.toBool((args.length > 1 ? args[1] : "false"));
 		try
 		{
-			FileInputStream fis = null;//new FileInputStream("/home/kLeZ-hAcK/Documenti/manga.xml");
-			Comics comics = new ComicsImporter(fis).getComics(ncomics);
+			FileInputStream fis = null;
+			// fis = new FileInputStream("/home/kLeZ-hAcK/Documenti/manga.xml");
+			Comics comics = ComicsImporter.getInstance(fis).getComics(ncomics);
+			System.out.println(comics.toComicsString());
 			comics.syncFeeds(FeedParser.getAll());
+			comics.syncPlain(PlainParser.getAll());
 			System.out.println(comics.size());
 			Iterator<Entry<String, Pair<Integer, List<Comic>>>> it;
 			it = comics.toEditorsDetailsTree().entrySet().iterator();
@@ -52,14 +54,6 @@ public class Main
 		{
 			e.printStackTrace();
 		}
-		catch (final ParserConfigurationException e)
-		{
-			e.printStackTrace();
-		}
-		catch (final SAXException e)
-		{
-			e.printStackTrace();
-		}
 		catch (IllegalArgumentException e)
 		{
 			e.printStackTrace();
@@ -68,27 +62,9 @@ public class Main
 		{
 			e.printStackTrace();
 		}
-	}
-
-	public static class ValueComparator implements Comparator<String>
-	{
-		Map<String, Pair<Integer, List<Comic>>> base;
-
-		public ValueComparator(Map<String, Pair<Integer, List<Comic>>> base)
+		catch (ComicsParseException e)
 		{
-			this.base = base;
-		}
-
-		public int compare(String a, String b)
-		{
-			if (base.get(a).getKey() >= base.get(b).getKey())
-			{
-				return -1;
-			}
-			else
-			{
-				return 1;
-			} // returning 0 would merge keys
+			e.printStackTrace();
 		}
 	}
 }

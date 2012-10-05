@@ -1,15 +1,12 @@
 package it.d4nguard.comicsimporter.main;
 
 import it.d4nguard.comicsimporter.beans.Comics;
+import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
 import it.d4nguard.comicsimporter.utils.WebScraper;
 import it.d4nguard.comicsimporter.utils.io.StreamUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
 
 public class ComicsImporter
 {
@@ -25,12 +22,12 @@ public class ComicsImporter
 		this.src = src;
 	}
 
-	public Comics getComics() throws IOException, ParserConfigurationException, SAXException
+	public Comics getComics() throws IOException, ComicsParseException
 	{
 		return getComics(-1);
 	}
 
-	public Comics getComics(int ncomics) throws IOException, ParserConfigurationException, SAXException
+	public Comics getComics(int ncomics) throws IOException, ComicsParseException
 	{
 		if (src == null)
 		{
@@ -39,5 +36,15 @@ public class ComicsImporter
 			src = StreamUtils.toInputStream(mangaContents);
 		}
 		return new Comics(src, ncomics);
+	}
+
+	public static ComicsImporter getInstance()
+	{
+		return new ComicsImporter();
+	}
+
+	public static ComicsImporter getInstance(InputStream src)
+	{
+		return new ComicsImporter(src);
 	}
 }

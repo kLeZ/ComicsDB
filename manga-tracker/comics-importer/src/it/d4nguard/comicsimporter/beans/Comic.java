@@ -30,6 +30,10 @@ public class Comic implements Serializable
 	private short year;
 	private Series series;
 
+	public Comic()
+	{
+	}
+
 	public Comic(URL url)
 	{
 		this.url = url;
