@@ -1,11 +1,8 @@
 package it.d4nguard.comicsimporter.beans;
 
 import it.d4nguard.comicsimporter.utils.Money;
-import it.d4nguard.comicsimporter.utils.StringUtils;
 
 import java.io.Serializable;
-
-import org.w3c.dom.Element;
 
 public class Volume implements Serializable
 {
@@ -99,18 +96,5 @@ public class Volume implements Serializable
 		builder.append(price);
 		builder.append("]");
 		return builder.toString();
-	}
-
-	public static Volume createVolume(Element volumeElem)
-	{
-		Volume volume = new Volume(StringUtils.clean(volumeElem.getAttribute("nome")));
-		if (volumeElem.hasAttribute("serie"))
-		{
-			volume.setSerie(volumeElem.getAttribute("serie"));
-		}
-		volume.setEditor(volumeElem.getAttribute("editore"));
-		volume.setPrice(new Money(volumeElem.getAttribute("prezzo")));
-		volume.setLast(new Boolean(volumeElem.getAttribute("ultimo")));
-		return volume;
 	}
 }

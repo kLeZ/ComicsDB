@@ -14,12 +14,15 @@ import org.xml.sax.InputSource;
 public class WebScraper
 {
 	public static final String WORK_DIR = System.getProperty("work.dir");
-	private final InputSource src;
-	private ScraperContext ctx;
-	private Map<String, Object> contextVars;
 
+	private static WebScraper current;
 	private static ProxyInfo proxy;
 	private static boolean useProxy;
+
+	private final InputSource src;
+
+	private ScraperContext ctx;
+	private Map<String, Object> contextVars;
 
 	public WebScraper(String config)
 	{
@@ -49,12 +52,6 @@ public class WebScraper
 		return ret;
 	}
 
-	public static void setProxy(ProxyInfo proxy)
-	{
-		useProxy = true;
-		WebScraper.proxy = proxy;
-	}
-
 	public String scrap(String returnVar)
 	{
 		scrap();
@@ -73,7 +70,6 @@ public class WebScraper
 				scraper.getHttpClientManager().setHttpProxyCredentials(proxy.getUsername(), proxy.getPassword(), proxy.getHost(), proxy.getDomain());
 			}
 		}
-
 		if (hasContextVars())
 		{
 			scraper.addVariablesToContext(contextVars);
@@ -82,13 +78,26 @@ public class WebScraper
 		ctx = scraper.getContext();
 	}
 
+	public static WebScraper getCurrent()
+	{
+		return current;
+	}
+
+	public static void setProxy(ProxyInfo proxy)
+	{
+		useProxy = true;
+		WebScraper.proxy = proxy;
+	}
+
 	public static String scrap(String config, String returnVar)
 	{
-		return new WebScraper(config).scrap(returnVar);
+		current = new WebScraper(config);
+		return current.scrap(returnVar);
 	}
 
 	public static String scrap(String config, String returnVar, Pair<String, Object>... contextVars)
 	{
-		return new WebScraper(config, Convert.toMap(contextVars)).scrap(returnVar);
+		current = new WebScraper(config, Convert.toMap(contextVars));
+		return current.scrap(returnVar);
 	}
 }

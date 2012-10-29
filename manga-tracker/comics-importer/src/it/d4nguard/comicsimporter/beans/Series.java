@@ -1,7 +1,5 @@
 package it.d4nguard.comicsimporter.beans;
 
-import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getElements;
-import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getGQName;
 import it.d4nguard.comicsimporter.utils.Money;
 
 import java.io.Serializable;
@@ -9,8 +7,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-
-import org.w3c.dom.Element;
 
 public class Series extends HashSet<Volume> implements Serializable
 {
@@ -235,6 +231,18 @@ public class Series extends HashSet<Volume> implements Serializable
 		}
 	}
 
+	private static String adaptNextTitle(String title, int nvol)
+	{
+		if (title.matches(".*[0-9]+"))
+		{
+			title = title.substring(0, title.lastIndexOf(' '));
+			title = title.trim();
+			title = title.concat(" ");
+			title = title.concat(String.valueOf(nvol));
+		}
+		return title;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -261,34 +269,5 @@ public class Series extends HashSet<Volume> implements Serializable
 		}
 		builder.append("]");
 		return builder.toString();
-	}
-
-	private static String adaptNextTitle(String title, int nvol)
-	{
-		if (title.matches(".*[0-9]+"))
-		{
-			title = title.substring(0, title.lastIndexOf(' '));
-			title = title.trim();
-			title = title.concat(" ");
-			title = title.concat(String.valueOf(nvol));
-		}
-		return title;
-	}
-
-	public static Series createSeries(Element serieElem)
-	{
-		boolean completa = false, completaInPatria = false;
-		completa = new Boolean(serieElem.getAttribute("completa"));
-		completaInPatria = new Boolean(serieElem.getAttribute("completa_in_patria"));
-		Series series = new Series(completa, completaInPatria);
-		Element[] volumes = getElements(serieElem, getGQName("volume"));
-		if (volumes.length > 0)
-		{
-			for (Element volume : volumes)
-			{
-				series.add(Volume.createVolume(volume));
-			}
-		}
-		return series;
 	}
 }

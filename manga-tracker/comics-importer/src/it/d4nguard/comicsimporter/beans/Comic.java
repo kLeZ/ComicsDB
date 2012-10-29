@@ -1,18 +1,8 @@
 package it.d4nguard.comicsimporter.beans;
 
-import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getAttribute;
-import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getElementText;
-import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getGQName;
-import it.d4nguard.comicsimporter.utils.Convert;
-
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-
-import javax.xml.namespace.QName;
-
-import org.w3c.dom.Element;
 
 public class Comic implements Serializable
 {
@@ -192,20 +182,5 @@ public class Comic implements Serializable
 		builder.append(series);
 		builder.append("]");
 		return builder.toString();
-	}
-
-	public static Comic createComic(Element comicElem) throws MalformedURLException
-	{
-		Comic comic = new Comic(new URL(comicElem.getAttribute("url")));
-		comic.setOriginalTitle(getAttribute(comicElem, getGQName("titolo"), new QName("originale")));
-		comic.setEnglishTitle(getAttribute(comicElem, getGQName("titolo"), new QName("inglese")));
-		comic.setArtworker(getAttribute(comicElem, getGQName("autore"), new QName("disegni")));
-		comic.setStorywriter(getAttribute(comicElem, getGQName("autore"), new QName("storia")));
-		comic.setOriginalEditor(getAttribute(comicElem, getGQName("editore"), new QName("originale")));
-		comic.setItalianEditor(getAttribute(comicElem, getGQName("editore"), new QName("italiano")));
-		comic.setTypology(Typology.addNewValue(getElementText(comicElem, getGQName("tipologia"))));
-		comic.setGenres(Genre.init(getElementText(comicElem, getGQName("genere"))));
-		comic.setYear(Convert.toShortYear(getElementText(comicElem, getGQName("anno"))));
-		return comic;
 	}
 }

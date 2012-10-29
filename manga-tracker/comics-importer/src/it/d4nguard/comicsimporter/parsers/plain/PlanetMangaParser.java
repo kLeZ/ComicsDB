@@ -7,6 +7,7 @@ import it.d4nguard.comicsimporter.beans.Comic;
 import it.d4nguard.comicsimporter.beans.Comics;
 import it.d4nguard.comicsimporter.beans.Series;
 import it.d4nguard.comicsimporter.beans.Volume;
+import it.d4nguard.comicsimporter.beans.mappers.xml.VolumeXmlMapper;
 import it.d4nguard.comicsimporter.utils.DateUtils;
 import it.d4nguard.comicsimporter.utils.Pair;
 import it.d4nguard.comicsimporter.utils.WebScraper;
@@ -108,7 +109,7 @@ public class PlanetMangaParser extends PlainParser
 				Node node = volumes.item(i);
 				if (node.getNodeType() == Node.ELEMENT_NODE)
 				{
-					Volume v = Volume.createVolume((Element) node);
+					Volume v = new VolumeXmlMapper().create((Element) node);
 					ret.add(v);
 				}
 			}

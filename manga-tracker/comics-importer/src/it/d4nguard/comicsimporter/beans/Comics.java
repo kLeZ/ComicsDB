@@ -1,94 +1,32 @@
 package it.d4nguard.comicsimporter.beans;
 
-import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getElement;
-import static it.d4nguard.comicsimporter.utils.xml.XmlUtils.getGQName;
-import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
 import it.d4nguard.comicsimporter.parsers.feed.FeedParser;
 import it.d4nguard.comicsimporter.parsers.plain.PlainParser;
 import it.d4nguard.comicsimporter.utils.Pair;
 import it.d4nguard.comicsimporter.utils.ValueComparator;
-import it.d4nguard.comicsimporter.utils.xml.XmlUtils;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.util.*;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.lang.text.StrBuilder;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 public class Comics extends HashSet<Comic> implements Serializable
 {
 	private static final long serialVersionUID = 4652226828232257234L;
-	private final Document doc;
 	private int totalComics = 0;
 
-	public Comics(File src) throws ComicsParseException
+	public Comics()
 	{
-		this(src, -1);
+		this(-1);
 	}
 
-	public Comics(InputStream src) throws ComicsParseException
+	public Comics(int loadLimit)
 	{
-		this(src, -1);
+		totalComics = loadLimit;
 	}
 
-	public Comics(File src, int loadLimit) throws ComicsParseException
-	{
-		try
-		{
-			totalComics = loadLimit;
-			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
-			doc.getDocumentElement().normalize();
-			load();
-		}
-		catch (SAXException e)
-		{
-			throw new ComicsParseException(e);
-		}
-		catch (IOException e)
-		{
-			throw new ComicsParseException(e);
-		}
-		catch (ParserConfigurationException e)
-		{
-			throw new ComicsParseException(e);
-		}
-	}
-
-	public Comics(InputStream src, int loadLimit) throws ComicsParseException
-	{
-		try
-		{
-			totalComics = loadLimit;
-			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
-			doc.getDocumentElement().normalize();
-			load();
-		}
-		catch (SAXException e)
-		{
-			throw new ComicsParseException(e);
-		}
-		catch (IOException e)
-		{
-			throw new ComicsParseException(e);
-		}
-		catch (ParserConfigurationException e)
-		{
-			throw new ComicsParseException(e);
-		}
-	}
-
-	private void setTotalComics(int totalComics)
+	public void setTotalComics(int totalComics)
 	{
 		if (this.totalComics <= 0)
 		{
@@ -138,23 +76,6 @@ public class Comics extends HashSet<Comic> implements Serializable
 		return ret;
 	}
 
-	private void load() throws MalformedURLException
-	{
-		NodeList comics = doc.getElementsByTagName("fumetto");
-		setTotalComics(comics.getLength());
-		for (int i = 0; i < totalComics; i++)
-		{
-			Node node = comics.item(i);
-			if (node.getNodeType() == Node.ELEMENT_NODE)
-			{
-				Comic comic = Comic.createComic((Element) node);
-				Series series = Series.createSeries(getElement(node, getGQName("serie")));
-				comic.setSeries(series);
-				add(comic);
-			}
-		}
-	}
-
 	public void syncFeeds(List<FeedParser> feeds) throws IOException
 	{
 		for (FeedParser feed : feeds)
@@ -189,11 +110,6 @@ public class Comics extends HashSet<Comic> implements Serializable
 		}
 		builder.append("]");
 		return builder.toString();
-	}
-
-	public String toXml()
-	{
-		return XmlUtils.toString(doc, false, true);
 	}
 
 	/**

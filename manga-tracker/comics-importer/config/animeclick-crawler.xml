@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config charset="UTF-8">
 	<var-def name="debug" overwrite="false">false</var-def>
-	<var-def name="write" overwrite="false">false</var-def>
+	<var-def name="write">true</var-def>
+	<var-def name="cache-file">manga.xml</var-def>
 	<var-def name="startUrl" overwrite="false">
 		<![CDATA[ http://www.animeclick.it ]]>
 	</var-def>
@@ -105,9 +106,9 @@
 					</body>
 					<catch>
 						<empty>
-							<file path="/home/kLeZ-hAcK/Documenti/manga.err" action="append" charset="UTF-8" type="text">
-								<template> URL: ${startUrl}/${mangaurl} ${doc}${sys.lf}${sys.lf} </template>
-							</file>
+							<var-def name="err">
+								<template> URL: ${startUrl}/${mangaurl}${sys.lf}${doc}${sys.lf}${sys.lf} </template>
+							</var-def>
 						</empty>
 					</catch>
 				</try>
@@ -117,7 +118,7 @@
 	</var-def>
 	<case>
 		<if condition="${write}">
-			<file action="write" type="text" charset="UTF-8" path="/home/kLeZ-hAcK/Documenti/manga.xml">
+			<file action="write" type="text" charset="UTF-8" path="${cache-file}">
 				<var name="mangaxml"/>
 			</file>
 		</if>
