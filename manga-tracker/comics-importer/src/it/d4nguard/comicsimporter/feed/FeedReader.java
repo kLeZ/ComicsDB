@@ -13,12 +13,12 @@ public class FeedReader
 {
 	private final URL url;
 
-	public FeedReader(String url) throws MalformedURLException
+	public FeedReader(final String url) throws MalformedURLException
 	{
 		this.url = new URL(url);
 	}
 
-	public FeedReader(URL url)
+	public FeedReader(final URL url)
 	{
 		this.url = url;
 	}
@@ -35,10 +35,7 @@ public class FeedReader
 		}
 		finally
 		{
-			if (reader != null)
-			{
-				reader.close();
-			}
+			if (reader != null) reader.close();
 		}
 		return ret;
 	}

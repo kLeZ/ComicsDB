@@ -52,16 +52,64 @@ public class StaticResourceBackedDynamicEnumTest
 	private final AgentDescriptor agent2Descriptor = new AgentDescriptor(7, "James Bond", true);
 	private final List<AgentDescriptor> agentDescriptors = Arrays.asList(new AgentDescriptor(2, "Bill Fairbanks", false), agent2Descriptor, new AgentDescriptor(9, "Peter Smith", false));
 
-	@Before
-	public void prepareFixture()
+	@Test
+	public void backingValueOf()
 	{
+		assertEquals(agent2Descriptor, agents.backingValueOf(Integer.valueOf(7)));
+	}
 
-		// this call will be made while the object is being initialized
-		agentDescriptorRepository.loadAll();
-		expectLastCall().andReturn(agentDescriptors);
-		replay(agentDescriptorRepository);
+	@Test(expected = IllegalArgumentException.class)
+	public void backingValueOf_nonexistent()
+	{
+		agents.backingValueOf(Integer.valueOf(1));
+	}
 
-		agents = new StaticResourceBackedDynamicEnum<Integer, AgentDescriptor>(agentDescriptorRepository);
+	@Test(expected = NullPointerException.class)
+	public void backingValueOf_null()
+	{
+		agents.backingValueOf(null);
+	}
+
+	@Test
+	public void compare_equals()
+	{
+		assertTrue(agents.compare(Integer.valueOf(7), Integer.valueOf(7)) == 0);
+	}
+
+	@Test(expected = ClassCastException.class)
+	public void compare_fromNonexistent()
+	{
+		agents.compare(Integer.valueOf(1), Integer.valueOf(7));
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void compare_fromNull()
+	{
+		agents.compare(null, Integer.valueOf(7));
+	}
+
+	@Test
+	public void compare_greaterThan()
+	{
+		assertTrue(agents.compare(Integer.valueOf(9), Integer.valueOf(7)) > 0);
+	}
+
+	@Test
+	public void compare_lessThan()
+	{
+		assertTrue(agents.compare(Integer.valueOf(2), Integer.valueOf(7)) < 0);
+	}
+
+	@Test(expected = ClassCastException.class)
+	public void compare_toNonexistent()
+	{
+		agents.compare(Integer.valueOf(2), Integer.valueOf(8));
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void compare_toNull()
+	{
+		agents.compare(Integer.valueOf(2), null);
 	}
 
 	@Test(expected = AssertionError.class)
@@ -78,9 +126,9 @@ public class StaticResourceBackedDynamicEnumTest
 	}
 
 	@Test
-	public void exists_null()
+	public void exists()
 	{
-		assertFalse(agents.exists(null));
+		assertTrue(agents.exists(2));
 	}
 
 	@Test
@@ -90,45 +138,9 @@ public class StaticResourceBackedDynamicEnumTest
 	}
 
 	@Test
-	public void exists()
+	public void exists_null()
 	{
-		assertTrue(agents.exists(2));
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void valueOf_null()
-	{
-		agents.valueOf(null);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void valueOf_nonexistent()
-	{
-		agents.valueOf("non-existent");
-	}
-
-	@Test
-	public void valueOf()
-	{
-		assertEquals(Integer.valueOf(7), agents.valueOf("007"));
-	}
-
-	@Test
-	public void values()
-	{
-		assertEquals(Arrays.asList(Integer.valueOf(2), Integer.valueOf(7), Integer.valueOf(9)), agents.values());
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void ordinal_null()
-	{
-		agents.ordinal(null);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void ordinal_nonexistent()
-	{
-		agents.ordinal(Integer.valueOf(8));
+		assertFalse(agents.exists(null));
 	}
 
 	@Test
@@ -139,58 +151,34 @@ public class StaticResourceBackedDynamicEnumTest
 		assertEquals(1, agents.ordinal(Integer.valueOf(7)));
 	}
 
-	@Test(expected = NullPointerException.class)
-	public void compare_fromNull()
+	@Test(expected = IllegalArgumentException.class)
+	public void ordinal_nonexistent()
 	{
-		agents.compare(null, Integer.valueOf(7));
+		agents.ordinal(Integer.valueOf(8));
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void compare_toNull()
+	public void ordinal_null()
 	{
-		agents.compare(Integer.valueOf(2), null);
+		agents.ordinal(null);
 	}
 
-	@Test(expected = ClassCastException.class)
-	public void compare_fromNonexistent()
+	@Before
+	public void prepareFixture()
 	{
-		agents.compare(Integer.valueOf(1), Integer.valueOf(7));
-	}
 
-	@Test(expected = ClassCastException.class)
-	public void compare_toNonexistent()
-	{
-		agents.compare(Integer.valueOf(2), Integer.valueOf(8));
+		// this call will be made while the object is being initialized
+		agentDescriptorRepository.loadAll();
+		expectLastCall().andReturn(agentDescriptors);
+		replay(agentDescriptorRepository);
+
+		agents = new StaticResourceBackedDynamicEnum<Integer, AgentDescriptor>(agentDescriptorRepository);
 	}
 
 	@Test
-	public void compare_lessThan()
+	public void range()
 	{
-		assertTrue(agents.compare(Integer.valueOf(2), Integer.valueOf(7)) < 0);
-	}
-
-	@Test
-	public void compare_equals()
-	{
-		assertTrue(agents.compare(Integer.valueOf(7), Integer.valueOf(7)) == 0);
-	}
-
-	@Test
-	public void compare_greaterThan()
-	{
-		assertTrue(agents.compare(Integer.valueOf(9), Integer.valueOf(7)) > 0);
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void range_fromNull()
-	{
-		agents.range(null, Integer.valueOf(7));
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void range_toNull()
-	{
-		agents.range(Integer.valueOf(2), null);
+		assertTrue(CollectionUtils.isEqualCollection(Arrays.asList(Integer.valueOf(7), Integer.valueOf(9)), agents.range(Integer.valueOf(7), Integer.valueOf(9))));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -199,10 +187,10 @@ public class StaticResourceBackedDynamicEnumTest
 		agents.range(Integer.valueOf(1), Integer.valueOf(7));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void range_toNonexistent()
+	@Test(expected = NullPointerException.class)
+	public void range_fromNull()
 	{
-		agents.range(Integer.valueOf(2), Integer.valueOf(8));
+		agents.range(null, Integer.valueOf(7));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -217,28 +205,40 @@ public class StaticResourceBackedDynamicEnumTest
 		assertTrue(CollectionUtils.isEqualCollection(Arrays.asList(Integer.valueOf(2)), agents.range(Integer.valueOf(2), Integer.valueOf(2))));
 	}
 
-	@Test
-	public void range()
+	@Test(expected = IllegalArgumentException.class)
+	public void range_toNonexistent()
 	{
-		assertTrue(CollectionUtils.isEqualCollection(Arrays.asList(Integer.valueOf(7), Integer.valueOf(9)), agents.range(Integer.valueOf(7), Integer.valueOf(9))));
+		agents.range(Integer.valueOf(2), Integer.valueOf(8));
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void backingValueOf_null()
+	public void range_toNull()
 	{
-		agents.backingValueOf(null);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void backingValueOf_nonexistent()
-	{
-		agents.backingValueOf(Integer.valueOf(1));
+		agents.range(Integer.valueOf(2), null);
 	}
 
 	@Test
-	public void backingValueOf()
+	public void valueOf()
 	{
-		assertEquals(agent2Descriptor, agents.backingValueOf(Integer.valueOf(7)));
+		assertEquals(Integer.valueOf(7), agents.valueOf("007"));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void valueOf_nonexistent()
+	{
+		agents.valueOf("non-existent");
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void valueOf_null()
+	{
+		agents.valueOf(null);
+	}
+
+	@Test
+	public void values()
+	{
+		assertEquals(Arrays.asList(Integer.valueOf(2), Integer.valueOf(7), Integer.valueOf(9)), agents.values());
 	}
 
 }

@@ -7,21 +7,20 @@ public class Pair<K, V> implements Entry<K, V>
 	private final K key;
 	private V value;
 
-	public Pair(K key)
+	public Pair(final K key)
 	{
 		this.key = key;
 	}
 
-	public Pair(K key, V value)
+	public Pair(final K key, final V value)
 	{
 		this.key = key;
 		this.value = value;
 	}
 
-	public V setValue(V value)
+	public K getKey()
 	{
-		this.value = value;
-		return this.value;
+		return this.key;
 	}
 
 	public V getValue()
@@ -29,8 +28,9 @@ public class Pair<K, V> implements Entry<K, V>
 		return this.value;
 	}
 
-	public K getKey()
+	public V setValue(final V value)
 	{
-		return this.key;
+		this.value = value;
+		return this.value;
 	}
 }

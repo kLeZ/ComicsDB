@@ -62,9 +62,9 @@ public class XPathUtils
 	 *             <li>If the XPath expression is invalid.</li>
 	 *             </ul>
 	 */
-	public static boolean isMatch(Node context, String xpath) throws TransformerException
+	public static boolean isMatch(final Node context, final String xpath) throws TransformerException
 	{
-		XObject result = XPathAPI.eval(context, xpath);
+		final XObject result = XPathAPI.eval(context, xpath);
 		return result.bool();
 	}
 
@@ -84,11 +84,11 @@ public class XPathUtils
 	 *             <li>If the XPath expression is invalid.</li>
 	 *             </ul>
 	 */
-	public static boolean isMatch(Node context, String xpath, Map<String, String> namespaces) throws TransformerException
+	public static boolean isMatch(final Node context, final String xpath, final Map<String, String> namespaces) throws TransformerException
 	{
-		MapNSResolver resolver = new MapNSResolver();
+		final MapNSResolver resolver = new MapNSResolver();
 		resolver.addMap(namespaces);
-		XObject result = XPathAPI.eval(context, xpath, resolver);
+		final XObject result = XPathAPI.eval(context, xpath, resolver);
 		return result.bool();
 	}
 
@@ -110,25 +110,25 @@ public class XPathUtils
 	 *             <li>If the XPath expression is invalid.</li>
 	 *             </ul>
 	 */
-	public static Node[] select(Node context, String xpath) throws TransformerException
+	public static Node[] select(final Node context, final String xpath) throws TransformerException
 	{
-		XObject result = XPathAPI.eval(context, xpath, XmlUtils.getDocumentRoot(context));
-		int type = result.getType();
+		final XObject result = XPathAPI.eval(context, xpath, XmlUtils.getDocumentRoot(context));
+		final int type = result.getType();
 
 		//
 		// if the xpath resolves to a set of nodes, return them
 		//
 		if (type == XObject.CLASS_NODESET)
 		{
-			NodeList list = result.nodelist();
+			final NodeList list = result.nodelist();
 			return XmlUtils.convertToArray(list);
 		}
 
 		//
 		// otherwise, it's a scalar - turn it into a text node
 		//
-		String resultValue = result.str();
-		Node resultNode = XmlUtils.createDocument().createTextNode(resultValue);
+		final String resultValue = result.str();
+		final Node resultNode = XmlUtils.createDocument().createTextNode(resultValue);
 		return new Node[] { resultNode };
 	}
 
@@ -148,10 +148,10 @@ public class XPathUtils
 	 *             <li>If the XPath expression is invalid.</li>
 	 *             </ul>
 	 */
-	public static Node[] selectNodeList(Node context, String xpath) throws TransformerException
+	public static Node[] selectNodeList(final Node context, final String xpath) throws TransformerException
 	{
-		Element root = XmlUtils.getDocumentRoot(context);
-		NodeList result = XPathAPI.selectNodeList(context, xpath, root);
+		final Element root = XmlUtils.getDocumentRoot(context);
+		final NodeList result = XPathAPI.selectNodeList(context, xpath, root);
 		return XmlUtils.convertToArray(result);
 	}
 }

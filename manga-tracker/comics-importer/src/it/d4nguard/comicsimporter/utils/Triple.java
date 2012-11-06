@@ -6,6 +6,32 @@ public abstract class Triple<S, T, U> implements Tuple
 	protected T t;
 	protected U u;
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean equals(final Object obj)
+	{
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Triple)) return false;
+		final Triple<S, T, U> other = (Triple<S, T, U>) obj;
+		if (s == null)
+		{
+			if (other.s != null) return false;
+		}
+		else if (!s.equals(other.s)) return false;
+		if (t == null)
+		{
+			if (other.t != null) return false;
+		}
+		else if (!t.equals(other.t)) return false;
+		if (u == null)
+		{
+			if (other.u != null) return false;
+		}
+		else if (!u.equals(other.u)) return false;
+		return true;
+	}
+
 	public S getS()
 	{
 		return s;
@@ -21,21 +47,6 @@ public abstract class Triple<S, T, U> implements Tuple
 		return u;
 	}
 
-	public void setS(S s)
-	{
-		this.s = s;
-	}
-
-	public void setT(T t)
-	{
-		this.t = t;
-	}
-
-	public void setU(U u)
-	{
-		this.u = u;
-	}
-
 	@Override
 	public int hashCode()
 	{
@@ -47,36 +58,25 @@ public abstract class Triple<S, T, U> implements Tuple
 		return result;
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean equals(Object obj)
+	public void setS(final S s)
 	{
-		if (this == obj) { return true; }
-		if (obj == null) { return false; }
-		if (!(obj instanceof Triple)) { return false; }
-		Triple<S, T, U> other = (Triple<S, T, U>) obj;
-		if (s == null)
-		{
-			if (other.s != null) { return false; }
-		}
-		else if (!s.equals(other.s)) { return false; }
-		if (t == null)
-		{
-			if (other.t != null) { return false; }
-		}
-		else if (!t.equals(other.t)) { return false; }
-		if (u == null)
-		{
-			if (other.u != null) { return false; }
-		}
-		else if (!u.equals(other.u)) { return false; }
-		return true;
+		this.s = s;
+	}
+
+	public void setT(final T t)
+	{
+		this.t = t;
+	}
+
+	public void setU(final U u)
+	{
+		this.u = u;
 	}
 
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("Triple [s=");
 		builder.append(s);
 		builder.append(", t=");

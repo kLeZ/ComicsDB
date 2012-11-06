@@ -20,28 +20,28 @@ public class DeepCopy
 	 * be serialized.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T copy(T orig)
+	public static <T> T copy(final T orig)
 	{
 		Object obj = null;
 		try
 		{
 			// Write the object out to a byte array
-			FastByteArrayOutputStream fbos = new FastByteArrayOutputStream();
-			ObjectOutputStream out = new ObjectOutputStream(fbos);
+			final FastByteArrayOutputStream fbos = new FastByteArrayOutputStream();
+			final ObjectOutputStream out = new ObjectOutputStream(fbos);
 			out.writeObject(orig);
 			out.flush();
 			out.close();
 
 			// Retrieve an input stream from the byte array and read
 			// a copy of the object back in.
-			ObjectInputStream in = new ObjectInputStream(fbos.getInputStream());
+			final ObjectInputStream in = new ObjectInputStream(fbos.getInputStream());
 			obj = in.readObject();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
-		catch (ClassNotFoundException cnfe)
+		catch (final ClassNotFoundException cnfe)
 		{
 			cnfe.printStackTrace();
 		}

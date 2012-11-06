@@ -49,6 +49,21 @@ public interface DynamicEnum<E, D extends DynamicEnumerable<E>> extends Comparat
 {
 
 	/**
+	 * Returns the object underlying the given enum value, i.e. the
+	 * <code>DynamicEnumValue v</code> for which
+	 * <code>v.enumValue().equals(enumValue)</code>.
+	 * 
+	 * @param enumValue
+	 *            the enum value whose backing object is required
+	 * @return the backing object for the given enum value
+	 * @throws IllegalArgumentException
+	 *             if the given value is not an enum constant
+	 * @throws NullPointerException
+	 *             if <code>enumValue</code> is null
+	 */
+	D backingValueOf(E enumValue);
+
+	/**
 	 * Checks if an enum constant matching the given purported instance of the
 	 * enum value
 	 * class exists.
@@ -59,34 +74,6 @@ public interface DynamicEnum<E, D extends DynamicEnumerable<E>> extends Comparat
 	 *         exists.
 	 */
 	boolean exists(E enumValue);
-
-	/**
-	 * Returns the enum constant with the specified name, in analogy to
-	 * {@link Enum#valueOf(Class, String)}.
-	 * <p>
-	 * The name must match the {@link DynamicEnumerable#name()} value of one of
-	 * the enum constants.
-	 * 
-	 * @param name
-	 *            the name of the constant to return
-	 * @return the enum constant with the specified name
-	 * @throws IllegalArgumentException
-	 *             if no constant with the specified name exists
-	 * @throws NullPointerException
-	 *             if <code>name</code> is null
-	 */
-	E valueOf(String name);
-
-	/**
-	 * Returns all the enum constants of the enumeration, in the order of their
-	 * {@link #ordinal(DynamicEnumerable) ordinals}.
-	 * <p>
-	 * Analogous to the &quot;magic&quot; <code>values()</code> method provided
-	 * by Java for each <code>Enum</code> class.
-	 * 
-	 * @return all the enum constants in the order of their ordinals
-	 */
-	List<E> values();
 
 	/**
 	 * Returns the ordinal of the given enumeration constant, in analogy to
@@ -131,17 +118,30 @@ public interface DynamicEnum<E, D extends DynamicEnumerable<E>> extends Comparat
 	Set<E> range(E from, E to);
 
 	/**
-	 * Returns the object underlying the given enum value, i.e. the
-	 * <code>DynamicEnumValue v</code> for which
-	 * <code>v.enumValue().equals(enumValue)</code>.
+	 * Returns the enum constant with the specified name, in analogy to
+	 * {@link Enum#valueOf(Class, String)}.
+	 * <p>
+	 * The name must match the {@link DynamicEnumerable#name()} value of one of
+	 * the enum constants.
 	 * 
-	 * @param enumValue
-	 *            the enum value whose backing object is required
-	 * @return the backing object for the given enum value
+	 * @param name
+	 *            the name of the constant to return
+	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException
-	 *             if the given value is not an enum constant
+	 *             if no constant with the specified name exists
 	 * @throws NullPointerException
-	 *             if <code>enumValue</code> is null
+	 *             if <code>name</code> is null
 	 */
-	D backingValueOf(E enumValue);
+	E valueOf(String name);
+
+	/**
+	 * Returns all the enum constants of the enumeration, in the order of their
+	 * {@link #ordinal(DynamicEnumerable) ordinals}.
+	 * <p>
+	 * Analogous to the &quot;magic&quot; <code>values()</code> method provided
+	 * by Java for each <code>Enum</code> class.
+	 * 
+	 * @return all the enum constants in the order of their ordinals
+	 */
+	List<E> values();
 }

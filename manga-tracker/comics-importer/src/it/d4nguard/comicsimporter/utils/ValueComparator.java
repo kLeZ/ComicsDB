@@ -10,20 +10,14 @@ public class ValueComparator implements Comparator<String>
 {
 	Map<String, Pair<Integer, List<Comic>>> base;
 
-	public ValueComparator(Map<String, Pair<Integer, List<Comic>>> base)
+	public ValueComparator(final Map<String, Pair<Integer, List<Comic>>> base)
 	{
 		this.base = base;
 	}
 
-	public int compare(String a, String b)
+	public int compare(final String a, final String b)
 	{
-		if (base.get(a).getKey() >= base.get(b).getKey())
-		{
-			return -1;
-		}
-		else
-		{
-			return 1;
-		}
+		if (base.get(a).getKey() >= base.get(b).getKey()) return -1;
+		else return 1;
 	}
 }

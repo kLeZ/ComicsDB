@@ -26,29 +26,10 @@ public class FastByteArrayOutputStream extends OutputStream
 	/**
 	 * Constructs a stream with the given initial size
 	 */
-	public FastByteArrayOutputStream(int initSize)
+	public FastByteArrayOutputStream(final int initSize)
 	{
 		size = 0;
 		buf = new byte[initSize];
-	}
-
-	/**
-	 * Ensures that we have a large enough buffer for the given size.
-	 */
-	private void verifyBufferSize(int sz)
-	{
-		if (sz > buf.length)
-		{
-			byte[] old = buf;
-			buf = new byte[Math.max(sz, 2 * buf.length)];
-			System.arraycopy(old, 0, buf, 0, old.length);
-			old = null;
-		}
-	}
-
-	public int getSize()
-	{
-		return size;
 	}
 
 	/**
@@ -61,27 +42,17 @@ public class FastByteArrayOutputStream extends OutputStream
 		return buf;
 	}
 
-	@Override
-	public final void write(byte b[])
+	/**
+	 * Returns a ByteArrayInputStream for reading back the written data
+	 */
+	public InputStream getInputStream()
 	{
-		verifyBufferSize(size + b.length);
-		System.arraycopy(b, 0, buf, size, b.length);
-		size += b.length;
+		return new FastByteArrayInputStream(buf, size);
 	}
 
-	@Override
-	public final void write(byte b[], int off, int len)
+	public int getSize()
 	{
-		verifyBufferSize(size + len);
-		System.arraycopy(b, off, buf, size, len);
-		size += len;
-	}
-
-	@Override
-	public final void write(int b)
-	{
-		verifyBufferSize(size + 1);
-		buf[size++] = (byte) b;
+		return size;
 	}
 
 	public void reset()
@@ -90,11 +61,40 @@ public class FastByteArrayOutputStream extends OutputStream
 	}
 
 	/**
-	 * Returns a ByteArrayInputStream for reading back the written data
+	 * Ensures that we have a large enough buffer for the given size.
 	 */
-	public InputStream getInputStream()
+	private void verifyBufferSize(final int sz)
 	{
-		return new FastByteArrayInputStream(buf, size);
+		if (sz > buf.length)
+		{
+			byte[] old = buf;
+			buf = new byte[Math.max(sz, 2 * buf.length)];
+			System.arraycopy(old, 0, buf, 0, old.length);
+			old = null;
+		}
+	}
+
+	@Override
+	public final void write(final byte b[])
+	{
+		verifyBufferSize(size + b.length);
+		System.arraycopy(b, 0, buf, size, b.length);
+		size += b.length;
+	}
+
+	@Override
+	public final void write(final byte b[], final int off, final int len)
+	{
+		verifyBufferSize(size + len);
+		System.arraycopy(b, off, buf, size, len);
+		size += len;
+	}
+
+	@Override
+	public final void write(final int b)
+	{
+		verifyBufferSize(size + 1);
+		buf[size++] = (byte) b;
 	}
 
 }

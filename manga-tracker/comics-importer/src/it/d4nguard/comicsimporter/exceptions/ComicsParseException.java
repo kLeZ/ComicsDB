@@ -8,18 +8,18 @@ public class ComicsParseException extends Exception
 	{
 	}
 
-	public ComicsParseException(String message)
+	public ComicsParseException(final String message)
 	{
 		super(message);
 	}
 
-	public ComicsParseException(Throwable cause)
-	{
-		super(cause);
-	}
-
-	public ComicsParseException(String message, Throwable cause)
+	public ComicsParseException(final String message, final Throwable cause)
 	{
 		super(message, cause);
+	}
+
+	public ComicsParseException(final Throwable cause)
+	{
+		super(cause);
 	}
 }

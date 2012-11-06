@@ -14,37 +14,17 @@ public class Volume implements Serializable
 	private boolean last;
 	private Money price;
 
-	public Volume(String name)
+	public Volume(final String name)
 	{
 		this.name = name;
 	}
 
-	public Volume(String name, String editor, boolean last, Money price)
+	public Volume(final String name, final String editor, final boolean last, final Money price)
 	{
 		this.name = name;
 		this.editor = editor;
 		this.last = last;
 		this.price = price;
-	}
-
-	public String getName()
-	{
-		return name;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-	public String getSerie()
-	{
-		return serie;
-	}
-
-	public void setSerie(String serie)
-	{
-		this.serie = serie;
 	}
 
 	public String getEditor()
@@ -52,19 +32,9 @@ public class Volume implements Serializable
 		return editor;
 	}
 
-	public void setEditor(String editor)
+	public String getName()
 	{
-		this.editor = editor;
-	}
-
-	public boolean isLast()
-	{
-		return last;
-	}
-
-	public void setLast(boolean last)
-	{
-		this.last = last;
+		return name;
 	}
 
 	public Money getPrice()
@@ -72,15 +42,45 @@ public class Volume implements Serializable
 		return price;
 	}
 
-	public void setPrice(Money price)
+	public String getSerie()
+	{
+		return serie;
+	}
+
+	public boolean isLast()
+	{
+		return last;
+	}
+
+	public void setEditor(final String editor)
+	{
+		this.editor = editor;
+	}
+
+	public void setLast(final boolean last)
+	{
+		this.last = last;
+	}
+
+	public void setName(final String name)
+	{
+		this.name = name;
+	}
+
+	public void setPrice(final Money price)
 	{
 		this.price = price;
+	}
+
+	public void setSerie(final String serie)
+	{
+		this.serie = serie;
 	}
 
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("Volume [name=");
 		builder.append(name);
 		if ((serie != null) && !serie.isEmpty())

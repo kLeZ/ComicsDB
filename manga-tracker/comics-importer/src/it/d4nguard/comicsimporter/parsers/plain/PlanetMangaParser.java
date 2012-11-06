@@ -4,10 +4,10 @@
 package it.d4nguard.comicsimporter.parsers.plain;
 
 import it.d4nguard.comicsimporter.beans.Comic;
-import it.d4nguard.comicsimporter.beans.Comics;
-import it.d4nguard.comicsimporter.beans.Series;
 import it.d4nguard.comicsimporter.beans.Volume;
 import it.d4nguard.comicsimporter.beans.mappers.xml.VolumeXmlMapper;
+import it.d4nguard.comicsimporter.bo.Comics;
+import it.d4nguard.comicsimporter.bo.Serie;
 import it.d4nguard.comicsimporter.utils.DateUtils;
 import it.d4nguard.comicsimporter.utils.Pair;
 import it.d4nguard.comicsimporter.utils.WebScraper;
@@ -36,91 +36,86 @@ public class PlanetMangaParser extends PlainParser
 {
 	public static final String PlanetManga_CONFIG = "planet-manga-crawler.xml";
 
-	@Override
-	public List<Comic> parse(final Comics comics) throws IOException
-	{
-		List<Comic> ret = new ArrayList<Comic>();
-		Calendar next = DateUtils.setCalendar(1);
-		Calendar limit = DateUtils.setCalendar(1);
-		limit.add(Calendar.MONTH, 2);
-		String config = StreamUtils.getResourceAsString(PlanetManga_CONFIG);
-		StrBuilder sb = new StrBuilder();
-		for (; next.before(limit); next.add(Calendar.WEEK_OF_YEAR, 1))
-		{
-			String src = WebScraper.scrap(config, "mangaxml", getPairs(next));
-			sb.appendln(src);
-			List<Volume> volumes = readVolumes(src);
-			for (Volume v : volumes)
-			{
-				if (comics.contains(v.getSerie()))
-				{
-					Comic c = comics.get(v.getSerie());
-					c.getSeries().add(v);
-					ret.add(c);
-				}
-				else if (v.getName().contains("1") && !v.getSerie().contains("1"))
-				{
-					Series s = new Series(false, false);
-					s.add(v);
-					Comic c = new Comic();
-					c.setEnglishTitle(v.getSerie());
-					c.setItalianEditor(v.getEditor());
-					c.setYear((short) next.get(Calendar.YEAR));
-					c.setSeries(s);
-					ret.add(c);
-				}
-			}
-		}
-		return ret;
-	}
-
-	private Pair<String, Object>[] getPairs(Calendar cal)
-	{
-		ArrayList<Pair<String, Object>> ret = new ArrayList<Pair<String, Object>>();
-		ret.add(new Pair<String, Object>("year", cal.get(Calendar.YEAR)));
-		ret.add(new Pair<String, Object>("month", cal.get(Calendar.MONTH)));
-		ret.add(new Pair<String, Object>("weekOfYear", cal.get(Calendar.WEEK_OF_YEAR)));
-		@SuppressWarnings("unchecked")
-		Pair<String, Object>[] checked = ret.toArray(new Pair[] {});
-		return checked;
-	}
-
-	public static List<Volume> readVolumes(String volumesXml) throws IOException
+	public static List<Volume> readVolumes(final String volumesXml) throws IOException
 	{
 		return readVolumes(volumesXml, false);
 	}
 
-	public static List<Volume> readVolumes(String volumesXml, boolean hasRootElement) throws IOException
+	public static List<Volume> readVolumes(String volumesXml, final boolean hasRootElement) throws IOException
 	{
-		List<Volume> ret = new ArrayList<Volume>();
+		final List<Volume> ret = new ArrayList<Volume>();
 		try
 		{
-			if (!hasRootElement)
-			{
-				volumesXml = "<root>".concat(volumesXml).concat("</root>");
-			}
-			InputStream is = StreamUtils.toInputStream(volumesXml);
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			Document doc = dbf.newDocumentBuilder().parse(is);
+			if (!hasRootElement) volumesXml = "<root>".concat(volumesXml).concat("</root>");
+			final InputStream is = StreamUtils.toInputStream(volumesXml);
+			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			final Document doc = dbf.newDocumentBuilder().parse(is);
 			doc.getDocumentElement().normalize();
-			NodeList volumes = doc.getDocumentElement().getChildNodes();
+			final NodeList volumes = doc.getDocumentElement().getChildNodes();
 			for (int i = 0; i < volumes.getLength(); i++)
 			{
-				Node node = volumes.item(i);
+				final Node node = volumes.item(i);
 				if (node.getNodeType() == Node.ELEMENT_NODE)
 				{
-					Volume v = new VolumeXmlMapper().create((Element) node);
+					final Volume v = new VolumeXmlMapper().create((Element) node);
 					ret.add(v);
 				}
 			}
 		}
-		catch (SAXException e)
+		catch (final SAXException e)
 		{
 			e.printStackTrace();
 		}
-		catch (ParserConfigurationException e)
+		catch (final ParserConfigurationException e)
 		{
 			e.printStackTrace();
+		}
+		return ret;
+	}
+
+	private Pair<String, Object>[] getPairs(final Calendar cal)
+	{
+		final ArrayList<Pair<String, Object>> ret = new ArrayList<Pair<String, Object>>();
+		ret.add(new Pair<String, Object>("year", cal.get(Calendar.YEAR)));
+		ret.add(new Pair<String, Object>("month", cal.get(Calendar.MONTH)));
+		ret.add(new Pair<String, Object>("weekOfYear", cal.get(Calendar.WEEK_OF_YEAR)));
+		@SuppressWarnings("unchecked")
+		final Pair<String, Object>[] checked = ret.toArray(new Pair[] {});
+		return checked;
+	}
+
+	@Override
+	public List<Comic> parse(final Comics comics) throws IOException
+	{
+		final List<Comic> ret = new ArrayList<Comic>();
+		final Calendar next = DateUtils.setCalendar(1);
+		final Calendar limit = DateUtils.setCalendar(1);
+		limit.add(Calendar.MONTH, 2);
+		final String config = StreamUtils.getResourceAsString(PlanetManga_CONFIG);
+		final StrBuilder sb = new StrBuilder();
+		for (; next.before(limit); next.add(Calendar.WEEK_OF_YEAR, 1))
+		{
+			final String src = WebScraper.scrap(config, "mangaxml", getPairs(next));
+			sb.appendln(src);
+			final List<Volume> volumes = readVolumes(src);
+			for (final Volume v : volumes)
+				if (comics.contains(v.getSerie()))
+				{
+					final Comic c = comics.get(v.getSerie());
+					c.getSerie().add(v);
+					ret.add(c);
+				}
+				else if (v.getName().contains("1") && !v.getSerie().contains("1"))
+				{
+					final Serie s = new Serie();
+					s.add(v);
+					final Comic c = new Comic();
+					c.setEnglishTitle(v.getSerie());
+					c.setItalianEditor(v.getEditor());
+					c.setYear((short) next.get(Calendar.YEAR));
+					c.setSerie(s);
+					ret.add(c);
+				}
 		}
 		return ret;
 	}

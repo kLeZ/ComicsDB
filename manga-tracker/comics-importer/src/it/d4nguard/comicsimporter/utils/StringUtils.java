@@ -2,22 +2,19 @@ package it.d4nguard.comicsimporter.utils;
 
 public class StringUtils
 {
-	public static String clean(String s)
+	public static String clean(final String s)
 	{
 		return BlankRemover.itrim(BlankRemover.lrtrim(s));
 	}
 
-	public static String cleanDateRange(String s, int take)
+	public static String cleanDateRange(String s, final int take)
 	{
 		if (s != null)
 		{
 			s = (s.contains("/") ? (s.split("/").length > 0 ? s.split("/")[take] : s.substring(0, s.indexOf('/'))) : s);
 			s = (s.contains("-") ? (s.split("-").length > 0 ? s.split("-")[take] : s.substring(0, s.indexOf('-'))) : s);
 		}
-		else
-		{
-			s = "";
-		}
+		else s = "";
 		return s;
 	}
 
@@ -26,20 +23,12 @@ public class StringUtils
 		return filterDigits(s, true);
 	}
 
-	public static String filterDigits(final String s, boolean defaultToZero)
+	public static String filterDigits(final String s, final boolean defaultToZero)
 	{
 		String ret = "";
-		for (char c : s.toCharArray())
-		{
-			if (Character.isDigit(c) || (c == '-'))
-			{
-				ret = ret.concat(String.valueOf(c));
-			}
-		}
-		if (defaultToZero && ret.isEmpty())
-		{
-			ret = "0";
-		}
+		for (final char c : s.toCharArray())
+			if (Character.isDigit(c) || (c == '-')) ret = ret.concat(String.valueOf(c));
+		if (defaultToZero && ret.isEmpty()) ret = "0";
 		return ret;
 	}
 }

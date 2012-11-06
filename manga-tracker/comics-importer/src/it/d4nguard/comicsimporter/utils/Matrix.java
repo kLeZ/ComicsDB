@@ -13,7 +13,7 @@ public abstract class Matrix<T>
 
 	// create M-by-N matrix of 0's
 	@SuppressWarnings("unchecked")
-	public Matrix(int M, int N)
+	public Matrix(final int M, final int N)
 	{
 		this.M = M;
 		this.N = N;
@@ -22,42 +22,28 @@ public abstract class Matrix<T>
 
 	// create matrix based on 2d array
 	@SuppressWarnings("unchecked")
-	public Matrix(T[][] data)
+	public Matrix(final T[][] data)
 	{
 		M = data.length;
 		N = data[0].length;
 		this.data = ((T[][]) Array.newInstance(getGenericTypeClass(), M, N));
 		for (int i = 0; i < M; i++)
-		{
 			for (int j = 0; j < N; j++)
-			{
 				this.data[i][j] = data[i][j];
-			}
-		}
-	}
-
-	// swap rows i and j
-	protected void swap(int i, int j)
-	{
-		T[] temp = data[i];
-		data[i] = data[j];
-		data[j] = temp;
 	}
 
 	/**
-	 * create and return the transpose of the invoking matrix
-	 * 
-	 * @return
-	 */
-	public abstract Matrix<T> transpose();
-
-	/**
-	 * return C = A + B
+	 * does A = B exactly?
 	 * 
 	 * @param B
 	 * @return
 	 */
-	public abstract Matrix<T> plus(Matrix<T> B);
+	public abstract boolean eq(Matrix<T> B);
+
+	protected Class<?> getGenericTypeClass()
+	{
+		return GenericsUtils.getTypeArguments(Matrix.class, getClass()).get(0);
+	}
 
 	/**
 	 * return C = A - B
@@ -68,12 +54,33 @@ public abstract class Matrix<T>
 	public abstract Matrix<T> minus(Matrix<T> B);
 
 	/**
-	 * does A = B exactly?
+	 * return C = A + B
 	 * 
 	 * @param B
 	 * @return
 	 */
-	public abstract boolean eq(Matrix<T> B);
+	public abstract Matrix<T> plus(Matrix<T> B);
+
+	/**
+	 * print matrix to standard output
+	 */
+	public abstract String show();
+
+	/**
+	 * return x = A^-1 b, assuming A is square and has full rank
+	 * 
+	 * @param rhs
+	 * @return
+	 */
+	public abstract Matrix<T> solve(Matrix<T> rhs);
+
+	// swap rows i and j
+	protected void swap(final int i, final int j)
+	{
+		final T[] temp = data[i];
+		data[i] = data[j];
+		data[j] = temp;
+	}
 
 	/**
 	 * return C = A * B
@@ -84,20 +91,9 @@ public abstract class Matrix<T>
 	public abstract Matrix<T> times(Matrix<T> B);
 
 	/**
-	 * return x = A^-1 b, assuming A is square and has full rank
+	 * create and return the transpose of the invoking matrix
 	 * 
-	 * @param rhs
 	 * @return
 	 */
-	public abstract Matrix<T> solve(Matrix<T> rhs);
-
-	/**
-	 * print matrix to standard output
-	 */
-	public abstract String show();
-
-	protected Class<?> getGenericTypeClass()
-	{
-		return GenericsUtils.getTypeArguments(Matrix.class, getClass()).get(0);
-	}
+	public abstract Matrix<T> transpose();
 }

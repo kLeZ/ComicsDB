@@ -57,13 +57,10 @@ public class XmlUtils
 		final Node parent;
 		private Node current = null;
 
-		public NodeChildrenIterator(Node parent)
+		public NodeChildrenIterator(final Node parent)
 		{
 			this.parent = parent;
-			if (parent != null)
-			{
-				current = parent.getFirstChild();
-			}
+			if (parent != null) current = parent.getFirstChild();
 		}
 
 		public boolean hasNext()
@@ -73,9 +70,9 @@ public class XmlUtils
 
 		public Node next()
 		{
-			if (current == null) { return null; }
+			if (current == null) return null;
 
-			Node res = current;
+			final Node res = current;
 			// move on to the next one
 			current = current.getNextSibling();
 			return res;
@@ -83,10 +80,10 @@ public class XmlUtils
 
 		public void remove()
 		{
-			if (current == null) { return; }
+			if (current == null) return;
 
 			// get next
-			Node next = current.getNextSibling();
+			final Node next = current.getNextSibling();
 
 			// remove exisiting
 			parent.removeChild(current);
@@ -116,23 +113,58 @@ public class XmlUtils
 	 */
 	public static final String UTF_8 = "UTF-8";
 
-	/**
-	 * @param list
-	 *            The list of Nodes to copy into a Node array.
-	 * @return An array holding a copy of the Nodes in the original NodeList.
-	 */
-	public static Node[] convertToArray(NodeList list)
+	private static final ThreadLocal<?> tls = new ThreadLocal<Object>()
 	{
-		int length = list.getLength();
-		Node[] copy = new Node[length];
+		// CTw for handling code that sets the context classloader when the TLS is used from a different thread context classloader.
+		// "this" is used as the initialization occurs on the correct classloader. The current context classloader also can't be garaunteed.
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
-		for (int n = 0; n < length; ++n)
+		@Override
+		protected Object initialValue()
 		{
-			copy[n] = list.item(n);
-		}
 
-		return copy;
-	}
+			// CTw fix for classloaders
+			final ClassLoader ct = Thread.currentThread().getContextClassLoader();
+			Thread.currentThread().setContextClassLoader(cl);
+			try
+			{
+
+				//1
+				// create the builder that will be shared throughout the process
+				//
+				final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+				//
+				// don't forget - turn on namespaces!!!
+				//
+				factory.setNamespaceAware(true);
+
+				//
+				// we don't need comment nodes - they'll only slow us down
+				//
+				factory.setIgnoringComments(true);
+
+				try
+				{
+					return factory.newDocumentBuilder();
+				}
+
+				//
+				// this exception would be thrown if you have the DOM interfaces 
+				// but not the implementation
+				//
+				catch (final ParserConfigurationException error)
+				{
+					throw new RuntimeException(error.getMessage(), error);
+				}
+			}
+			finally
+			{
+				// reset it
+				Thread.currentThread().setContextClassLoader(ct);
+			}
+		}
+	};
 
 	/**
 	 * @param parent
@@ -141,17 +173,33 @@ public class XmlUtils
 	 * @return An array holding a copy of the child Nodes from the original
 	 *         parent.
 	 */
-	public static Node[] convertToArray(Node parent)
+	public static Node[] convertToArray(final Node parent)
 	{
-		ArrayList<Node> list = new ArrayList<Node>();
-		NodeChildrenIterator itr = new NodeChildrenIterator(parent);
+		final ArrayList<Node> list = new ArrayList<Node>();
+		final NodeChildrenIterator itr = new NodeChildrenIterator(parent);
 		while (itr.hasNext())
 		{
-			Node child = itr.next();
+			final Node child = itr.next();
 			list.add(child);
 		}
 
 		return list.toArray(new Node[list.size()]);
+	}
+
+	/**
+	 * @param list
+	 *            The list of Nodes to copy into a Node array.
+	 * @return An array holding a copy of the Nodes in the original NodeList.
+	 */
+	public static Node[] convertToArray(final NodeList list)
+	{
+		final int length = list.getLength();
+		final Node[] copy = new Node[length];
+
+		for (int n = 0; n < length; ++n)
+			copy[n] = list.item(n);
+
+		return copy;
 	}
 
 	/**
@@ -171,31 +219,16 @@ public class XmlUtils
 	 *         already a DOM Node, it will be imported into the given
 	 *         Document and returned. If the value is null, null is returned.
 	 */
-	public static Node convertToNode(Document document, Object value)
+	public static Node convertToNode(final Document document, Object value)
 	{
 		//
 		// null is null - that's that
 		//
-		if (value == null)
-		{
-			return null;
-		}
-		else if (value instanceof Node)
-		{
-			return document.importNode((Node) value, true);
-		}
-		else if (value instanceof XmlSerializable)
-		{
-			return ((XmlSerializable) value).toXML(document);
-		}
-		else if (value instanceof Date)
-		{
-			value = XsdUtils.getLocalTimeString((Date) value);
-		}
-		else if (value instanceof QName)
-		{
-			value = toString((QName) value);
-		}
+		if (value == null) return null;
+		else if (value instanceof Node) return document.importNode((Node) value, true);
+		else if (value instanceof XmlSerializable) return ((XmlSerializable) value).toXML(document);
+		else if (value instanceof Date) value = XsdUtils.getLocalTimeString((Date) value);
+		else if (value instanceof QName) value = toString((QName) value);
 
 		//
 		// all other types get treated as text
@@ -218,59 +251,6 @@ public class XmlUtils
 		return (DocumentBuilder) tls.get();
 	}
 
-	private static final ThreadLocal<?> tls = new ThreadLocal<Object>()
-	{
-		// CTw for handling code that sets the context classloader when the TLS is used from a different thread context classloader.
-		// "this" is used as the initialization occurs on the correct classloader. The current context classloader also can't be garaunteed.
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-
-		@Override
-		protected Object initialValue()
-		{
-
-			// CTw fix for classloaders
-			ClassLoader ct = Thread.currentThread().getContextClassLoader();
-			Thread.currentThread().setContextClassLoader(cl);
-			try
-			{
-
-				//1
-				// create the builder that will be shared throughout the process
-				//
-				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
-				//
-				// don't forget - turn on namespaces!!!
-				//
-				factory.setNamespaceAware(true);
-
-				//
-				// we don't need comment nodes - they'll only slow us down
-				//
-				factory.setIgnoringComments(true);
-
-				try
-				{
-					return factory.newDocumentBuilder();
-				}
-
-				//
-				// this exception would be thrown if you have the DOM interfaces 
-				// but not the implementation
-				//
-				catch (ParserConfigurationException error)
-				{
-					throw new RuntimeException(error.getMessage(), error);
-				}
-			}
-			finally
-			{
-				// reset it
-				Thread.currentThread().setContextClassLoader(ct);
-			}
-		}
-	};
-
 	/**
 	 * @return A new DOM Document.
 	 */
@@ -292,7 +272,7 @@ public class XmlUtils
 	 *             <li>If the file does not contain valid a XML document.</li>
 	 *             </ul>
 	 */
-	public static Document createDocument(File file) throws IOException, SAXException
+	public static Document createDocument(final File file) throws IOException, SAXException
 	{
 		return createBuilder().parse(file);
 	}
@@ -312,7 +292,7 @@ public class XmlUtils
 	 *             <li>If the stream does not contain a valid XML document.</li>
 	 *             </ul>
 	 */
-	public static Document createDocument(InputSource source) throws IOException, SAXException
+	public static Document createDocument(final InputSource source) throws IOException, SAXException
 	{
 		return createBuilder().parse(source);
 	}
@@ -332,7 +312,7 @@ public class XmlUtils
 	 *             <li>If the stream does not contain a valid XML document.</li>
 	 *             </ul>
 	 */
-	public static Document createDocument(InputStream stream) throws IOException, SAXException
+	public static Document createDocument(final InputStream stream) throws IOException, SAXException
 	{
 		return createBuilder().parse(stream);
 	}
@@ -352,12 +332,12 @@ public class XmlUtils
 	 *             <li>If the string does not contain a valid XML document.</li>
 	 *             </ul>
 	 */
-	public static Document createDocument(String xml) throws IOException, SAXException
+	public static Document createDocument(final String xml) throws IOException, SAXException
 	{
 		//
 		// have to convert the string to bytes in order to parse it
 		//
-		InputSource source = new InputSource(new StringReader(xml));
+		final InputSource source = new InputSource(new StringReader(xml));
 		return createDocument(source);
 	}
 
@@ -369,7 +349,7 @@ public class XmlUtils
 	 *            The URI of the XML file to parse.
 	 * @see #createDocument(File)
 	 */
-	public static Document createDocument(URI uri) throws IOException, SAXException
+	public static Document createDocument(final URI uri) throws IOException, SAXException
 	{
 		return createDocument(new File(uri));
 	}
@@ -381,7 +361,7 @@ public class XmlUtils
 	 *            The QName of the new Element.
 	 * @return A new, empty Element whose owner the given Document.
 	 */
-	public static Element createElement(Document doc, QName qname)
+	public static Element createElement(final Document doc, final QName qname)
 	{
 		return createElement(doc, qname, null);
 	}
@@ -435,11 +415,11 @@ public class XmlUtils
 	 *         children are imported from the given value Node (see fourth
 	 *         parameter details).
 	 */
-	public static Element createElement(Document doc, QName qname, Node value, boolean embedChildren)
+	public static Element createElement(final Document doc, final QName qname, Node value, final boolean embedChildren)
 	{
-		Element root = createEmptyElement(doc, qname);
+		final Element root = createEmptyElement(doc, qname);
 
-		if (value == null) { return root; }
+		if (value == null) return root;
 
 		if (embedChildren)
 		{
@@ -453,11 +433,11 @@ public class XmlUtils
 			//
 			// don't forget the attributes in the root value node!
 			//
-			NamedNodeMap attributes = value.getAttributes();
+			final NamedNodeMap attributes = value.getAttributes();
 
 			if (attributes != null)
 			{
-				String prefix = qname.getPrefix();
+				final String prefix = qname.getPrefix();
 				String namespaceAttr = null;
 
 				//
@@ -466,19 +446,16 @@ public class XmlUtils
 				//
 				// we will use this to avoid duplicate attributes below
 				//
-				if ((prefix != null) && (prefix.length() > 0))
-				{
-					namespaceAttr = XMLNS_PREFIX + ':' + prefix;
-				}
+				if ((prefix != null) && (prefix.length() > 0)) namespaceAttr = XMLNS_PREFIX + ':' + prefix;
 
-				int length = attributes.getLength();
+				final int length = attributes.getLength();
 
 				for (int n = 0; n < length; ++n)
 				{
-					Node attr = attributes.item(n);
+					final Node attr = attributes.item(n);
 					String nameString = attr.getNodeName();
-					String valueString = attr.getNodeValue();
-					String namespaceString = attr.getNamespaceURI();
+					final String valueString = attr.getNodeValue();
+					final String namespaceString = attr.getNamespaceURI();
 
 					//
 					// HACK: workaround for a bug in Xerces
@@ -486,28 +463,16 @@ public class XmlUtils
 					// must prevent duplicate xmlns:tns="http://whatever" 
 					// attributes from appearing
 					//
-					if (!nameString.equals(namespaceAttr))
+					if (!nameString.equals(namespaceAttr)) if (namespaceString == null) root.setAttribute(nameString, valueString);
+					else //
+					// if the namespace equals the namespace defined 
+					// in the root element, we can include its prefix
+					//
+					if (!namespaceString.equals(qname.getNamespaceURI())) root.setAttributeNS(namespaceString, nameString, valueString);
+					else
 					{
-						if (namespaceString == null)
-						{
-							root.setAttribute(nameString, valueString);
-						}
-						else
-						{
-							//
-							// if the namespace equals the namespace defined 
-							// in the root element, we can include its prefix
-							//
-							if (!namespaceString.equals(qname.getNamespaceURI()))
-							{
-								root.setAttributeNS(namespaceString, nameString, valueString);
-							}
-							else
-							{
-								nameString = nameString.indexOf(':') == -1 ? qname.getPrefix() + ":" + nameString : nameString;
-								root.setAttributeNS(namespaceString, nameString, valueString);
-							}
-						}
+						nameString = nameString.indexOf(':') == -1 ? qname.getPrefix() + ":" + nameString : nameString;
+						root.setAttributeNS(namespaceString, nameString, valueString);
 					}
 				}
 			}
@@ -516,10 +481,10 @@ public class XmlUtils
 			// now add the child elements
 			//
 
-			NodeChildrenIterator itr = new NodeChildrenIterator(value);
+			final NodeChildrenIterator itr = new NodeChildrenIterator(value);
 			while (itr.hasNext())
 			{
-				Node nextChild = doc.importNode(itr.next(), true);
+				final Node nextChild = doc.importNode(itr.next(), true);
 				root.appendChild(nextChild);
 			}
 		}
@@ -553,16 +518,13 @@ public class XmlUtils
 	 * @see #convertToNode(Document, Object)
 	 * @see #createElement(Document, QName, Node, boolean)
 	 */
-	public static Element createElement(Document doc, QName qname, Object value)
+	public static Element createElement(final Document doc, final QName qname, final Object value)
 	{
-		boolean embed = (value instanceof Node) || (value instanceof XmlSerializable);
-		Node valueNode = convertToNode(doc, value);
-		Element element = createElement(doc, qname, valueNode, embed);
+		final boolean embed = (value instanceof Node) || (value instanceof XmlSerializable);
+		final Node valueNode = convertToNode(doc, value);
+		final Element element = createElement(doc, qname, valueNode, embed);
 
-		if (value instanceof QName)
-		{
-			setQNameNamespace(element, (QName) value);
-		}
+		if (value instanceof QName) setQNameNamespace(element, (QName) value);
 
 		return element;
 	}
@@ -573,7 +535,7 @@ public class XmlUtils
 	 * 
 	 * @see #createElement(QName, Object)
 	 */
-	public static Element createElement(QName qname)
+	public static Element createElement(final QName qname)
 	{
 		return createElement(qname, null);
 	}
@@ -584,7 +546,7 @@ public class XmlUtils
 	 * 
 	 * @see #createElement(Document, QName, Object)
 	 */
-	public static Element createElement(QName qname, Object value)
+	public static Element createElement(final QName qname, final Object value)
 	{
 		return createElement(createDocument(), qname, value);
 	}
@@ -596,9 +558,9 @@ public class XmlUtils
 	 *            The QName of the new Element.
 	 * @return An empty Element whose owner is the given Document.
 	 */
-	private static Element createEmptyElement(Document doc, QName qname)
+	private static Element createEmptyElement(final Document doc, final QName qname)
 	{
-		String prefix = qname.getPrefix();
+		final String prefix = qname.getPrefix();
 		String name = qname.getLocalPart();
 
 		//
@@ -609,12 +571,9 @@ public class XmlUtils
 		//       parsing to work correctly, the second argument to the 
 		//       createElementNS method MUST be a qualified name.
 		//
-		if ((prefix != null) && (prefix.length() > 0))
-		{
-			name = prefix + ':' + name;
-		}
+		if ((prefix != null) && (prefix.length() > 0)) name = prefix + ':' + name;
 
-		String uri = qname.getNamespaceURI();
+		final String uri = qname.getNamespaceURI();
 
 		return doc.createElementNS(uri, name);
 	}
@@ -634,26 +593,26 @@ public class XmlUtils
 	 *         are the same (e1 == e2). It short-circuits to "false" if
 	 *         one reference is null and the other isn't.
 	 */
-	public static boolean equals(Element e1, Element e2)
+	public static boolean equals(final Element e1, final Element e2)
 	{
 		//
 		// avoid semantic comparisons if we can
 		//
-		if (e1 == e2) { return true; }
+		if (e1 == e2) return true;
 
 		//
 		// they're not the same reference, so if either equals null, 
 		// we can quit
 		//
-		if ((e1 == null) || (e2 == null)) { return false; }
+		if ((e1 == null) || (e2 == null)) return false;
 
 		//
 		// make sure root elements are the same, including tag name
 		//
-		QName qname1 = getElementQName(e1);
-		QName qname2 = getElementQName(e2);
+		final QName qname1 = getElementQName(e1);
+		final QName qname2 = getElementQName(e2);
 
-		if (!qname1.equals(qname2)) { return false; }
+		if (!qname1.equals(qname2)) return false;
 
 		return haveMatchingChildren(e1, e2) && haveMatchingAttributes(e1, e2);
 	}
@@ -664,21 +623,21 @@ public class XmlUtils
 	 * @return The content of the first child Text node in the Element. The
 	 *         method returns null if the Element has no text.
 	 */
-	public static String extractText(Element element)
+	public static String extractText(final Element element)
 	{
 		//
 		// have to check all nodes, because we could have text 
 		// mixed with elements
 		//
-		NodeChildrenIterator itr = new NodeChildrenIterator(element);
+		final NodeChildrenIterator itr = new NodeChildrenIterator(element);
 		while (itr.hasNext())
 		{
-			Node next = itr.next();
+			final Node next = itr.next();
 
 			//
 			// note that we remove all leading/trailing whitespace
 			//
-			if (next.getNodeType() == Node.TEXT_NODE) { return next.getNodeValue().trim(); }
+			if (next.getNodeType() == Node.TEXT_NODE) return next.getNodeValue().trim();
 		}
 		return null;
 	}
@@ -698,14 +657,14 @@ public class XmlUtils
 	 *         returns null if no occurrences are found.
 	 * @see #findInSubTree(Element, QName)
 	 */
-	public static Element findFirstInSubTree(Element context, QName qname)
+	public static Element findFirstInSubTree(final Element context, final QName qname)
 	{
 		//
 		// do a complete search and return the first result (if one exists)
 		//        
-		Element[] results = findInSubTree(context, qname);
+		final Element[] results = findInSubTree(context, qname);
 
-		if (results.length == 0) { return null; }
+		if (results.length == 0) return null;
 
 		return results[0];
 	}
@@ -736,23 +695,21 @@ public class XmlUtils
 	 * @see #getElement(Node, QName)
 	 * @see #getElements(Node, QName)
 	 */
-	public static Element[] findInSubTree(Element context, QName qname)
+	public static Element[] findInSubTree(final Element context, final QName qname)
 	{
-		String name = qname.getLocalPart();
-		String uri = qname.getNamespaceURI();
+		final String name = qname.getLocalPart();
+		final String uri = qname.getNamespaceURI();
 
 		//
 		// DOM's getElementsByTagName methods search the whole subtree
 		//
-		NodeList matches = context.getElementsByTagNameNS(uri, name);
-		int length = matches.getLength();
+		final NodeList matches = context.getElementsByTagNameNS(uri, name);
+		final int length = matches.getLength();
 
-		Element[] asArray = new Element[length];
+		final Element[] asArray = new Element[length];
 
 		for (int n = 0; n < length; ++n)
-		{
 			asArray[n] = (Element) matches.item(n);
-		}
 
 		return asArray;
 	}
@@ -764,7 +721,7 @@ public class XmlUtils
 	 *         regardless of namespace URI or name. The method returns an
 	 *         empty array if no children exist.
 	 */
-	public static Element[] getAllElements(Node context)
+	public static Element[] getAllElements(final Node context)
 	{
 		//
 		// "*" is the DOM wildcard for "any namespace"
@@ -782,7 +739,7 @@ public class XmlUtils
 	 *         namespace URI. The method returns an empty array if there are
 	 *         no children that belong the namespace.
 	 */
-	public static Element[] getAllElements(Node context, String namespace)
+	public static Element[] getAllElements(final Node context, final String namespace)
 	{
 
 		//
@@ -805,7 +762,7 @@ public class XmlUtils
 	 *         namespace URI and name. The method returns an empty array if
 	 *         no children have such a QName.
 	 */
-	public static Element[] getAllElements(Node context, String namespace, String localName)
+	public static Element[] getAllElements(final Node context, final String namespace, final String localName)
 	{
 		//
 		// NOTE: The DOM API has a getElementsByTagName feature that allows 
@@ -836,25 +793,22 @@ public class XmlUtils
 		// much faster for large XML trees.
 		//
 
-		boolean matchAllNames = localName.equals("*");
-		boolean matchAllNamespaces = namespace.equals("*");
+		final boolean matchAllNames = localName.equals("*");
+		final boolean matchAllNamespaces = namespace.equals("*");
 
-		List<Node> elements = new ArrayList<Node>();
+		final List<Node> elements = new ArrayList<Node>();
 
-		NodeChildrenIterator itr = new NodeChildrenIterator(context);
+		final NodeChildrenIterator itr = new NodeChildrenIterator(context);
 		while (itr.hasNext())
 		{
-			Node next = itr.next();
+			final Node next = itr.next();
 			//
 			// first check - is it an Element?
 			//
-			if (next.getNodeType() != Node.ELEMENT_NODE)
-			{
-				continue;
-			}
+			if (next.getNodeType() != Node.ELEMENT_NODE) continue;
 
 			String nextName = next.getLocalName();
-			String nextNamespace = next.getNamespaceURI();
+			final String nextNamespace = next.getNamespaceURI();
 
 			//
 			// check if it's DOM Level 1 (no NS concept). we have to 
@@ -862,10 +816,7 @@ public class XmlUtils
 			//
 			if (nextNamespace == null)
 			{
-				if (!matchAllNamespaces)
-				{
-					continue;
-				}
+				if (!matchAllNamespaces) continue;
 
 				nextName = next.getNodeName();
 			}
@@ -876,13 +827,10 @@ public class XmlUtils
 			// NOTE: this will pass for DOM Level 1 if we are matching 
 			//       all namespaces
 			//
-			if ((matchAllNamespaces || namespace.equals(nextNamespace)) && (matchAllNames || localName.equals(nextName)))
-			{
-				elements.add(next);
-			}
+			if ((matchAllNamespaces || namespace.equals(nextNamespace)) && (matchAllNames || localName.equals(nextName))) elements.add(next);
 		}
 
-		Element[] resultsAsArray = new Element[elements.size()];
+		final Element[] resultsAsArray = new Element[elements.size()];
 		return elements.toArray(resultsAsArray);
 	}
 
@@ -899,7 +847,7 @@ public class XmlUtils
 	 *         Map is keyed by the namespace prefixes. The Map does not
 	 *         include namespaces outside of the Element QNames.
 	 */
-	public static Map<String, String> getAllNamespaces(Element xml)
+	public static Map<String, String> getAllNamespaces(final Element xml)
 	{
 		return getAllNamespaces(xml, new HashMap<String, String>());
 	}
@@ -918,50 +866,48 @@ public class XmlUtils
 	 *         but with more entries.
 	 * @see #getAllNamespaces(Element)
 	 */
-	private static Map<String, String> getAllNamespaces(Element xml, Map<String, String> namespacesByPrefix)
+	private static Map<String, String> getAllNamespaces(final Element xml, final Map<String, String> namespacesByPrefix)
 	{
 		//
 		// get the qualifying URI for this element, then recurse through 
 		// the sub-tree to get those of the child elements
 		//
 
-		QName qname = getElementQName(xml);
-		String prefix = qname.getPrefix();
-		String namespace = qname.getNamespaceURI();
+		final QName qname = getElementQName(xml);
+		final String prefix = qname.getPrefix();
+		final String namespace = qname.getNamespaceURI();
 		namespacesByPrefix.put(prefix, namespace);
 
-		Element[] children = getAllElements(xml);
+		final Element[] children = getAllElements(xml);
 
-		for (Element element : children)
-		{
+		for (final Element element : children)
 			getAllNamespaces(element, namespacesByPrefix);
-		}
 
 		return namespacesByPrefix;
 	}
 
-	public static String getAttribute(Element xml, QName subElementName, QName qname)
+	public static String getAttribute(final Element xml, final QName qname)
 	{
-		return getAttribute(getElement(xml, toGQname(subElementName)), qname);
-	}
+		final String uri = qname.getNamespaceURI();
+		final String name = qname.getLocalPart();
+		final String value = xml.getAttributeNS(uri, name);
 
-	public static String getAttribute(Element xml, QName qname)
-	{
-		String uri = qname.getNamespaceURI();
-		String name = qname.getLocalPart();
-		String value = xml.getAttributeNS(uri, name);
-
-		if ((value != null) && (value.length() == 0)) { return null; }
+		if ((value != null) && (value.length() == 0)) return null;
 
 		return value;
+	}
+
+	public static String getAttribute(final Element xml, final QName subElementName, final QName qname)
+	{
+		return getAttribute(getElement(xml, toGQname(subElementName)), qname);
 	}
 
 	/**
 	 * @return The Boolean value represented by the Element's text.
 	 */
-	public static Boolean getBoolean(Element xml)
+	public static Boolean getBoolean(final Element xml)
 	{
-		String text = extractText(xml);
+		final String text = extractText(xml);
 		return Boolean.valueOf(text);
 	}
 
@@ -974,9 +920,9 @@ public class XmlUtils
 	 *             </ul>
 	 * @see XsdUtils#getLocalTime(String)
 	 */
-	public static Date getDate(Element xml) throws ParseException
+	public static Date getDate(final Element xml) throws ParseException
 	{
-		String text = extractText(xml);
+		final String text = extractText(xml);
 		return text == null ? null : XsdUtils.getLocalTime(text);
 	}
 
@@ -986,10 +932,7 @@ public class XmlUtils
 	 */
 	public static Element getDocumentRoot(Node xml)
 	{
-		if (xml.getNodeType() != Node.DOCUMENT_NODE)
-		{
-			xml = xml.getOwnerDocument();
-		}
+		if (xml.getNodeType() != Node.DOCUMENT_NODE) xml = xml.getOwnerDocument();
 
 		return getFirstElement(xml);
 	}
@@ -997,9 +940,9 @@ public class XmlUtils
 	/**
 	 * @return The double value represented by the Element's text.
 	 */
-	public static Double getDouble(Element xml)
+	public static Double getDouble(final Element xml)
 	{
-		String text = extractText(xml);
+		final String text = extractText(xml);
 		return Double.valueOf(text);
 	}
 
@@ -1015,7 +958,7 @@ public class XmlUtils
 	 * @return The first direct child Element with the given QName.
 	 * @see #getElement(Node, QName, int)
 	 */
-	public static Element getElement(Node context, QName qname)
+	public static Element getElement(final Node context, final QName qname)
 	{
 		return getElement(context, qname, 0);
 	}
@@ -1032,25 +975,25 @@ public class XmlUtils
 	 * @return The n-th direct child Element with the given QName. The method
 	 *         returns null if there are no children with that QName.
 	 */
-	public static Element getElement(Node context, QName qname, int index)
+	public static Element getElement(final Node context, final QName qname, final int index)
 	{
-		String name = qname.getLocalPart();
-		String uri = qname.getNamespaceURI();
+		final String name = qname.getLocalPart();
+		final String uri = qname.getNamespaceURI();
 
-		Element[] children = getAllElements(context, uri, name);
+		final Element[] children = getAllElements(context, uri, name);
 
 		//
 		// technically, if there are NO matches, the index is out-of-bounds. 
 		// however, we just return null because this is a common occurrence 
 		// and/or test for existence
 		//
-		if (children.length == 0) { return null; }
+		if (children.length == 0) return null;
 
 		//
 		// on the other hand, if there were matches, but the index is too 
 		// large, then we have a programmer error
 		//
-		if (index >= children.length) { throw new ArrayIndexOutOfBoundsException(index); }
+		if (index >= children.length) throw new ArrayIndexOutOfBoundsException(index);
 
 		return children[index];
 	}
@@ -1060,21 +1003,21 @@ public class XmlUtils
 	 *            The Element whose QName will be returned.
 	 * @return The QName of the given Element definition.
 	 */
-	public static QName getElementQName(Element xml)
+	public static QName getElementQName(final Element xml)
 	{
-		String uri = xml.getNamespaceURI();
-		String prefix = xml.getPrefix();
-		String name = xml.getLocalName();
+		final String uri = xml.getNamespaceURI();
+		final String prefix = xml.getPrefix();
+		final String name = xml.getLocalName();
 
 		//
 		// support for DOM Level 1 - no NS concept
 		//
-		if (name == null) { return new QName(xml.getNodeName()); }
+		if (name == null) return new QName(xml.getNodeName());
 
 		//
 		// prefix is not required, but it CANNOT be null
 		//
-		if ((prefix != null) && (prefix.length() > 0)) { return new QName(uri, name, prefix); }
+		if ((prefix != null) && (prefix.length() > 0)) return new QName(uri, name, prefix);
 
 		return new QName(uri, name);
 	}
@@ -1086,10 +1029,10 @@ public class XmlUtils
 	 *            The QName to search for.
 	 * @return All direct child Elements that have the given QName.
 	 */
-	public static Element[] getElements(Node context, QName qname)
+	public static Element[] getElements(final Node context, final QName qname)
 	{
-		String name = qname.getLocalPart();
-		String namespace = qname.getNamespaceURI();
+		final String name = qname.getLocalPart();
+		final String namespace = qname.getNamespaceURI();
 		return getAllElements(context, namespace, name);
 	}
 
@@ -1106,16 +1049,14 @@ public class XmlUtils
 	 * @see #extractText(Element)
 	 * @see #getElementText(Node, QName)
 	 */
-	public static String[] getElementsText(Node context, QName qname)
+	public static String[] getElementsText(final Node context, final QName qname)
 	{
-		Element[] elements = getElements(context, qname);
+		final Element[] elements = getElements(context, qname);
 
-		String[] text = new String[elements.length];
+		final String[] text = new String[elements.length];
 
 		for (int n = 0; n < elements.length; ++n)
-		{
 			text[n] = extractText(elements[n]);
-		}
 
 		return text;
 	}
@@ -1143,11 +1084,11 @@ public class XmlUtils
 	 * @return The text of the first child Element with the given QName.
 	 * @see #extractText(Element)
 	 */
-	public static String getElementText(Node context, QName qname)
+	public static String getElementText(final Node context, final QName qname)
 	{
-		Element element = getElement(context, qname);
+		final Element element = getElement(context, qname);
 
-		if (element == null) { return null; }
+		if (element == null) return null;
 
 		return extractText(element);
 	}
@@ -1158,14 +1099,14 @@ public class XmlUtils
 	 * @return The first direct child Element. The method returns null if
 	 *         the given node has no children.
 	 */
-	public static Element getFirstElement(Node context)
+	public static Element getFirstElement(final Node context)
 	{
 		//
 		// search for all elements, then grab the first one (if one exists)
 		//
-		Element[] elements = getAllElements(context);
+		final Element[] elements = getAllElements(context);
 
-		if (elements.length == 0) { return null; }
+		if (elements.length == 0) return null;
 
 		return elements[0];
 	}
@@ -1173,10 +1114,15 @@ public class XmlUtils
 	/**
 	 * @return The float value represented by the Element's text.
 	 */
-	public static Float getFloat(Element xml)
+	public static Float getFloat(final Element xml)
 	{
-		String text = extractText(xml);
+		final String text = extractText(xml);
 		return Float.valueOf(text);
+	}
+
+	public static QName getGQName(final String name)
+	{
+		return new QName("*", name, "*");
 	}
 
 	/**
@@ -1187,17 +1133,15 @@ public class XmlUtils
 	 *         specify a standard hashCode() for DOM Nodes, so this
 	 *         method gives us some standard behavior to rely on.
 	 */
-	public static int getHashCode(Element xml)
+	public static int getHashCode(final Element xml)
 	{
-		String text = extractText(xml);
+		final String text = extractText(xml);
 		int hashCode = text == null ? 0 : text.hashCode();
 
-		Element[] children = getAllElements(xml);
+		final Element[] children = getAllElements(xml);
 
-		for (Element element : children)
-		{
+		for (final Element element : children)
 			hashCode += getHashCode(element);
-		}
 
 		return hashCode;
 	}
@@ -1205,19 +1149,98 @@ public class XmlUtils
 	/**
 	 * @return The integer value represented by the Element's text.
 	 */
-	public static Integer getInteger(Element xml)
+	public static Integer getInteger(final Element xml)
 	{
-		String text = extractText(xml);
+		final String text = extractText(xml);
 		return Integer.valueOf(text);
 	}
 
 	/**
 	 * @return The long value represented by the Element's text.
 	 */
-	public static Long getLong(Element xml)
+	public static Long getLong(final Element xml)
 	{
-		String text = extractText(xml);
+		final String text = extractText(xml);
 		return Long.valueOf(text);
+	}
+
+	/**
+	 * Searches the given sub-tree and returns all of the namespace URIs that
+	 * are used to declare the root Element and its child Elements. Unlike
+	 * getAllNamespaces
+	 * it only retrieves the namespace declarations i.e.
+	 * xmlns:prefix="namespace".
+	 * Also unlike getAllNamespaces this works up the xml nodes to the root.
+	 * Namespace
+	 * prefixes are therefore correct for that node, reassigned prefixes higher
+	 * up the tree are ignored.
+	 * 
+	 * @param xml
+	 *            The root of the sub-tree to perform the search on.
+	 * @return A Map containing all namespaces used in Element QNames. The
+	 *         Map is keyed by the namespace prefixes. The Map does not
+	 *         include namespaces outside of the Element QNames.
+	 */
+	public static Map<String, String> getNamespaceDeclarations(final Element xml)
+	{
+		return getNamespaceDeclarations(xml, new HashMap<String, String>());
+	}
+
+	/**
+	 * This is an auxiliary method used to recursively search an Element
+	 * and its parent nodes for namespace/prefix definitions. It is used to
+	 * implement
+	 * getNamespaceDeclarations(Element).
+	 * 
+	 * @param xml
+	 *            The current Element in the recursive search. All namespace
+	 *            prefixes will be searched.
+	 *            , and then its children will be searched.
+	 * @param namespacesByPrefix
+	 *            The result Map so far. This is a Map[prefix, namespace].
+	 * @return The same Map as the second parameter (namespacesByPrefix),
+	 *         but with more entries.
+	 * @see #getAllNamespaces(Element)
+	 */
+	private static Map<String, String> getNamespaceDeclarations(final Element xml, final Map<String, String> namespacesByPrefix)
+	{
+		// get the prefixes declared here and head up the tree
+		// code borrowed from Xalan XPathUtils, as it works.  
+
+		// Its important to really check for the NS but this usually only works on
+		// a fresh parse. Developers may manually add declarations that are not in the
+		// correct namespace, then we guess.  As the xmlns prefix is reserved its safe just
+		// to use this code.
+
+		Node parent = xml;
+
+		int type;
+
+		while ((null != parent) && (((type = parent.getNodeType()) == Node.ELEMENT_NODE) || (type == Node.ENTITY_REFERENCE_NODE)))
+		{
+			if (type == Node.ELEMENT_NODE)
+			{
+				final NamedNodeMap nnm = parent.getAttributes();
+
+				for (int i = 0; i < nnm.getLength(); i++)
+				{
+					final Node attr = nnm.item(i);
+					final String aname = attr.getNodeName();
+					final boolean isPrefix = aname.startsWith("xmlns:");
+
+					if (isPrefix || aname.equals("xmlns"))
+					{
+						final int index = aname.indexOf(':');
+						final String pre = isPrefix ? aname.substring(index + 1) : "";
+						final String namespace = attr.getNodeValue();
+
+						namespacesByPrefix.put(pre, namespace);
+					}
+				}
+			}
+			parent = parent.getParentNode();
+		}
+		return namespacesByPrefix;
 	}
 
 	/**
@@ -1227,11 +1250,11 @@ public class XmlUtils
 	 * @param xml
 	 * @return A fully-resolved QName, or null if there was no text.
 	 */
-	public static QName getQName(Element xml)
+	public static QName getQName(final Element xml)
 	{
-		String qnameString = extractText(xml);
+		final String qnameString = extractText(xml);
 
-		if (qnameString == null) { return null; }
+		if (qnameString == null) return null;
 
 		return parseQName(qnameString, xml);
 	}
@@ -1246,15 +1269,15 @@ public class XmlUtils
 	 *            The name of the child element whose text is a QName.
 	 * @return A fully-resolved QName, or null if there was no text.
 	 */
-	public static QName getQNameFromChild(Element xml, QName childQName)
+	public static QName getQNameFromChild(final Element xml, final QName childQName)
 	{
 		//
 		// we can't just get the text - we need to have the actual 
 		// element so we can resolve the QName's namespace
 		//
-		Element child = getElement(xml, childQName);
+		final Element child = getElement(xml, childQName);
 
-		if (child == null) { return null; }
+		if (child == null) return null;
 
 		return getQName(child);
 	}
@@ -1262,9 +1285,9 @@ public class XmlUtils
 	/**
 	 * @return The short value represented by the Element's text.
 	 */
-	public static Short getShort(Element xml)
+	public static Short getShort(final Element xml)
 	{
-		String text = extractText(xml);
+		final String text = extractText(xml);
 		return Short.valueOf(text);
 	}
 
@@ -1276,7 +1299,7 @@ public class XmlUtils
 	 *         namespace declarations, since the prefixes used in an
 	 *         XML fragment are not important.
 	 */
-	public static boolean haveMatchingAttributes(Element e1, Element e2)
+	public static boolean haveMatchingAttributes(final Element e1, final Element e2)
 	{
 		//
 		// the order of the attributes is not important, just the values. 
@@ -1284,33 +1307,33 @@ public class XmlUtils
 		// in a fragment are also unimportant
 		//
 
-		NamedNodeMap attr1 = e1.getAttributes();
-		NamedNodeMap attr2 = e2.getAttributes();
+		final NamedNodeMap attr1 = e1.getAttributes();
+		final NamedNodeMap attr2 = e2.getAttributes();
 
-		int length1 = attr1.getLength();
-		int length2 = attr2.getLength();
+		final int length1 = attr1.getLength();
+		final int length2 = attr2.getLength();
 
-		NamedNodeMap larger = length1 >= length2 ? attr1 : attr2;
-		int largerLength = larger.getLength();
+		final NamedNodeMap larger = length1 >= length2 ? attr1 : attr2;
+		final int largerLength = larger.getLength();
 
 		for (int n = 0; n < largerLength; ++n)
 		{
-			Attr attr = (Attr) larger.item(n);
-			String name = attr.getName();
-			String value = attr.getValue();
+			final Attr attr = (Attr) larger.item(n);
+			final String name = attr.getName();
+			final String value = attr.getValue();
 
 			//
 			// ignore namespace URI declarations...
 			//
 			if (!name.startsWith("xmlns:"))
 			{
-				Attr match = (Attr) larger.getNamedItem(name);
+				final Attr match = (Attr) larger.getNamedItem(name);
 
-				if (match == null) { return false; }
+				if (match == null) return false;
 
-				String matchValue = match.getValue();
+				final String matchValue = match.getValue();
 
-				if ((matchValue == null) || !matchValue.equals(value)) { return false; }
+				if ((matchValue == null) || !matchValue.equals(value)) return false;
 			}
 		}
 
@@ -1329,7 +1352,7 @@ public class XmlUtils
 	 *         not Attr or other DOM Nodes.
 	 * @see #haveMatchingAttributes(Element, Element)
 	 */
-	public static boolean haveMatchingChildren(Element e1, Element e2)
+	public static boolean haveMatchingChildren(final Element e1, final Element e2)
 	{
 		//
 		// compare all the child nodes... (w/o attributes). nodes must be 
@@ -1337,43 +1360,37 @@ public class XmlUtils
 		// should match
 		//
 
-		NodeChildrenIterator itr1 = new NodeChildrenIterator(e1);
-		NodeChildrenIterator itr2 = new NodeChildrenIterator(e2);
+		final NodeChildrenIterator itr1 = new NodeChildrenIterator(e1);
+		final NodeChildrenIterator itr2 = new NodeChildrenIterator(e2);
 		while (itr1.hasNext() && itr2.hasNext())
 		{
-			Node next1 = itr1.next();
-			Node next2 = itr2.next();
+			final Node next1 = itr1.next();
+			final Node next2 = itr2.next();
 
-			short type1 = next1.getNodeType();
-			short type2 = next2.getNodeType();
+			final short type1 = next1.getNodeType();
+			final short type2 = next2.getNodeType();
 
 			//
 			// nodes aren't the same type - WRONG ORDER!
 			//
-			if (type1 != type2)
-			{
-				return false;
-			}
+			if (type1 != type2) return false;
 			else if (type1 == Node.TEXT_NODE)
 			{
-				String text1 = next1.getNodeValue();
-				String text2 = next2.getNodeValue();
+				final String text1 = next1.getNodeValue();
+				final String text2 = next2.getNodeValue();
 
-				if (!text1.equals(text2)) { return false; }
+				if (!text1.equals(text2)) return false;
 			}
 
 			//
 			// recurse down the tree to do more comparisons
 			//
-			else if ((type1 == Node.ELEMENT_NODE) && !equals((Element) next1, (Element) next2)) { return false; }
+			else if ((type1 == Node.ELEMENT_NODE) && !equals((Element) next1, (Element) next2)) return false;
 		}
 
 		// extra test incase more children (was previously covered by a children.getLength)
-		if (itr1.hasNext() != itr2.hasNext())
-		{
-			// means one has more children than the other
-			return false;
-		}
+		if (itr1.hasNext() != itr2.hasNext()) // means one has more children than the other
+		return false;
 
 		return true;
 	}
@@ -1390,7 +1407,7 @@ public class XmlUtils
 	 *            The sub-tree to copy Nodes to.
 	 * @return The same Node as the second parameter (the new sub-tree).
 	 */
-	public static Node moveSubTree(Node from, Node to)
+	public static Node moveSubTree(final Node from, final Node to)
 	{
 		return moveSubTree(from, to, null);
 	}
@@ -1411,30 +1428,21 @@ public class XmlUtils
 	 *            The Node before which the children will be inserted
 	 * @return The same Node as the second parameter (the new sub-tree).
 	 */
-	public static Node moveSubTree(Node from, Node to, Node context)
+	public static Node moveSubTree(final Node from, final Node to, final Node context)
 	{
-		Node[] asArray = convertToArray(from);
+		final Node[] asArray = convertToArray(from);
 
-		Document fromDoc = from.getOwnerDocument();
-		Document toDoc = to.getOwnerDocument();
+		final Document fromDoc = from.getOwnerDocument();
+		final Document toDoc = to.getOwnerDocument();
 
 		for (int n = 0; n < asArray.length; ++n)
 		{
 			from.removeChild(asArray[n]);
 
-			if (fromDoc != toDoc)
-			{
-				asArray[n] = toDoc.importNode(asArray[n], true);
-			}
+			if (fromDoc != toDoc) asArray[n] = toDoc.importNode(asArray[n], true);
 
-			if (context == null)
-			{
-				to.appendChild(asArray[n]);
-			}
-			else
-			{
-				to.insertBefore(asArray[n], context);
-			}
+			if (context == null) to.appendChild(asArray[n]);
+			else to.insertBefore(asArray[n], context);
 		}
 
 		return to;
@@ -1456,33 +1464,27 @@ public class XmlUtils
 	 * @return A QName object with a proper namespace URI, if one is defined.
 	 * @see #resolveNamespace(String, Node)
 	 */
-	public static QName parseQName(String qname, Element namespaceContext)
+	public static QName parseQName(final String qname, final Element namespaceContext)
 	{
-		int colonIndex = qname.indexOf(':');
+		final int colonIndex = qname.indexOf(':');
 
 		String prefix = null;
 
-		if (colonIndex >= 0)
-		{
-			prefix = qname.substring(0, colonIndex);
-		}
+		if (colonIndex >= 0) prefix = qname.substring(0, colonIndex);
 
-		String localName = qname.substring(colonIndex + 1);
+		final String localName = qname.substring(colonIndex + 1);
 
 		String uri = null;
 
 		//
 		// if possible, try to resolve the prefix to a namespace URI
 		//
-		if (namespaceContext != null)
-		{
-			uri = resolveNamespace(qname, namespaceContext);
-		}
+		if (namespaceContext != null) uri = resolveNamespace(qname, namespaceContext);
 
 		//
 		// prefix is not required, but it CANNOT be null
 		//
-		if ((prefix != null) && (prefix.length() > 0)) { return new QName(uri, localName, prefix); }
+		if ((prefix != null) && (prefix.length() > 0)) return new QName(uri, localName, prefix);
 
 		return new QName(uri, localName);
 	}
@@ -1499,9 +1501,9 @@ public class XmlUtils
 	 *         namespace URI is the schema's target namespace, and the prefix
 	 *         is <i>muse-op</i>.
 	 */
-	public static QName parseSchemaName(String name, Element namespaceContext)
+	public static QName parseSchemaName(final String name, final Element namespaceContext)
 	{
-		String uri = searchParentNamespaces(namespaceContext, TARGET_NS);
+		final String uri = searchParentNamespaces(namespaceContext, TARGET_NS);
 		return new QName(uri, name, "muse-op");
 	}
 
@@ -1520,9 +1522,9 @@ public class XmlUtils
 	 * @return The namespace URI that the QName's prefix is associated
 	 *         with. The method returns null if no match is found.
 	 */
-	public static String resolveNamespace(String qname, Node xml)
+	public static String resolveNamespace(final String qname, final Node xml)
 	{
-		int colonIndex = qname.indexOf(':');
+		final int colonIndex = qname.indexOf(':');
 
 		//
 		// if no prefix is provided, we look for the target NS
@@ -1531,7 +1533,7 @@ public class XmlUtils
 
 		if (colonIndex >= 0)
 		{
-			String prefix = qname.substring(0, colonIndex);
+			final String prefix = qname.substring(0, colonIndex);
 			attributeName += ':' + prefix;
 		}
 
@@ -1555,7 +1557,7 @@ public class XmlUtils
 	 *         returns null if the attribute is not found in the given Node
 	 *         or its parents.
 	 */
-	private static String searchParentNamespaces(Node xml, String attribute)
+	private static String searchParentNamespaces(final Node xml, final String attribute)
 	{
 		Node next = xml;
 		String uri = null;
@@ -1565,10 +1567,7 @@ public class XmlUtils
 		//
 		while ((next != null) && ((uri == null) || (uri.length() == 0)))
 		{
-			if (next.getNodeType() == Node.ELEMENT_NODE)
-			{
-				uri = ((Element) next).getAttribute(attribute);
-			}
+			if (next.getNodeType() == Node.ELEMENT_NODE) uri = ((Element) next).getAttribute(attribute);
 
 			next = next.getParentNode();
 		}
@@ -1576,10 +1575,7 @@ public class XmlUtils
 		//
 		// DOM returns empty strings for non-existent attributes - we want null
 		//
-		if ((uri != null) && (uri.length() == 0))
-		{
-			uri = null;
-		}
+		if ((uri != null) && (uri.length() == 0)) uri = null;
 
 		return uri;
 	}
@@ -1592,24 +1588,18 @@ public class XmlUtils
 	 * 
 	 * @see #createElement(Document, QName, Node, boolean)
 	 */
-	public static void setElement(Element context, QName qname, Node node, boolean embedChildren)
+	public static void setElement(final Element context, final QName qname, final Node node, final boolean embedChildren)
 	{
-		Document doc = context.getOwnerDocument();
-		Element next = createElement(doc, qname, node, embedChildren);
+		final Document doc = context.getOwnerDocument();
+		final Element next = createElement(doc, qname, node, embedChildren);
 
-		Element toReplace = getElement(context, qname);
+		final Element toReplace = getElement(context, qname);
 
 		//
 		// didn't exist before - just tack it on
 		//
-		if (toReplace == null)
-		{
-			context.appendChild(next);
-		}
-		else
-		{
-			context.replaceChild(next, toReplace);
-		}
+		if (toReplace == null) context.appendChild(next);
+		else context.replaceChild(next, toReplace);
 	}
 
 	/**
@@ -1620,18 +1610,15 @@ public class XmlUtils
 	 * 
 	 * @see #createElement(Document, QName, Object)
 	 */
-	public static void setElement(Element context, QName qname, Object value)
+	public static void setElement(final Element context, final QName qname, final Object value)
 	{
-		Document doc = context.getOwnerDocument();
-		boolean embedChildren = (value instanceof Node) || (value instanceof XmlSerializable);
-		Node valueNode = convertToNode(doc, value);
+		final Document doc = context.getOwnerDocument();
+		final boolean embedChildren = (value instanceof Node) || (value instanceof XmlSerializable);
+		final Node valueNode = convertToNode(doc, value);
 
 		setElement(context, qname, valueNode, embedChildren);
 
-		if (value instanceof QName)
-		{
-			setQNameNamespace(context, (QName) value);
-		}
+		if (value instanceof QName) setQNameNamespace(context, (QName) value);
 	}
 
 	/**
@@ -1645,21 +1632,18 @@ public class XmlUtils
 	 * @param text
 	 *            The new text value.
 	 */
-	public static void setElementText(Element element, String text)
+	public static void setElementText(final Element element, final String text)
 	{
 		Node currentTextNode = null;
 
 		//
 		// first check to see if we already have text in the element
 		//
-		NodeChildrenIterator itr = new NodeChildrenIterator(element);
+		final NodeChildrenIterator itr = new NodeChildrenIterator(element);
 		while (itr.hasNext() && (currentTextNode == null))
 		{
-			Node next = itr.next();
-			if (next.getNodeType() == Node.TEXT_NODE)
-			{
-				currentTextNode = next;
-			}
+			final Node next = itr.next();
+			if (next.getNodeType() == Node.TEXT_NODE) currentTextNode = next;
 		}
 
 		//
@@ -1667,7 +1651,7 @@ public class XmlUtils
 		//
 		if (currentTextNode == null)
 		{
-			Document doc = element.getOwnerDocument();
+			final Document doc = element.getOwnerDocument();
 			currentTextNode = doc.createTextNode("");
 			currentTextNode = element.appendChild(currentTextNode);
 		}
@@ -1686,38 +1670,35 @@ public class XmlUtils
 	 * @param prefix
 	 * @param namespaceURI
 	 */
-	public static void setNamespaceAttribute(Element element, String prefix, String namespaceURI)
+	public static void setNamespaceAttribute(final Element element, final String prefix, final String namespaceURI)
 	{
 		String attributeName = XMLNS_PREFIX;
 
 		//
 		// handle null or blank prefix
 		//
-		boolean hasPrefix = (prefix != null) && (prefix.length() > 0);
+		final boolean hasPrefix = (prefix != null) && (prefix.length() > 0);
 
-		if (hasPrefix)
-		{
-			attributeName += ':' + prefix;
-		}
+		if (hasPrefix) attributeName += ':' + prefix;
 
 		// 
 		// do not add namespace attribute if matching attribute found, or
 		// element has matching bound namespace, or attempting to redefine
 		// element's bound default namespace
 		//
-		if (element.hasAttribute(attributeName) || ((element.getNamespaceURI() != null) && ((!hasPrefix && (element.getPrefix() == null)) || ((element.getPrefix() != null) && element.getPrefix().equals(prefix))))) { return; }
+		if (element.hasAttribute(attributeName) || ((element.getNamespaceURI() != null) && ((!hasPrefix && (element.getPrefix() == null)) || ((element.getPrefix() != null) && element.getPrefix().equals(prefix))))) return;
 
 		// 
 		// do not add namespace attribute if any attributes have the same bound 
 		// prefix or attempting to redefine attribute's bound defaultnamespace
 		//
-		NamedNodeMap attrs = element.getAttributes();
+		final NamedNodeMap attrs = element.getAttributes();
 
 		for (int index = 0; index < attrs.getLength(); index++)
 		{
-			Attr attr = (Attr) attrs.item(index);
+			final Attr attr = (Attr) attrs.item(index);
 
-			if ((attr.getNamespaceURI() != null) && ((!hasPrefix && (attr.getPrefix() == null)) || ((attr.getPrefix() != null) && attr.getPrefix().equals(prefix)))) { return; }
+			if ((attr.getNamespaceURI() != null) && ((!hasPrefix && (attr.getPrefix() == null)) || ((attr.getPrefix() != null) && attr.getPrefix().equals(prefix)))) return;
 		}
 
 		// 
@@ -1731,12 +1712,12 @@ public class XmlUtils
 	 * their namespace specified in a new element, and this is not taken
 	 * care of when serializing the QName to its text node value.
 	 */
-	private static void setQNameNamespace(Element xml, QName value)
+	private static void setQNameNamespace(final Element xml, final QName value)
 	{
-		String elementPrefix = xml.getPrefix();
+		final String elementPrefix = xml.getPrefix();
 
-		String valueURI = value.getNamespaceURI();
-		String valuePrefix = value.getPrefix();
+		final String valueURI = value.getNamespaceURI();
+		final String valuePrefix = value.getPrefix();
 
 		//
 		// check to make sure:
@@ -1744,10 +1725,7 @@ public class XmlUtils
 		// 1. the value has a namespace URI
 		// 2. that the value's prefix isn't already bound on this element
 		//        
-		if (((valueURI != null) && (valueURI.length() > 0)) && ((elementPrefix != null) && !valuePrefix.equals(elementPrefix)))
-		{
-			setNamespaceAttribute(xml, valuePrefix, valueURI);
-		}
+		if (((valueURI != null) && (valueURI.length() > 0)) && ((elementPrefix != null) && !valuePrefix.equals(elementPrefix))) setNamespaceAttribute(xml, valuePrefix, valueURI);
 	}
 
 	/**
@@ -1757,7 +1735,7 @@ public class XmlUtils
 	 * 
 	 * @see #toFile(Node, File, boolean)
 	 */
-	public static void toFile(Node xml, File file) throws IOException
+	public static void toFile(final Node xml, final File file) throws IOException
 	{
 		toFile(xml, file, true);
 	}
@@ -1780,13 +1758,18 @@ public class XmlUtils
 	 *             </ul>
 	 * @see #toString(Node, boolean)
 	 */
-	public static void toFile(Node xml, File file, boolean printHeader) throws IOException
+	public static void toFile(final Node xml, final File file, final boolean printHeader) throws IOException
 	{
-		String xmlString = toString(xml, printHeader);
+		final String xmlString = toString(xml, printHeader);
 
-		FileWriter writer = new FileWriter(file);
+		final FileWriter writer = new FileWriter(file);
 		writer.write(xmlString);
 		writer.close();
+	}
+
+	public static QName toGQname(final QName qname)
+	{
+		return new QName("*", qname.getLocalPart(), "*");
 	}
 
 	/**
@@ -1797,7 +1780,7 @@ public class XmlUtils
 	 * 
 	 * @see #toString(Node, boolean)
 	 */
-	public static String toString(Node xml)
+	public static String toString(final Node xml)
 	{
 		return toString(xml, true);
 	}
@@ -1809,7 +1792,7 @@ public class XmlUtils
 	 * 
 	 * @see #toString(Node, boolean, boolean)
 	 */
-	public static String toString(Node xml, boolean printHeader)
+	public static String toString(final Node xml, final boolean printHeader)
 	{
 		return toString(xml, printHeader, true);
 	}
@@ -1828,38 +1811,32 @@ public class XmlUtils
 	 *            indented with symmetry.
 	 * @return The string representation of the given Node.
 	 */
-	public static String toString(Node xml, boolean printHeader, boolean printIndents)
+	public static String toString(final Node xml, final boolean printHeader, final boolean printIndents)
 	{
-		short type = xml.getNodeType();
+		final short type = xml.getNodeType();
 
-		if (type == Node.TEXT_NODE) { return xml.getNodeValue(); }
+		if (type == Node.TEXT_NODE) return xml.getNodeValue();
 
 		//
 		// NOTE: This serialization code is not part of JAXP/DOM - it is 
 		//       specific to Xerces and creates a Xerces dependency for 
 		//       this class.
 		//
-		XMLSerializer serializer = new XMLSerializer();
+		final XMLSerializer serializer = new XMLSerializer();
 		serializer.setNamespaces(true);
 
-		OutputFormat formatter = new OutputFormat();
+		final OutputFormat formatter = new OutputFormat();
 		formatter.setOmitXMLDeclaration(!printHeader);
 		formatter.setIndenting(printIndents);
 		serializer.setOutputFormat(formatter);
 
-		StringWriter writer = new StringWriter();
+		final StringWriter writer = new StringWriter();
 		serializer.setOutputCharStream(writer);
 
 		try
 		{
-			if (type == Node.DOCUMENT_NODE)
-			{
-				serializer.serialize((Document) xml);
-			}
-			else
-			{
-				serializer.serialize((Element) xml);
-			}
+			if (type == Node.DOCUMENT_NODE) serializer.serialize((Document) xml);
+			else serializer.serialize((Element) xml);
 		}
 
 		//
@@ -1870,7 +1847,7 @@ public class XmlUtils
 		// if it DOES fail, we re-throw with a more serious error, because 
 		// this a very common operation.
 		//
-		catch (IOException error)
+		catch (final IOException error)
 		{
 			throw new RuntimeException(error.getMessage(), error);
 		}
@@ -1893,102 +1870,13 @@ public class XmlUtils
 	 *         which is a valid representation to put into XML documents. If
 	 *         the QName has no prefix, the local name is returned.
 	 */
-	public static String toString(QName qname)
+	public static String toString(final QName qname)
 	{
-		String prefix = qname.getPrefix();
-		String name = qname.getLocalPart();
+		final String prefix = qname.getPrefix();
+		final String name = qname.getLocalPart();
 
-		if ((prefix == null) || (prefix.length() == 0)) { return name; }
+		if ((prefix == null) || (prefix.length() == 0)) return name;
 
 		return prefix + ':' + name;
-	}
-
-	/**
-	 * Searches the given sub-tree and returns all of the namespace URIs that
-	 * are used to declare the root Element and its child Elements. Unlike
-	 * getAllNamespaces
-	 * it only retrieves the namespace declarations i.e.
-	 * xmlns:prefix="namespace".
-	 * Also unlike getAllNamespaces this works up the xml nodes to the root.
-	 * Namespace
-	 * prefixes are therefore correct for that node, reassigned prefixes higher
-	 * up the tree are ignored.
-	 * 
-	 * @param xml
-	 *            The root of the sub-tree to perform the search on.
-	 * @return A Map containing all namespaces used in Element QNames. The
-	 *         Map is keyed by the namespace prefixes. The Map does not
-	 *         include namespaces outside of the Element QNames.
-	 */
-	public static Map<String, String> getNamespaceDeclarations(Element xml)
-	{
-		return getNamespaceDeclarations(xml, new HashMap<String, String>());
-	}
-
-	/**
-	 * This is an auxiliary method used to recursively search an Element
-	 * and its parent nodes for namespace/prefix definitions. It is used to
-	 * implement
-	 * getNamespaceDeclarations(Element).
-	 * 
-	 * @param xml
-	 *            The current Element in the recursive search. All namespace
-	 *            prefixes will be searched.
-	 *            , and then its children will be searched.
-	 * @param namespacesByPrefix
-	 *            The result Map so far. This is a Map[prefix, namespace].
-	 * @return The same Map as the second parameter (namespacesByPrefix),
-	 *         but with more entries.
-	 * @see #getAllNamespaces(Element)
-	 */
-	private static Map<String, String> getNamespaceDeclarations(Element xml, Map<String, String> namespacesByPrefix)
-	{
-		// get the prefixes declared here and head up the tree
-		// code borrowed from Xalan XPathUtils, as it works.  
-
-		// Its important to really check for the NS but this usually only works on
-		// a fresh parse. Developers may manually add declarations that are not in the
-		// correct namespace, then we guess.  As the xmlns prefix is reserved its safe just
-		// to use this code.
-
-		Node parent = xml;
-
-		int type;
-
-		while ((null != parent) && (((type = parent.getNodeType()) == Node.ELEMENT_NODE) || (type == Node.ENTITY_REFERENCE_NODE)))
-		{
-			if (type == Node.ELEMENT_NODE)
-			{
-				NamedNodeMap nnm = parent.getAttributes();
-
-				for (int i = 0; i < nnm.getLength(); i++)
-				{
-					Node attr = nnm.item(i);
-					String aname = attr.getNodeName();
-					boolean isPrefix = aname.startsWith("xmlns:");
-
-					if (isPrefix || aname.equals("xmlns"))
-					{
-						int index = aname.indexOf(':');
-						String pre = isPrefix ? aname.substring(index + 1) : "";
-						String namespace = attr.getNodeValue();
-
-						namespacesByPrefix.put(pre, namespace);
-					}
-				}
-			}
-			parent = parent.getParentNode();
-		}
-		return namespacesByPrefix;
-	}
-
-	public static QName getGQName(String name)
-	{
-		return new QName("*", name, "*");
-	}
-
-	public static QName toGQname(QName qname)
-	{
-		return new QName("*", qname.getLocalPart(), "*");
 	}
 }

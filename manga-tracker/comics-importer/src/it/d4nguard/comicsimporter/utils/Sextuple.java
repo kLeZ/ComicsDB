@@ -6,14 +6,35 @@ public class Sextuple<S, T, U, V, W, X> extends Triple<S, T, U> implements Tuple
 	protected W w;
 	protected X x;
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean equals(final Object obj)
+	{
+		if (this == obj) return true;
+		if (!super.equals(obj)) return false;
+		if (!(obj instanceof Sextuple)) return false;
+		final Sextuple<S, T, U, V, W, X> other = (Sextuple<S, T, U, V, W, X>) obj;
+		if (v == null)
+		{
+			if (other.v != null) return false;
+		}
+		else if (!v.equals(other.v)) return false;
+		if (w == null)
+		{
+			if (other.w != null) return false;
+		}
+		else if (!w.equals(other.w)) return false;
+		if (x == null)
+		{
+			if (other.x != null) return false;
+		}
+		else if (!x.equals(other.x)) return false;
+		return true;
+	}
+
 	public V getV()
 	{
 		return v;
-	}
-
-	public void setV(V v)
-	{
-		this.v = v;
 	}
 
 	public W getW()
@@ -21,19 +42,9 @@ public class Sextuple<S, T, U, V, W, X> extends Triple<S, T, U> implements Tuple
 		return w;
 	}
 
-	public void setW(W w)
-	{
-		this.w = w;
-	}
-
 	public X getX()
 	{
 		return x;
-	}
-
-	public void setX(X x)
-	{
-		this.x = x;
 	}
 
 	@Override
@@ -47,36 +58,25 @@ public class Sextuple<S, T, U, V, W, X> extends Triple<S, T, U> implements Tuple
 		return result;
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean equals(Object obj)
+	public void setV(final V v)
 	{
-		if (this == obj) { return true; }
-		if (!super.equals(obj)) { return false; }
-		if (!(obj instanceof Sextuple)) { return false; }
-		Sextuple<S, T, U, V, W, X> other = (Sextuple<S, T, U, V, W, X>) obj;
-		if (v == null)
-		{
-			if (other.v != null) { return false; }
-		}
-		else if (!v.equals(other.v)) { return false; }
-		if (w == null)
-		{
-			if (other.w != null) { return false; }
-		}
-		else if (!w.equals(other.w)) { return false; }
-		if (x == null)
-		{
-			if (other.x != null) { return false; }
-		}
-		else if (!x.equals(other.x)) { return false; }
-		return true;
+		this.v = v;
+	}
+
+	public void setW(final W w)
+	{
+		this.w = w;
+	}
+
+	public void setX(final X x)
+	{
+		this.x = x;
 	}
 
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("Sextuple [v=");
 		builder.append(v);
 		builder.append(", w=");

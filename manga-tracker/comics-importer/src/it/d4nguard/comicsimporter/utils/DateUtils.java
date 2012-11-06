@@ -36,184 +36,13 @@ public class DateUtils
 
 	public static final String FULL = "EEEE dd/MMMM/yyyy";// Lunedi_01/gennaio/2007
 
-	public static Vector<Integer> getYears(int start_year, int end_year)
+	public static int compareTo(final Date date1, final Date date2)
 	{
-		Vector<Integer> anni = new Vector<Integer>();
-		for (int i = start_year; i <= end_year; i++)
-		{
-			anni.add(new Integer(i));
-		}
-		return anni;
-	}
-
-	private static double diffDays(Calendar dateFrom, Calendar dateTo)
-	{
-		// conversione in millisecondi
-		long dateFromMillis = dateFrom.getTimeInMillis();
-		long dateToMillis = dateTo.getTimeInMillis();
-		long diffMillis = dateToMillis - dateFromMillis;
-		// conversione in giorni con la divisione intera
-		double diffMillis_DivInt = diffMillis / 86400000;
-		return diffMillis_DivInt;
-	}
-
-	public static Vector<Calendar> getDateRange(Calendar dateFrom, Calendar dateTo)
-	{
-		Vector<Calendar> ret = new Vector<Calendar>();
-		int diff = (int) diffDays(dateFrom, dateTo);
-		for (int i = 0; i < diff; i++)
-		{
-			dateFrom.add(Calendar.DAY_OF_YEAR, 1);
-			Calendar date = Calendar.getInstance();
-			date.setTimeInMillis(dateFrom.getTimeInMillis());
-			ret.add(date);
-		}
-		return ret;
-	}
-
-	public static Vector<Integer> getDays()
-	{
-		Vector<Integer> ret = new Vector<Integer>();
-		for (int i = 1; i < 32; i++)
-		{
-			ret.addElement(new Integer(i));
-		}
-		return ret;
-	}
-
-	public static String getMonthString(int month)
-	{
-		return new DateFormatSymbols().getMonths()[month - 1];
-	}
-
-	public static Vector<String> getMonths()
-	{
-		Vector<String> ret = new Vector<String>();
-		for (int i = 0; i < 12; i++)
-		{
-			ret.addElement(getMonthString(i));
-		}
-		return ret;
-	}
-
-	public static int getCurrentYear()
-	{
-		Date date = new Date();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		int i = cal.get(Calendar.YEAR);
+		final int i = date1.compareTo(date2);
 		return i;
 	}
 
-	public static Date setDate(int day)
-	{
-		Date ret = null;
-		Calendar cal = Calendar.getInstance();
-		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), day);
-		ret = cal.getTime();
-		return ret;
-	}
-
-	public static Date setDate(int day, int month)
-	{
-		Date ret = null;
-		Calendar cal = Calendar.getInstance();
-		cal.set(cal.get(Calendar.YEAR), month, day);
-		ret = cal.getTime();
-		return ret;
-	}
-
-	public static Date setDate(int day, int month, int year)
-	{
-		Date ret = null;
-		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, day);
-		ret = cal.getTime();
-		return ret;
-	}
-
-	public static Date setDate(int day, int month, int year, int hours, int minutes)
-	{
-		Date ret = null;
-		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, day, hours, minutes);
-		ret = cal.getTime();
-		return ret;
-	}
-
-	public static Date setDate(int day, int month, int year, int hours, int minutes, int seconds)
-	{
-		Date data = null;
-		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, day, hours, minutes, seconds);
-		data = cal.getTime();
-		return data;
-	}
-
-	public static String formatDate(String date, String pattern)
-	{
-		String ret = "";
-		try
-		{
-			DateFormat df = DateFormat.getDateInstance();
-			Date date_parse = df.parse(date);
-			SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-			ret = sdf.format(date_parse);
-		}
-		catch (ParseException e)
-		{
-			e.printStackTrace();
-		}
-		return ret;
-	}
-
-	public static String formatDate(Date date, String pattern)
-	{
-		String ret = "";
-		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-		ret = sdf.format(date);
-		return ret;
-	}
-
-	public static int getYearFromDate(Date date)
-	{
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		int i = cal.get(Calendar.YEAR);
-		return i;
-	}
-
-	public static int getMonthFromDate(Date date)
-	{
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		int i = cal.get(Calendar.MONTH);
-		return i;
-	}
-
-	public static int getDayFromDate(Date date)
-	{
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		int i = cal.get(Calendar.DATE);
-		return i;
-	}
-
-	public static Date parseDate(String date, String pattern) throws ParseException
-	{
-		Date ret = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-		ret = sdf.parse(date);
-		return ret;
-	}
-
-	public static int compareTo(Date date1, Date date2)
-	{
-		int i = date1.compareTo(date2);
-		return i;
-	}
-
-	public static int compareTo(String date1, String date2)
+	public static int compareTo(final String date1, final String date2)
 	{
 		int i = 0;
 		Date data1_d = null;
@@ -224,14 +53,141 @@ public class DateUtils
 			data2_d = parseDate(date2, MEDIUM);
 			i = data1_d.compareTo(data2_d);
 		}
-		catch (ParseException pe)
+		catch (final ParseException pe)
 		{
 			pe.printStackTrace();
 		}
 		return i;
 	}
 
-	public static boolean isValidDate(String date)
+	private static double diffDays(final Calendar dateFrom, final Calendar dateTo)
+	{
+		// conversione in millisecondi
+		final long dateFromMillis = dateFrom.getTimeInMillis();
+		final long dateToMillis = dateTo.getTimeInMillis();
+		final long diffMillis = dateToMillis - dateFromMillis;
+		// conversione in giorni con la divisione intera
+		final double diffMillis_DivInt = diffMillis / 86400000;
+		return diffMillis_DivInt;
+	}
+
+	public static String formatDate(final Date date, final String pattern)
+	{
+		String ret = "";
+		final SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+		ret = sdf.format(date);
+		return ret;
+	}
+
+	public static String formatDate(final String date, final String pattern)
+	{
+		String ret = "";
+		try
+		{
+			final DateFormat df = DateFormat.getDateInstance();
+			final Date date_parse = df.parse(date);
+			final SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+			ret = sdf.format(date_parse);
+		}
+		catch (final ParseException e)
+		{
+			e.printStackTrace();
+		}
+		return ret;
+	}
+
+	public static Calendar getCalendar(final Date date)
+	{
+		final Calendar ret = Calendar.getInstance();
+		ret.setTime(date);
+		return ret;
+	}
+
+	public static int getCurrentYear()
+	{
+		final Date date = new Date();
+		final Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		final int i = cal.get(Calendar.YEAR);
+		return i;
+	}
+
+	public static Vector<Calendar> getDateRange(final Calendar dateFrom, final Calendar dateTo)
+	{
+		final Vector<Calendar> ret = new Vector<Calendar>();
+		final int diff = (int) diffDays(dateFrom, dateTo);
+		for (int i = 0; i < diff; i++)
+		{
+			dateFrom.add(Calendar.DAY_OF_YEAR, 1);
+			final Calendar date = Calendar.getInstance();
+			date.setTimeInMillis(dateFrom.getTimeInMillis());
+			ret.add(date);
+		}
+		return ret;
+	}
+
+	public static int getDayFromDate(final Date date)
+	{
+		final Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		final int i = cal.get(Calendar.DATE);
+		return i;
+	}
+
+	public static Vector<Integer> getDays()
+	{
+		final Vector<Integer> ret = new Vector<Integer>();
+		for (int i = 1; i < 32; i++)
+			ret.addElement(new Integer(i));
+		return ret;
+	}
+
+	public static String getMinSecsFromSecs(final double duration)
+	{
+		String ret = "";
+		final int intpart = (int) duration / 60, floatpart = (int) duration % 60;
+		ret = String.format("%02d:%02d", intpart, floatpart);
+		return ret;
+	}
+
+	public static int getMonthFromDate(final Date date)
+	{
+		final Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		final int i = cal.get(Calendar.MONTH);
+		return i;
+	}
+
+	public static Vector<String> getMonths()
+	{
+		final Vector<String> ret = new Vector<String>();
+		for (int i = 0; i < 12; i++)
+			ret.addElement(getMonthString(i));
+		return ret;
+	}
+
+	public static String getMonthString(final int month)
+	{
+		return new DateFormatSymbols().getMonths()[month - 1];
+	}
+
+	public static int getYearFromDate(final Date date)
+	{
+		final Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		final int i = cal.get(Calendar.YEAR);
+		return i;
+	}
+
+	public static Vector<Integer> getYears(final int start_year, final int end_year)
+	{
+		final Vector<Integer> anni = new Vector<Integer>();
+		for (int i = start_year; i <= end_year; i++)
+			anni.add(new Integer(i));
+		return anni;
+	}
+
+	public static boolean isValidDate(final String date)
 	{
 		boolean retVal = false;
 		try
@@ -239,60 +195,98 @@ public class DateUtils
 			parseDate(date, MEDIUM);
 			retVal = true;
 		}
-		catch (ParseException pe)
+		catch (final ParseException pe)
 		{
 			System.out.println("Data non valida: " + date);
 		}
 		return retVal;
 	}
 
-	public static String getMinSecsFromSecs(double duration)
+	public static Date parseDate(final String date, final String pattern) throws ParseException
 	{
-		String ret = "";
-		int intpart = (int) duration / 60, floatpart = (int) duration % 60;
-		ret = String.format("%02d:%02d", intpart, floatpart);
+		Date ret = new Date();
+		final SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+		ret = sdf.parse(date);
 		return ret;
 	}
 
-	public static Calendar getCalendar(Date date)
+	public static Calendar setCalendar(final int day)
 	{
-		Calendar ret = Calendar.getInstance();
-		ret.setTime(date);
-		return ret;
-	}
-
-	public static Calendar setCalendar(int day)
-	{
-		Calendar cal = Calendar.getInstance();
+		final Calendar cal = Calendar.getInstance();
 		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), day);
 		return cal;
 	}
 
-	public static Calendar setCalendar(int day, int month)
+	public static Calendar setCalendar(final int day, final int month)
 	{
-		Calendar cal = Calendar.getInstance();
+		final Calendar cal = Calendar.getInstance();
 		cal.set(cal.get(Calendar.YEAR), month, day);
 		return cal;
 	}
 
-	public static Calendar setCalendar(int day, int month, int year)
+	public static Calendar setCalendar(final int day, final int month, final int year)
 	{
-		Calendar cal = Calendar.getInstance();
+		final Calendar cal = Calendar.getInstance();
 		cal.set(year, month, day);
 		return cal;
 	}
 
-	public static Calendar setCalendar(int day, int month, int year, int hours, int minutes)
+	public static Calendar setCalendar(final int day, final int month, final int year, final int hours, final int minutes)
 	{
-		Calendar cal = Calendar.getInstance();
+		final Calendar cal = Calendar.getInstance();
 		cal.set(year, month, day, hours, minutes);
 		return cal;
 	}
 
-	public static Calendar setCalendar(int day, int month, int year, int hours, int minutes, int seconds)
+	public static Calendar setCalendar(final int day, final int month, final int year, final int hours, final int minutes, final int seconds)
 	{
-		Calendar cal = Calendar.getInstance();
+		final Calendar cal = Calendar.getInstance();
 		cal.set(year, month, day, hours, minutes, seconds);
 		return cal;
+	}
+
+	public static Date setDate(final int day)
+	{
+		Date ret = null;
+		final Calendar cal = Calendar.getInstance();
+		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), day);
+		ret = cal.getTime();
+		return ret;
+	}
+
+	public static Date setDate(final int day, final int month)
+	{
+		Date ret = null;
+		final Calendar cal = Calendar.getInstance();
+		cal.set(cal.get(Calendar.YEAR), month, day);
+		ret = cal.getTime();
+		return ret;
+	}
+
+	public static Date setDate(final int day, final int month, final int year)
+	{
+		Date ret = null;
+		final Calendar cal = Calendar.getInstance();
+		cal.set(year, month, day);
+		ret = cal.getTime();
+		return ret;
+	}
+
+	public static Date setDate(final int day, final int month, final int year, final int hours, final int minutes)
+	{
+		Date ret = null;
+		final Calendar cal = Calendar.getInstance();
+		cal.set(year, month, day, hours, minutes);
+		ret = cal.getTime();
+		return ret;
+	}
+
+	public static Date setDate(final int day, final int month, final int year, final int hours, final int minutes, final int seconds)
+	{
+		Date data = null;
+		final Calendar cal = Calendar.getInstance();
+		cal.set(year, month, day, hours, minutes, seconds);
+		data = cal.getTime();
+		return data;
 	}
 }

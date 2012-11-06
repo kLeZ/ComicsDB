@@ -5,24 +5,35 @@ public class Pentuple<S, T, U, V, W> extends Triple<S, T, U> implements Tuple
 	protected V v;
 	protected W w;
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean equals(final Object obj)
+	{
+		if (this == obj) return true;
+		if (!super.equals(obj)) return false;
+		if (!(obj instanceof Pentuple)) return false;
+		final Pentuple<S, T, U, V, W> other = (Pentuple<S, T, U, V, W>) obj;
+		if (v == null)
+		{
+			if (other.v != null) return false;
+		}
+		else if (!v.equals(other.v)) return false;
+		if (w == null)
+		{
+			if (other.w != null) return false;
+		}
+		else if (!w.equals(other.w)) return false;
+		return true;
+	}
+
 	public V getV()
 	{
 		return v;
 	}
 
-	public void setV(V v)
-	{
-		this.v = v;
-	}
-
 	public W getW()
 	{
 		return w;
-	}
-
-	public void setW(W w)
-	{
-		this.w = w;
 	}
 
 	@Override
@@ -35,31 +46,20 @@ public class Pentuple<S, T, U, V, W> extends Triple<S, T, U> implements Tuple
 		return result;
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean equals(Object obj)
+	public void setV(final V v)
 	{
-		if (this == obj) { return true; }
-		if (!super.equals(obj)) { return false; }
-		if (!(obj instanceof Pentuple)) { return false; }
-		Pentuple<S, T, U, V, W> other = (Pentuple<S, T, U, V, W>) obj;
-		if (v == null)
-		{
-			if (other.v != null) { return false; }
-		}
-		else if (!v.equals(other.v)) { return false; }
-		if (w == null)
-		{
-			if (other.w != null) { return false; }
-		}
-		else if (!w.equals(other.w)) { return false; }
-		return true;
+		this.v = v;
+	}
+
+	public void setW(final W w)
+	{
+		this.w = w;
 	}
 
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("Pentuple [v=");
 		builder.append(v);
 		builder.append(", w=");

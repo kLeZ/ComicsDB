@@ -32,11 +32,11 @@ import com.qrmedia.pattern.dynamicenum.DynamicEnumerable;
  */
 public class AgentDescriptor implements DynamicEnumerable<Integer>
 {
-	private int codenumber;
+	private final int codenumber;
 
-	private String name;
+	private final String name;
 
-	private boolean alive;
+	private final boolean alive;
 
 	/**
 	 * Creates an agent descriptor.
@@ -48,10 +48,10 @@ public class AgentDescriptor implements DynamicEnumerable<Integer>
 	 * @param alive
 	 *            <code>true</code> iff the agent is still alive
 	 */
-	public AgentDescriptor(int codenumber, String name, boolean alive)
+	public AgentDescriptor(final int codenumber, final String name, final boolean alive)
 	{
 
-		if (name == null) { throw new IllegalArgumentException("Name may not be null"); }
+		if (name == null) throw new IllegalArgumentException("Name may not be null");
 
 		this.codenumber = codenumber;
 		this.name = name;
@@ -63,9 +63,15 @@ public class AgentDescriptor implements DynamicEnumerable<Integer>
 		return Integer.valueOf(codenumber);
 	}
 
-	public String name()
+	@Override
+	public boolean equals(final Object obj)
 	{
-		return "00" + codenumber;
+
+		if (obj == this) return true;
+		else if (!(obj instanceof AgentDescriptor)) return false;
+
+		final AgentDescriptor other = (AgentDescriptor) obj;
+		return new EqualsBuilder().append(codenumber, other.codenumber).append(name, other.name).append(alive, other.alive).isEquals();
 	}
 
 	@Override
@@ -74,18 +80,9 @@ public class AgentDescriptor implements DynamicEnumerable<Integer>
 		return new HashCodeBuilder().append(codenumber).append(name).append(alive).toHashCode();
 	}
 
-	@Override
-	public boolean equals(Object obj)
+	public String name()
 	{
-
-		if (obj == this)
-		{
-			return true;
-		}
-		else if (!(obj instanceof AgentDescriptor)) { return false; }
-
-		AgentDescriptor other = (AgentDescriptor) obj;
-		return new EqualsBuilder().append(codenumber, other.codenumber).append(name, other.name).append(alive, other.alive).isEquals();
+		return "00" + codenumber;
 	}
 
 	/*

@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 1-nov-2012 8.37.17 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="it.d4nguard.comicsimporter.beans.Comic" table="COMIC">
+		<id name="id" type="java.lang.Long">
+			<column name="ID" />
+			<generator class="assigned" />
+		</id>
+		<property name="url" type="java.net.URL">
+			<column name="URL" />
+		</property>
+		<property name="originalTitle" type="java.lang.String">
+			<column name="ORIGINALTITLE" />
+		</property>
+		<property name="englishTitle" type="java.lang.String">
+			<column name="ENGLISHTITLE" />
+		</property>
+		<property name="artworker" type="java.lang.String">
+			<column name="ARTWORKER" />
+		</property>
+		<property name="storywriter" type="java.lang.String">
+			<column name="STORYWRITER" />
+		</property>
+		<property name="originalEditor" type="java.lang.String">
+			<column name="ORIGINALEDITOR" />
+		</property>
+		<property name="italianEditor" type="java.lang.String">
+			<column name="ITALIANEDITOR" />
+		</property>
+		<many-to-one name="typology" class="it.d4nguard.comicsimporter.bo.Typology"
+			fetch="join">
+			<column name="TYPOLOGY" />
+		</many-to-one>
+		<list name="genres" inverse="false" table="GENRE" lazy="true">
+			<key>
+				<column name="SERIALVERSIONUID" />
+			</key>
+			<list-index></list-index>
+			<one-to-many class="it.d4nguard.comicsimporter.bo.Genre" />
+		</list>
+		<property name="year" type="short">
+			<column name="YEAR" />
+		</property>
+		<property name="complete" type="boolean">
+			<column name="COMPLETE" />
+		</property>
+		<property name="completeInCountry" type="boolean">
+			<column name="COMPLETEINCOUNTRY" />
+		</property>
+		<many-to-one name="serie" class="it.d4nguard.comicsimporter.bo.Serie"
+			fetch="join">
+			<column name="SERIE" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

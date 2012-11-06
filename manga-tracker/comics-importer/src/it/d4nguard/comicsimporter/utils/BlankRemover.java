@@ -2,36 +2,36 @@ package it.d4nguard.comicsimporter.utils;
 
 public class BlankRemover
 {
-	private BlankRemover()
+	/* replace multiple whitespaces between words with single blank */
+	public static String itrim(final String source)
 	{
+		return source.replaceAll("\\b(\\s{2,}|\\u00a0{2,})\\b", " ");
+	}
+
+	public static String lrtrim(final String source)
+	{
+		return ltrim(rtrim(source));
 	}
 
 	/* remove leading whitespace */
-	public static String ltrim(String source)
+	public static String ltrim(final String source)
 	{
 		return source.replaceAll("^(\\s|\\u00a0)+", "");
 	}
 
 	/* remove trailing whitespace */
-	public static String rtrim(String source)
+	public static String rtrim(final String source)
 	{
 		return source.replaceAll("(\\s|\\u00a0)+$", "");
 	}
 
-	/* replace multiple whitespaces between words with single blank */
-	public static String itrim(String source)
-	{
-		return source.replaceAll("\\b(\\s{2,}|\\u00a0{2,})\\b", " ");
-	}
-
 	/* remove all superfluous whitespaces in source string */
-	public static String trim(String source)
+	public static String trim(final String source)
 	{
 		return itrim(ltrim(rtrim(source)));
 	}
 
-	public static String lrtrim(String source)
+	private BlankRemover()
 	{
-		return ltrim(rtrim(source));
 	}
 }

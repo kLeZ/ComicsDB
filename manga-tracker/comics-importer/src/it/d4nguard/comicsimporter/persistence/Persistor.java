@@ -2,17 +2,17 @@ package it.d4nguard.comicsimporter.persistence;
 
 import java.util.Collection;
 
-public interface Persistor
+public interface Persistor<E>
 {
-	<E> E pop(CharSequence filter);
+	int drop(E elem);
 
-	<E> Collection<E> popMany(CharSequence filter);
+	int dropMany(Collection<E> elems);
 
-	<E> int push(E elem);
+	E pop(CharSequence filter);
 
-	<E> int pushMany(Collection<E> elems);
+	Collection<E> popMany(CharSequence filter);
 
-	<E> int drop(E elem);
+	int push(E elem);
 
-	<E> int dropMany(Collection<E> elems);
+	int pushMany(Collection<E> elems);
 }

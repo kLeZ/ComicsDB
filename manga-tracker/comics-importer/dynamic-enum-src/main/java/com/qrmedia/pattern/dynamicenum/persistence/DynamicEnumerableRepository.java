@@ -23,20 +23,22 @@ import java.util.List;
 import com.qrmedia.pattern.dynamicenum.DynamicEnumerable;
 
 /**
- * A repository for {@link DynamicEnumerable} objects underlying a set of dynamic 
+ * A repository for {@link DynamicEnumerable} objects underlying a set of
+ * dynamic
  * enum constants.
  * 
- * @param <D>	the type of the objects giving rise to the enum values
+ * @param <D>
+ *            the type of the objects giving rise to the enum values
  * @author anphilli
  * @since 5 Feb 2009
- *
  */
-public interface DynamicEnumerableRepository<D extends DynamicEnumerable<?>> {
+public interface DynamicEnumerableRepository<D extends DynamicEnumerable<?>>
+{
 
-    /**
-     * Loads all the objects underlying the dynamic enumeration.
-     * 
-     * @return	all the objects underlying the dynamic enumeration
-     */
-    List<D> loadAll();
+	/**
+	 * Loads all the objects underlying the dynamic enumeration.
+	 * 
+	 * @return all the objects underlying the dynamic enumeration
+	 */
+	List<D> loadAll();
 }

@@ -88,7 +88,8 @@
 										<tipologia>{$tipologia}</tipologia>
 										<genere>{$genere}</genere>
 										<anno>{$anno}</anno>
-										<serie completa="{$serie_completa}" completa_in_patria="{$completo_in_patria}">
+										<completa in_patria="{$completo_in_patria}">{$serie_completa}</completa>
+										<serie>
 										{
 											for $row in $volumes_table//tr[not(@bgcolor='#E1ECFF')]
 											let $nomeserie := normalize-space(data($row//td[1]/a/text())[1])

@@ -2,23 +2,23 @@ package it.d4nguard.comicsimporter.utils;
 
 public class ProxyInfo
 {
-	private String hostName;
-	private int hostPort;
+	private final String hostName;
+	private final int hostPort;
 	private String username;
 	private String password;
 	private String host;
 	private String domain;
 
-	private boolean useCredentials;
+	private final boolean useCredentials;
 
-	public ProxyInfo(String hostName, int hostPort)
+	public ProxyInfo(final String hostName, final int hostPort)
 	{
 		this.hostName = hostName;
 		this.hostPort = hostPort;
 		useCredentials = false;
 	}
 
-	public ProxyInfo(String hostName, int hostPort, String username, String password)
+	public ProxyInfo(final String hostName, final int hostPort, final String username, final String password)
 	{
 		this.hostName = hostName;
 		this.hostPort = hostPort;
@@ -27,7 +27,7 @@ public class ProxyInfo
 		useCredentials = true;
 	}
 
-	public ProxyInfo(String hostName, int hostPort, String username, String password, String host, String domain)
+	public ProxyInfo(final String hostName, final int hostPort, final String username, final String password, final String host, final String domain)
 	{
 		this.hostName = hostName;
 		this.hostPort = hostPort;
@@ -36,6 +36,16 @@ public class ProxyInfo
 		this.host = host;
 		this.domain = domain;
 		useCredentials = true;
+	}
+
+	public String getDomain()
+	{
+		return domain;
+	}
+
+	public String getHost()
+	{
+		return host;
 	}
 
 	public String getHostName()
@@ -48,24 +58,14 @@ public class ProxyInfo
 		return hostPort;
 	}
 
-	public String getUsername()
-	{
-		return username;
-	}
-
 	public String getPassword()
 	{
 		return password;
 	}
 
-	public String getHost()
+	public String getUsername()
 	{
-		return host;
-	}
-
-	public String getDomain()
-	{
-		return domain;
+		return username;
 	}
 
 	public boolean isUseCredentials()
@@ -76,7 +76,7 @@ public class ProxyInfo
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("ProxyInfo [hostName=");
 		builder.append(hostName);
 		builder.append(", hostPort=");

@@ -11,13 +11,10 @@ public class VolumeXmlMapper implements XmlMapper<Volume>
 	/* (non-Javadoc)
 	 * @see it.d4nguard.comicsimporter.beans.mappers.xml.XmlMapper#create(org.w3c.dom.Element)
 	 */
-	public Volume create(Element elem)
+	public Volume create(final Element elem)
 	{
-		Volume volume = new Volume(StringUtils.clean(elem.getAttribute("nome")));
-		if (elem.hasAttribute("serie"))
-		{
-			volume.setSerie(elem.getAttribute("serie"));
-		}
+		final Volume volume = new Volume(StringUtils.clean(elem.getAttribute("nome")));
+		if (elem.hasAttribute("serie")) volume.setSerie(elem.getAttribute("serie"));
 		volume.setEditor(elem.getAttribute("editore"));
 		volume.setPrice(new Money(elem.getAttribute("prezzo")));
 		volume.setLast(new Boolean(elem.getAttribute("ultimo")));

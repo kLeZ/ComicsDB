@@ -49,19 +49,6 @@ public interface DynamicEnumerable<E>
 {
 
 	/**
-	 * Returns the name of this enumerated value, in analogy to
-	 * {@link Enum#name()}. The
-	 * returned name must be non-<code>null</code>.
-	 * <p>
-	 * Implementing classes must ensure that, for two instances <code>v1</code>
-	 * and <code>v2</code>, <code>v1.name().equals(v2.name())</code> iff
-	 * <code>v1.equals(v2)</code>.
-	 * 
-	 * @return the name of this enumerated value
-	 */
-	String name();
-
-	/**
 	 * Returns the &quot;convenience&quot; object representing this enumerated
 	 * value. The
 	 * returned enum value must be non-<code>null</code>.
@@ -73,4 +60,17 @@ public interface DynamicEnumerable<E>
 	 * @return the object representing the underlying enumerated value
 	 */
 	E enumValue();
+
+	/**
+	 * Returns the name of this enumerated value, in analogy to
+	 * {@link Enum#name()}. The
+	 * returned name must be non-<code>null</code>.
+	 * <p>
+	 * Implementing classes must ensure that, for two instances <code>v1</code>
+	 * and <code>v2</code>, <code>v1.name().equals(v2.name())</code> iff
+	 * <code>v1.equals(v2)</code>.
+	 * 
+	 * @return the name of this enumerated value
+	 */
+	String name();
 }

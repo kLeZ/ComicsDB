@@ -1,7 +1,7 @@
 package it.d4nguard.comicsimporter.parsers.plain;
 
 import it.d4nguard.comicsimporter.beans.Comic;
-import it.d4nguard.comicsimporter.beans.Comics;
+import it.d4nguard.comicsimporter.bo.Comics;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -16,28 +16,6 @@ import com.sun.syndication.io.FeedException;
 
 public abstract class PlainParser
 {
-	public abstract List<Comic> parse(final Comics comics) throws IOException;
-
-	/**
-	 * @param excludes
-	 * @return
-	 * @throws IllegalArgumentException
-	 * @throws IOException
-	 * @throws FeedException
-	 */
-	public static List<PlainParser> getAll(Collection<Class<? extends PlainParser>> excludes) throws IllegalArgumentException, IOException, FeedException
-	{
-		List<PlainParser> ret = new ArrayList<PlainParser>();
-		for (Class<? extends PlainParser> clazz : getClasses())
-		{
-			if (((excludes == null) || (excludes.size() == 0)) || !excludes.contains(clazz))
-			{
-				ret.add(getInstance(clazz));
-			}
-		}
-		return ret;
-	}
-
 	/**
 	 * @return
 	 * @throws FeedException
@@ -49,41 +27,58 @@ public abstract class PlainParser
 		return getAll(null);
 	}
 
+	/**
+	 * @param excludes
+	 * @return
+	 * @throws IllegalArgumentException
+	 * @throws IOException
+	 * @throws FeedException
+	 */
+	public static List<PlainParser> getAll(final Collection<Class<? extends PlainParser>> excludes) throws IllegalArgumentException, IOException, FeedException
+	{
+		final List<PlainParser> ret = new ArrayList<PlainParser>();
+		for (final Class<? extends PlainParser> clazz : getClasses())
+			if (((excludes == null) || (excludes.size() == 0)) || !excludes.contains(clazz)) ret.add(getInstance(clazz));
+		return ret;
+	}
+
 	public static Set<Class<? extends PlainParser>> getClasses()
 	{
-		Reflections reflections = new Reflections(PlainParser.class.getPackage().getName());
-		Set<Class<? extends PlainParser>> classes = reflections.getSubTypesOf(PlainParser.class);
+		final Reflections reflections = new Reflections(PlainParser.class.getPackage().getName());
+		final Set<Class<? extends PlainParser>> classes = reflections.getSubTypesOf(PlainParser.class);
 		return classes;
 	}
 
-	public static PlainParser getInstance(Class<? extends PlainParser> clazz)
+	public static PlainParser getInstance(final Class<? extends PlainParser> clazz)
 	{
 		PlainParser instance = null;
 		try
 		{
 			instance = clazz.getConstructor().newInstance();
 		}
-		catch (SecurityException e)
+		catch (final SecurityException e)
 		{
 			e.printStackTrace();
 		}
-		catch (InstantiationException e)
+		catch (final InstantiationException e)
 		{
 			e.printStackTrace();
 		}
-		catch (IllegalAccessException e)
+		catch (final IllegalAccessException e)
 		{
 			e.printStackTrace();
 		}
-		catch (InvocationTargetException e)
+		catch (final InvocationTargetException e)
 		{
 			e.printStackTrace();
 		}
-		catch (NoSuchMethodException e)
+		catch (final NoSuchMethodException e)
 		{
 			e.printStackTrace();
 		}
 		return instance;
 	}
+
+	public abstract List<Comic> parse(final Comics comics) throws IOException;
 
 }

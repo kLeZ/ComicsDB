@@ -15,50 +15,6 @@ import java.io.*;
 public class PipedDeepCopy
 {
 	/**
-	 * Flag object used internally to indicate that deserialization failed.
-	 */
-	private static final Object ERROR = new Object();
-
-	/**
-	 * Returns a copy of the object, or null if the object cannot
-	 * be serialized.
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T copy(T orig)
-	{
-		Object obj = null;
-		try
-		{
-			// Make a connected pair of piped streams
-			PipedInputStream in = new PipedInputStream();
-			PipedOutputStream pos = new PipedOutputStream(in);
-
-			// Make a deserializer thread (see inner class below)
-			Deserializer des = new Deserializer(in);
-
-			// Write the object to the pipe
-			@SuppressWarnings("resource")
-			ObjectOutputStream out = new ObjectOutputStream(pos);
-			out.writeObject(orig);
-
-			// Wait for the object to be deserialized
-			obj = des.getDeserializedObject();
-
-			// See if something went wrong
-			if (obj == ERROR)
-			{
-				obj = null;
-			}
-		}
-		catch (IOException ioe)
-		{
-			ioe.printStackTrace();
-		}
-
-		return (T) obj;
-	}
-
-	/**
 	 * Thread subclass that handles deserializing from a PipedInputStream.
 	 */
 	private static class Deserializer extends Thread
@@ -78,47 +34,11 @@ public class PipedDeepCopy
 		 */
 		private PipedInputStream in = null;
 
-		public Deserializer(PipedInputStream pin) throws IOException
+		public Deserializer(final PipedInputStream pin) throws IOException
 		{
 			lock = new Object();
 			in = pin;
 			start();
-		}
-
-		@Override
-		public void run()
-		{
-			Object o = null;
-			try
-			{
-				ObjectInputStream oin = new ObjectInputStream(in);
-				o = oin.readObject();
-			}
-			catch (IOException e)
-			{
-				// This should never happen. If it does we make sure
-				// that a the object is set to a flag that indicates
-				// deserialization was not possible.
-				e.printStackTrace();
-			}
-			catch (ClassNotFoundException cnfe)
-			{
-				// Same here...
-				cnfe.printStackTrace();
-			}
-
-			synchronized (lock)
-			{
-				if (o == null)
-				{
-					obj = ERROR;
-				}
-				else
-				{
-					obj = o;
-				}
-				lock.notifyAll();
-			}
 		}
 
 		/**
@@ -133,16 +53,85 @@ public class PipedDeepCopy
 				synchronized (lock)
 				{
 					while (obj == null)
-					{
 						lock.wait();
-					}
 				}
 			}
-			catch (InterruptedException ie)
+			catch (final InterruptedException ie)
 			{
 				// If we are interrupted we just return null
 			}
 			return obj;
 		}
+
+		@Override
+		public void run()
+		{
+			Object o = null;
+			try
+			{
+				final ObjectInputStream oin = new ObjectInputStream(in);
+				o = oin.readObject();
+			}
+			catch (final IOException e)
+			{
+				// This should never happen. If it does we make sure
+				// that a the object is set to a flag that indicates
+				// deserialization was not possible.
+				e.printStackTrace();
+			}
+			catch (final ClassNotFoundException cnfe)
+			{
+				// Same here...
+				cnfe.printStackTrace();
+			}
+
+			synchronized (lock)
+			{
+				if (o == null) obj = ERROR;
+				else obj = o;
+				lock.notifyAll();
+			}
+		}
+	}
+
+	/**
+	 * Flag object used internally to indicate that deserialization failed.
+	 */
+	private static final Object ERROR = new Object();
+
+	/**
+	 * Returns a copy of the object, or null if the object cannot
+	 * be serialized.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T copy(final T orig)
+	{
+		Object obj = null;
+		try
+		{
+			// Make a connected pair of piped streams
+			final PipedInputStream in = new PipedInputStream();
+			final PipedOutputStream pos = new PipedOutputStream(in);
+
+			// Make a deserializer thread (see inner class below)
+			final Deserializer des = new Deserializer(in);
+
+			// Write the object to the pipe
+			@SuppressWarnings("resource")
+			final ObjectOutputStream out = new ObjectOutputStream(pos);
+			out.writeObject(orig);
+
+			// Wait for the object to be deserialized
+			obj = des.getDeserializedObject();
+
+			// See if something went wrong
+			if (obj == ERROR) obj = null;
+		}
+		catch (final IOException ioe)
+		{
+			ioe.printStackTrace();
+		}
+
+		return (T) obj;
 	}
 }

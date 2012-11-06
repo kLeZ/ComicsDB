@@ -19,20 +19,56 @@ public class WebScraper
 	private static ProxyInfo proxy;
 	private static boolean useProxy;
 
+	public static WebScraper getCurrent()
+	{
+		return current;
+	}
+
+	public static String scrap(final String config, final String returnVar)
+	{
+		current = new WebScraper(config);
+		return current.scrap(returnVar);
+	}
+
+	public static String scrap(final String config, final String returnVar, final Pair<String, Object>... contextVars)
+	{
+		current = new WebScraper(config, Convert.toMap(contextVars));
+		return current.scrap(returnVar);
+	}
+
+	public static void setProxy(final ProxyInfo proxy)
+	{
+		useProxy = true;
+		WebScraper.proxy = proxy;
+	}
+
 	private final InputSource src;
 
 	private ScraperContext ctx;
+
 	private Map<String, Object> contextVars;
 
-	public WebScraper(String config)
+	public WebScraper(final String config)
 	{
 		src = new InputSource(new StringReader(config));
 	}
 
-	public WebScraper(String config, Map<String, Object> contextVars)
+	public WebScraper(final String config, final Map<String, Object> contextVars)
 	{
 		this(config);
 		this.contextVars = contextVars;
+	}
+
+	public Map<String, String> getReturnContext()
+	{
+		final HashMap<String, String> ret = new HashMap<String, String>();
+		for (@SuppressWarnings("unchecked")
+		final Iterator<Entry<String, Object>> it = ctx.entrySet().iterator(); it.hasNext();)
+		{
+			final Entry<String, Object> entry = it.next();
+			ret.put(entry.getKey(), entry.getValue().toString());
+		}
+		return ret;
 	}
 
 	public boolean hasContextVars()
@@ -40,64 +76,23 @@ public class WebScraper
 		return (contextVars != null) && !contextVars.isEmpty();
 	}
 
-	public Map<String, String> getReturnContext()
-	{
-		HashMap<String, String> ret = new HashMap<String, String>();
-		for (@SuppressWarnings("unchecked")
-		Iterator<Entry<String, Object>> it = ctx.entrySet().iterator(); it.hasNext();)
-		{
-			Entry<String, Object> entry = it.next();
-			ret.put(entry.getKey(), entry.getValue().toString());
-		}
-		return ret;
-	}
-
-	public String scrap(String returnVar)
-	{
-		scrap();
-		return ctx.get(returnVar).toString();
-	}
-
 	public void scrap()
 	{
-		ScraperConfiguration configuration = new ScraperConfiguration(src);
-		Scraper scraper = new Scraper(configuration, WORK_DIR);
+		final ScraperConfiguration configuration = new ScraperConfiguration(src);
+		final Scraper scraper = new Scraper(configuration, WORK_DIR);
 		if (useProxy)
 		{
 			scraper.getHttpClientManager().setHttpProxy(proxy.getHostName(), proxy.getHostPort());
-			if (proxy.isUseCredentials())
-			{
-				scraper.getHttpClientManager().setHttpProxyCredentials(proxy.getUsername(), proxy.getPassword(), proxy.getHost(), proxy.getDomain());
-			}
+			if (proxy.isUseCredentials()) scraper.getHttpClientManager().setHttpProxyCredentials(proxy.getUsername(), proxy.getPassword(), proxy.getHost(), proxy.getDomain());
 		}
-		if (hasContextVars())
-		{
-			scraper.addVariablesToContext(contextVars);
-		}
+		if (hasContextVars()) scraper.addVariablesToContext(contextVars);
 		scraper.execute();
 		ctx = scraper.getContext();
 	}
 
-	public static WebScraper getCurrent()
+	public String scrap(final String returnVar)
 	{
-		return current;
-	}
-
-	public static void setProxy(ProxyInfo proxy)
-	{
-		useProxy = true;
-		WebScraper.proxy = proxy;
-	}
-
-	public static String scrap(String config, String returnVar)
-	{
-		current = new WebScraper(config);
-		return current.scrap(returnVar);
-	}
-
-	public static String scrap(String config, String returnVar, Pair<String, Object>... contextVars)
-	{
-		current = new WebScraper(config, Convert.toMap(contextVars));
-		return current.scrap(returnVar);
+		scrap();
+		return ctx.get(returnVar).toString();
 	}
 }

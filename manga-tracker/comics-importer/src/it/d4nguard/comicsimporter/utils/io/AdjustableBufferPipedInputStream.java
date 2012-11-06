@@ -8,7 +8,7 @@ import java.io.PipedInputStream;
  */
 public class AdjustableBufferPipedInputStream extends PipedInputStream
 {
-	public AdjustableBufferPipedInputStream(int bufSize)
+	public AdjustableBufferPipedInputStream(final int bufSize)
 	{
 		super();
 		buffer = new byte[bufSize];

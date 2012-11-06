@@ -21,14 +21,14 @@ import com.sun.org.apache.xml.internal.utils.PrefixResolver;
 public class MapNSResolver implements PrefixResolver
 {
 
-	private Map<String, String> map = new HashMap<String, String>();
+	private final Map<String, String> map = new HashMap<String, String>();
 
-	public void addMap(Map<String, String> prefixmappings)
+	public void addMap(final Map<String, String> prefixmappings)
 	{
 		map.putAll(prefixmappings);
 	}
 
-	public void addMapping(String prefix, String namespace)
+	public void addMapping(final String prefix, final String namespace)
 	{
 		map.put(prefix, namespace);
 	}
@@ -38,12 +38,12 @@ public class MapNSResolver implements PrefixResolver
 		return null;
 	}
 
-	public String getNamespaceForPrefix(String prefix)
+	public String getNamespaceForPrefix(final String prefix)
 	{
 		return map.get(prefix);
 	}
 
-	public String getNamespaceForPrefix(String prefix, Node context)
+	public String getNamespaceForPrefix(final String prefix, final Node context)
 	{
 		return null;
 	}

@@ -11,8 +11,8 @@ public abstract class TypeAwareArrayList<T> extends ArrayList<T>
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public T[] toArray()
 	{
-		Class<TypeAwareArrayList> taal = TypeAwareArrayList.class;
-		Class<?> clazz = GenericsUtils.getTypeArguments(taal, getClass()).get(0);
+		final Class<TypeAwareArrayList> taal = TypeAwareArrayList.class;
+		final Class<?> clazz = GenericsUtils.getTypeArguments(taal, getClass()).get(0);
 		return toArray(((T[]) Array.newInstance(clazz, size())));
 	}
 }

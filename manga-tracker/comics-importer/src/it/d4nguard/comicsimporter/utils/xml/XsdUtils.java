@@ -56,20 +56,15 @@ public class XsdUtils
 		}
 	};
 
-	private static SimpleDateFormat _FORMATTER()
-	{
-		return _FORMATTER_TLS.get();
-	};
-
-	public static final QName ANY_TYPE_QNAME = new QName(NAMESPACE_URI, "anyType", PREFIX);
+	public static final QName ANY_TYPE_QNAME = new QName(NAMESPACE_URI, "anyType", PREFIX);;
 
 	public static final QName ANY_URI_QNAME = new QName(NAMESPACE_URI, "anyURI", PREFIX);
+
+	public static final QName ATTRIBUTE_GROUP_QNAME = new QName(NAMESPACE_URI, "attributeGroup", PREFIX);
 
 	//
 	// below are the names for some XSD built-in types
 	//
-
-	public static final QName ATTRIBUTE_GROUP_QNAME = new QName(NAMESPACE_URI, "attributeGroup", PREFIX);
 
 	public static final QName ATTRIBUTE_QNAME = new QName(NAMESPACE_URI, "attribute", PREFIX);
 
@@ -101,11 +96,11 @@ public class XsdUtils
 
 	public static final QName INTEGER_QNAME = new QName(NAMESPACE_URI, "integer", PREFIX);
 
+	public static final QName LONG_QNAME = new QName(NAMESPACE_URI, "long", PREFIX);
+
 	//
 	// below are the common names for XSD tags
 	//
-
-	public static final QName LONG_QNAME = new QName(NAMESPACE_URI, "long", PREFIX);
 
 	public static final String MAX_OCCURS = "maxOccurs";
 
@@ -143,15 +138,21 @@ public class XsdUtils
 
 	public static final QName SEQUENCE_QNAME = new QName(NAMESPACE_URI, "sequence", PREFIX);
 
+	public static final QName SHORT_QNAME = new QName(NAMESPACE_URI, "short", PREFIX);
+
 	//
 	// millisecond values used when serializing xsd:durations
 	//
 
-	public static final QName SHORT_QNAME = new QName(NAMESPACE_URI, "short", PREFIX);
 	public static final QName SIMPLE_TYPE_QNAME = new QName(NAMESPACE_URI, "simpleType", PREFIX);
 	public static final QName STRING_QNAME = new QName(NAMESPACE_URI, "string", PREFIX);
 	public static final String TYPE = "type";
 	public static final String UNBOUNDED = "unbounded";
+
+	private static SimpleDateFormat _FORMATTER()
+	{
+		return _FORMATTER_TLS.get();
+	}
 
 	/**
 	 * @param before
@@ -160,11 +161,11 @@ public class XsdUtils
 	 *         the two dates. If the second time is before the first one,
 	 *         the duration will have a '-' prefix, meaning it is negative.
 	 */
-	public static String getDuration(Date before, Date after)
+	public static String getDuration(final Date before, final Date after)
 	{
-		long beforeTime = before.getTime();
-		long afterTime = after.getTime();
-		long totalTime = afterTime - beforeTime;
+		final long beforeTime = before.getTime();
+		final long afterTime = after.getTime();
+		final long totalTime = afterTime - beforeTime;
 
 		return getDuration(totalTime);
 	}
@@ -177,16 +178,13 @@ public class XsdUtils
 	 */
 	public static String getDuration(long totalTime)
 	{
-		StringBuffer duration = new StringBuffer();
+		final StringBuffer duration = new StringBuffer();
 
-		if (totalTime < 0)
-		{
-			duration.append('-');
-		}
+		if (totalTime < 0) duration.append('-');
 
 		duration.append('P');
 
-		long years = totalTime / MS_IN_A_YEAR;
+		final long years = totalTime / MS_IN_A_YEAR;
 
 		if (years > 0)
 		{
@@ -195,7 +193,7 @@ public class XsdUtils
 			totalTime -= years * MS_IN_A_YEAR;
 		}
 
-		long months = totalTime / MS_IN_A_MONTH;
+		final long months = totalTime / MS_IN_A_MONTH;
 
 		if (months > 0)
 		{
@@ -204,7 +202,7 @@ public class XsdUtils
 			totalTime -= months * MS_IN_A_MONTH;
 		}
 
-		long days = totalTime / MS_IN_A_DAY;
+		final long days = totalTime / MS_IN_A_DAY;
 
 		if (days > 0)
 		{
@@ -221,7 +219,7 @@ public class XsdUtils
 		{
 			duration.append('T');
 
-			long hours = totalTime / MS_IN_A_HOUR;
+			final long hours = totalTime / MS_IN_A_HOUR;
 
 			if (hours > 0)
 			{
@@ -230,7 +228,7 @@ public class XsdUtils
 				totalTime -= hours * MS_IN_A_HOUR;
 			}
 
-			long minutes = totalTime / MS_IN_A_MINUTE;
+			final long minutes = totalTime / MS_IN_A_MINUTE;
 
 			if (minutes > 0)
 			{
@@ -239,7 +237,7 @@ public class XsdUtils
 				totalTime -= minutes * MS_IN_A_MINUTE;
 			}
 
-			double seconds = ((double) totalTime) / 1000;
+			final double seconds = ((double) totalTime) / 1000;
 
 			if (seconds > 1.0)
 			{
@@ -266,7 +264,7 @@ public class XsdUtils
 	 *            A valid xsd:duration string.
 	 * @return The time, in milliseconds, represented by the given xsd:duration.
 	 */
-	public static long getDuration(String durationString)
+	public static long getDuration(final String durationString)
 	{
 		//
 		// I'm sure there's a more elegant way to do this using regex groups, 
@@ -290,7 +288,7 @@ public class XsdUtils
 			++start;
 		}
 
-		if (durationString.indexOf('P') != start) { throw new IllegalArgumentException(durationString); }
+		if (durationString.indexOf('P') != start) throw new IllegalArgumentException(durationString);
 
 		++start;
 
@@ -298,7 +296,7 @@ public class XsdUtils
 
 		if (end >= 0)
 		{
-			String yearsString = durationString.substring(start, end);
+			final String yearsString = durationString.substring(start, end);
 			years = Integer.parseInt(yearsString);
 			start = end + 1;
 		}
@@ -309,11 +307,11 @@ public class XsdUtils
 		// no T, or T is after the M, then it's a month value.
 		//
 		end = durationString.indexOf('M');
-		int time = durationString.indexOf('T');
+		final int time = durationString.indexOf('T');
 
 		if ((end >= 0) && ((time == -1) || (time > end)))
 		{
-			String monthsString = durationString.substring(start, end);
+			final String monthsString = durationString.substring(start, end);
 			months = Integer.parseInt(monthsString);
 			start = end + 1;
 		}
@@ -322,24 +320,24 @@ public class XsdUtils
 
 		if (end >= 0)
 		{
-			String daysString = durationString.substring(start, end);
+			final String daysString = durationString.substring(start, end);
 			days = Integer.parseInt(daysString);
 			start = end + 1;
 		}
 
 		if (start != durationString.length())
 		{
-			if (durationString.charAt(start) != 'T') { throw new IllegalArgumentException(durationString); }
+			if (durationString.charAt(start) != 'T') throw new IllegalArgumentException(durationString);
 
 			++start;
 
-			if (start == durationString.length()) { throw new IllegalArgumentException(durationString); }
+			if (start == durationString.length()) throw new IllegalArgumentException(durationString);
 
 			end = durationString.indexOf('H');
 
 			if (end >= 0)
 			{
-				String hoursString = durationString.substring(start, end);
+				final String hoursString = durationString.substring(start, end);
 				hours = Integer.parseInt(hoursString);
 				start = end + 1;
 			}
@@ -348,7 +346,7 @@ public class XsdUtils
 
 			if (end >= 0)
 			{
-				String minString = durationString.substring(start, end);
+				final String minString = durationString.substring(start, end);
 				minutes = Integer.parseInt(minString);
 				start = end + 1;
 			}
@@ -357,17 +355,14 @@ public class XsdUtils
 
 			if (end >= 0)
 			{
-				String secString = durationString.substring(start, end);
+				final String secString = durationString.substring(start, end);
 				seconds = Double.parseDouble(secString);
 			}
 		}
 
 		double totalMilliseconds = (years * MS_IN_A_YEAR) + (months * MS_IN_A_MONTH) + (days * MS_IN_A_DAY) + (hours * MS_IN_A_HOUR) + (minutes * MS_IN_A_MINUTE) + (seconds * 1000);
 
-		if (isNegative)
-		{
-			totalMilliseconds *= -1;
-		}
+		if (isNegative) totalMilliseconds *= -1;
 
 		return (long) totalMilliseconds;
 	}
@@ -383,7 +378,7 @@ public class XsdUtils
 	 *             <li>If the format of the date string was incorrect.</li>
 	 *             </ul>
 	 */
-	public static Date getLocalTime(String dateTimeString) throws ParseException
+	public static Date getLocalTime(final String dateTimeString) throws ParseException
 	{
 		return _FORMATTER().parse(dateTimeString);
 	}
@@ -409,39 +404,39 @@ public class XsdUtils
 	 * @return A string that describes the given date, in XSD format, with
 	 *         a +/- suffix to denote the local time.
 	 */
-	public static String getLocalTimeString(Date date)
+	public static String getLocalTimeString(final Date date)
 	{
 		// keep the copy, don't hit tls again.
-		SimpleDateFormat formatter = _FORMATTER();
+		final SimpleDateFormat formatter = _FORMATTER();
 
 		//
 		// if we leave this date w/o a +N:00 postfix, calling code 
 		// will assume it is UTC
 		//
-		String dateWithoutTimeZone = formatter.format(date);
+		final String dateWithoutTimeZone = formatter.format(date);
 
 		//
 		// figure out whether we're before (-) or after (+) UTC
 		//
-		TimeZone timeZone = formatter.getTimeZone();
+		final TimeZone timeZone = formatter.getTimeZone();
 		long offset = timeZone.getOffset(date.getTime());
 
-		char sign = offset < 0 ? '-' : '+';
+		final char sign = offset < 0 ? '-' : '+';
 		offset = Math.abs(offset);
 
 		//
 		// figure out what comes after the +/-
 		// 
-		long hours = offset / 3600000;
-		long minutes = (offset % 3600000) / 60000;
+		final long hours = offset / 3600000;
+		final long minutes = (offset % 3600000) / 60000;
 
 		//
 		// add the +/- suffix and call it a day
 		//        
-		int length = dateWithoutTimeZone.length() + 6;
-		StringBuffer buffer = new StringBuffer(length);
+		final int length = dateWithoutTimeZone.length() + 6;
+		final StringBuffer buffer = new StringBuffer(length);
 
-		DecimalFormat twoDigits = new DecimalFormat("00");
+		final DecimalFormat twoDigits = new DecimalFormat("00");
 
 		buffer.append(dateWithoutTimeZone);
 		buffer.append(sign);
