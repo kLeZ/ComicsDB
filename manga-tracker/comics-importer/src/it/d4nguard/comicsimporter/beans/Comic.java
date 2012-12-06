@@ -1,42 +1,40 @@
 package it.d4nguard.comicsimporter.beans;
 
-import it.d4nguard.comicsimporter.bo.Genre;
-import it.d4nguard.comicsimporter.bo.Serie;
-import it.d4nguard.comicsimporter.bo.Typology;
+import it.d4nguard.comicsimporter.util.StringUtils;
 
-import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
 
-public class Comic implements Serializable
+public class Comic
 {
-	private static final long serialVersionUID = 1973643771157988169L;
-
+	private Long id;
 	private URL url;
 	private String originalTitle;
 	private String englishTitle;
-	private String artworker;
-	private String storywriter;
-	private String originalEditor;
-	private String italianEditor;
+	private Author artworker;
+	private Author storywriter;
+	private Editor originalEditor;
+	private Editor italianEditor;
 	private Typology typology;
 	private List<Genre> genres;
 	private short year;
 	private boolean complete;
 	private boolean completeInCountry;
-	private Serie serie;
+	private List<Volume> serie;
 
 	public Comic()
 	{
+
 	}
 
-	public Comic(final URL url)
+	public Comic(Long id)
 	{
-		this.url = url;
+		this.id = id;
 	}
 
-	public Comic(final URL url, final String originalTitle, final String englishTitle, final String artworker, final String storywriter, final String originalEditor, final String italianEditor, final Typology typology, final List<Genre> genres, final short year, final boolean complete, final boolean completeInCountry, final Serie serie)
+	public Comic(Long id, URL url, String originalTitle, String englishTitle, Author artworker, Author storywriter, Editor originalEditor, Editor italianEditor, Typology typology, List<Genre> genres, short year, boolean complete, boolean completeInCountry, List<Volume> serie)
 	{
+		this.id = id;
 		this.url = url;
 		this.originalTitle = originalTitle;
 		this.englishTitle = englishTitle;
@@ -52,49 +50,45 @@ public class Comic implements Serializable
 		this.serie = serie;
 	}
 
-	public String getArtworker()
+	public boolean isMe(String title)
 	{
-		return artworker;
+		title = title.toUpperCase();
+		boolean ret = false;
+		if (!StringUtils.isNullOrWhitespace(getOriginalTitle()))
+		{
+			final String ori = getOriginalTitle().toUpperCase();
+			ret |= ori.contentEquals(title);
+		}
+		if (!StringUtils.isNullOrWhitespace(getEnglishTitle()))
+		{
+			final String eng = getEnglishTitle().toUpperCase();
+			ret |= eng.contentEquals(title);
+		}
+		return ret;
 	}
 
-	public String getEnglishTitle()
+	public String getTitle()
 	{
-		return englishTitle;
+		String ret = "";
+		if (!StringUtils.isNullOrWhitespace(getOriginalTitle()) && !StringUtils.isNullOrWhitespace(ret))
+		{
+			ret = getOriginalTitle().toUpperCase();
+		}
+		if (!StringUtils.isNullOrWhitespace(getEnglishTitle()) && !StringUtils.isNullOrWhitespace(ret))
+		{
+			ret = getEnglishTitle().toUpperCase();
+		}
+		return ret;
 	}
 
-	public List<Genre> getGenres()
+	public Long getId()
 	{
-		return genres;
+		return id;
 	}
 
-	public String getItalianEditor()
+	public void setId(Long id)
 	{
-		return italianEditor;
-	}
-
-	public String getOriginalEditor()
-	{
-		return originalEditor;
-	}
-
-	public String getOriginalTitle()
-	{
-		return originalTitle;
-	}
-
-	public Serie getSerie()
-	{
-		return serie;
-	}
-
-	public String getStorywriter()
-	{
-		return storywriter;
-	}
-
-	public Typology getTypology()
-	{
-		return typology;
+		this.id = id;
 	}
 
 	public URL getUrl()
@@ -102,9 +96,99 @@ public class Comic implements Serializable
 		return url;
 	}
 
+	public void setUrl(URL url)
+	{
+		this.url = url;
+	}
+
+	public String getOriginalTitle()
+	{
+		return originalTitle;
+	}
+
+	public void setOriginalTitle(String originalTitle)
+	{
+		this.originalTitle = originalTitle;
+	}
+
+	public String getEnglishTitle()
+	{
+		return englishTitle;
+	}
+
+	public void setEnglishTitle(String englishTitle)
+	{
+		this.englishTitle = englishTitle;
+	}
+
+	public Author getArtworker()
+	{
+		return artworker;
+	}
+
+	public void setArtworker(Author artworker)
+	{
+		this.artworker = artworker;
+	}
+
+	public Author getStorywriter()
+	{
+		return storywriter;
+	}
+
+	public void setStorywriter(Author storywriter)
+	{
+		this.storywriter = storywriter;
+	}
+
+	public Editor getOriginalEditor()
+	{
+		return originalEditor;
+	}
+
+	public void setOriginalEditor(Editor originalEditor)
+	{
+		this.originalEditor = originalEditor;
+	}
+
+	public Editor getItalianEditor()
+	{
+		return italianEditor;
+	}
+
+	public void setItalianEditor(Editor italianEditor)
+	{
+		this.italianEditor = italianEditor;
+	}
+
+	public Typology getTypology()
+	{
+		return typology;
+	}
+
+	public void setTypology(Typology typology)
+	{
+		this.typology = typology;
+	}
+
+	public List<Genre> getGenres()
+	{
+		return genres;
+	}
+
+	public void setGenres(List<Genre> genres)
+	{
+		this.genres = genres;
+	}
+
 	public short getYear()
 	{
 		return year;
+	}
+
+	public void setYear(short year)
+	{
+		this.year = year;
 	}
 
 	public boolean isComplete()
@@ -112,147 +196,153 @@ public class Comic implements Serializable
 		return complete;
 	}
 
+	public void setComplete(boolean complete)
+	{
+		this.complete = complete;
+	}
+
 	public boolean isCompleteInCountry()
 	{
 		return completeInCountry;
 	}
 
-	public void setArtworker(final String artworker)
-	{
-		this.artworker = artworker;
-	}
-
-	public void setComplete(final boolean complete)
-	{
-		this.complete = complete;
-	}
-
-	public void setCompleteInCountry(final boolean completeInCountry)
+	public void setCompleteInCountry(boolean completeInCountry)
 	{
 		this.completeInCountry = completeInCountry;
 	}
 
-	public void setEnglishTitle(final String englishTitle)
+	public List<Volume> getSerie()
 	{
-		this.englishTitle = englishTitle;
+		return serie;
 	}
 
-	public void setGenres(final List<Genre> genres)
-	{
-		this.genres = genres;
-	}
-
-	public void setItalianEditor(final String italianEditor)
-	{
-		this.italianEditor = italianEditor;
-	}
-
-	public void setOriginalEditor(final String originalEditor)
-	{
-		this.originalEditor = originalEditor;
-	}
-
-	public void setOriginalTitle(final String originalTitle)
-	{
-		this.originalTitle = originalTitle;
-	}
-
-	public void setSerie(final Serie serie)
+	public void setSerie(List<Volume> serie)
 	{
 		this.serie = serie;
 	}
 
-	public void setStorywriter(final String storywriter)
+	@Override
+	public int hashCode()
 	{
-		this.storywriter = storywriter;
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + ((artworker == null) ? 0 : artworker.hashCode());
+		result = (prime * result) + (complete ? 1231 : 1237);
+		result = (prime * result) + (completeInCountry ? 1231 : 1237);
+		result = (prime * result) + ((englishTitle == null) ? 0 : englishTitle.hashCode());
+		result = (prime * result) + ((genres == null) ? 0 : genres.hashCode());
+		result = (prime * result) + ((id == null) ? 0 : id.hashCode());
+		result = (prime * result) + ((italianEditor == null) ? 0 : italianEditor.hashCode());
+		result = (prime * result) + ((originalEditor == null) ? 0 : originalEditor.hashCode());
+		result = (prime * result) + ((originalTitle == null) ? 0 : originalTitle.hashCode());
+		result = (prime * result) + ((serie == null) ? 0 : serie.hashCode());
+		result = (prime * result) + ((storywriter == null) ? 0 : storywriter.hashCode());
+		result = (prime * result) + ((typology == null) ? 0 : typology.hashCode());
+		result = (prime * result) + ((url == null) ? 0 : url.hashCode());
+		result = (prime * result) + year;
+		return result;
 	}
 
-	public void setTypology(final Typology typology)
+	@Override
+	public boolean equals(Object obj)
 	{
-		this.typology = typology;
-	}
-
-	public void setUrl(final URL url)
-	{
-		this.url = url;
-	}
-
-	public void setYear(final short year)
-	{
-		this.year = year;
+		if (this == obj) { return true; }
+		if (obj == null) { return false; }
+		if (!(obj instanceof Comic)) { return false; }
+		Comic other = (Comic) obj;
+		if (artworker == null)
+		{
+			if (other.artworker != null) { return false; }
+		}
+		else if (!artworker.equals(other.artworker)) { return false; }
+		if (complete != other.complete) { return false; }
+		if (completeInCountry != other.completeInCountry) { return false; }
+		if (englishTitle == null)
+		{
+			if (other.englishTitle != null) { return false; }
+		}
+		else if (!englishTitle.equals(other.englishTitle)) { return false; }
+		if (genres == null)
+		{
+			if (other.genres != null) { return false; }
+		}
+		else if (!genres.equals(other.genres)) { return false; }
+		if (id == null)
+		{
+			if (other.id != null) { return false; }
+		}
+		else if (!id.equals(other.id)) { return false; }
+		if (italianEditor == null)
+		{
+			if (other.italianEditor != null) { return false; }
+		}
+		else if (!italianEditor.equals(other.italianEditor)) { return false; }
+		if (originalEditor == null)
+		{
+			if (other.originalEditor != null) { return false; }
+		}
+		else if (!originalEditor.equals(other.originalEditor)) { return false; }
+		if (originalTitle == null)
+		{
+			if (other.originalTitle != null) { return false; }
+		}
+		else if (!originalTitle.equals(other.originalTitle)) { return false; }
+		if (serie == null)
+		{
+			if (other.serie != null) { return false; }
+		}
+		else if (!serie.equals(other.serie)) { return false; }
+		if (storywriter == null)
+		{
+			if (other.storywriter != null) { return false; }
+		}
+		else if (!storywriter.equals(other.storywriter)) { return false; }
+		if (typology == null)
+		{
+			if (other.typology != null) { return false; }
+		}
+		else if (!typology.equals(other.typology)) { return false; }
+		if (url == null)
+		{
+			if (other.url != null) { return false; }
+		}
+		else if (!url.equals(other.url)) { return false; }
+		if (year != other.year) { return false; }
+		return true;
 	}
 
 	@Override
 	public String toString()
 	{
-		final StringBuilder builder = new StringBuilder();
-		builder.append("Comic [");
-		if (url != null)
-		{
-			builder.append("url=");
-			builder.append(url);
-			builder.append(", ");
-		}
-		if (originalTitle != null)
-		{
-			builder.append("originalTitle=");
-			builder.append(originalTitle);
-			builder.append(", ");
-		}
-		if (englishTitle != null)
-		{
-			builder.append("englishTitle=");
-			builder.append(englishTitle);
-			builder.append(", ");
-		}
-		if (artworker != null)
-		{
-			builder.append("artworker=");
-			builder.append(artworker);
-			builder.append(", ");
-		}
-		if (storywriter != null)
-		{
-			builder.append("storywriter=");
-			builder.append(storywriter);
-			builder.append(", ");
-		}
-		if (originalEditor != null)
-		{
-			builder.append("originalEditor=");
-			builder.append(originalEditor);
-			builder.append(", ");
-		}
-		if (italianEditor != null)
-		{
-			builder.append("italianEditor=");
-			builder.append(italianEditor);
-			builder.append(", ");
-		}
-		if (typology != null)
-		{
-			builder.append("typology=");
-			builder.append(typology);
-			builder.append(", ");
-		}
-		if (genres != null)
-		{
-			builder.append("genres=");
-			builder.append(genres);
-			builder.append(", ");
-		}
-		builder.append("year=");
+		StringBuilder builder = new StringBuilder();
+		builder.append("Comic [id=");
+		builder.append(id);
+		builder.append(", url=");
+		builder.append(url);
+		builder.append(", originalTitle=");
+		builder.append(originalTitle);
+		builder.append(", englishTitle=");
+		builder.append(englishTitle);
+		builder.append(", artworker=");
+		builder.append(artworker);
+		builder.append(", storywriter=");
+		builder.append(storywriter);
+		builder.append(", originalEditor=");
+		builder.append(originalEditor);
+		builder.append(", italianEditor=");
+		builder.append(italianEditor);
+		builder.append(", typology=");
+		builder.append(typology);
+		builder.append(", genres=");
+		builder.append(genres);
+		builder.append(", year=");
 		builder.append(year);
 		builder.append(", complete=");
 		builder.append(complete);
 		builder.append(", completeInCountry=");
 		builder.append(completeInCountry);
-		builder.append(", ");
-		if (serie != null)
-		{
-			builder.append("serie=");
-			builder.append(serie);
-		}
+		builder.append(", serie=");
+		builder.append(serie);
 		builder.append("]");
 		return builder.toString();
 	}

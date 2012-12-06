@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 8-nov-2012 8.48.29 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="it.d4nguard.comicsimporter.beans.Volume" table="VOLUME" lazy="false">
+		<id name="id" type="java.lang.Long" column="ID">
+			<generator class="increment" />
+		</id>
+		<property name="comicId" type="java.lang.Long" access="field" column="COMICID" />
+		<property name="name" type="java.lang.String" column="NAME" />
+		<property name="serie" type="java.lang.String" column="SERIE" />
+		<many-to-one name="editor" cascade="save-update" class="it.d4nguard.comicsimporter.beans.Editor" fetch="join" column="EDITOR" />
+		<property name="last" type="boolean" column="LAST" />
+		<property name="price" type="it.d4nguard.comicsimporter.util.MoneyType" column="PRICE" />
+	</class>
+</hibernate-mapping>

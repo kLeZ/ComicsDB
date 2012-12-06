@@ -1,25 +1,45 @@
 package it.d4nguard.comicsimporter.beans;
 
-import java.io.Serializable;
+import it.d4nguard.comicsimporter.util.StringUtils;
+
 import java.util.ArrayList;
 
-public class Genre implements Serializable
+public class Genre
 {
-	private static final long serialVersionUID = -5242543259514817938L;
+	private static ArrayList<Genre> genres = new ArrayList<Genre>();
 
-	private final String name;
-	private static ArrayList<String> values = new ArrayList<String>();
+	private Long id;
+	private Long comicId;
+	private String name;
+
+	public Genre()
+	{
+
+	}
 
 	public Genre(String name)
 	{
-		if (values.contains(name))
-		{
-			this.name = name;
-		}
-		else
-		{
-			throw new IllegalArgumentException();
-		}
+		this.name = name;
+	}
+
+	public Long getId()
+	{
+		return id;
+	}
+
+	public void setId(Long id)
+	{
+		this.id = id;
+	}
+
+	public Long getComicId()
+	{
+		return comicId;
+	}
+
+	public void setComicId(Long comicId)
+	{
+		this.comicId = comicId;
 	}
 
 	public String getName()
@@ -27,31 +47,68 @@ public class Genre implements Serializable
 		return name;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + ((comicId == null) ? 0 : comicId.hashCode());
+		result = (prime * result) + ((id == null) ? 0 : id.hashCode());
+		result = (prime * result) + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj) { return true; }
+		if (obj == null) { return false; }
+		if (!(obj instanceof Genre)) { return false; }
+		Genre other = (Genre) obj;
+		if (comicId == null)
+		{
+			if (other.comicId != null) { return false; }
+		}
+		else if (!comicId.equals(other.comicId)) { return false; }
+		if (id == null)
+		{
+			if (other.id != null) { return false; }
+		}
+		else if (!id.equals(other.id)) { return false; }
+		if (name == null)
+		{
+			if (other.name != null) { return false; }
+		}
+		else if (!name.equals(other.name)) { return false; }
+		return true;
+	}
+
 	@Override
 	public String toString()
 	{
-		return getName();
+		return name;
 	}
 
-	public static void addNewValue(String name)
+	public static Genre get(String name)
 	{
-		values.add(name);
-	}
-
-	public static ArrayList<Genre> init(String genres)
-	{
-		ArrayList<Genre> ret = new ArrayList<Genre>();
-		if ((genres != null) && !genres.isEmpty())
+		Genre ret = null;
+		for (Genre g : genres)
 		{
-			String[] genresStrings = genres.split(", ");
-			for (String genre : genresStrings)
+			if (g.getName().equalsIgnoreCase(name))
 			{
-				addNewValue(genre);
-				ret.add(new Genre(genre));
+				ret = g;
+				break;
 			}
+		}
+		if ((ret == null) && !StringUtils.isNullOrWhitespace(name))
+		{
+			ret = new Genre(name);
+			genres.add(ret);
 		}
 		return ret;
 	}

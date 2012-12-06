@@ -6,7 +6,7 @@
 	<var-def name="month"><case><if condition="sys.isVariableDefined(month)"><var name="month"/></if></case></var-def>
 	<var-def name="weekOfYear"><case><if condition="sys.isVariableDefined(weekOfYear)"><var name="weekOfYear"/></if></case></var-def>
 	<var-def name="startUrl" overwrite="false">
-		<![CDATA[ http://www.paninicomics.it/web/guest/planetmanga/checklist ]]>
+		<var name="url" />
 		<script return="queryString"><![CDATA[
 			List parts = new ArrayList();
 			if (year != null && !year.toString().isEmpty())

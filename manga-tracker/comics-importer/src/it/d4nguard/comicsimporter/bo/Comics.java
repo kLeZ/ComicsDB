@@ -1,10 +1,9 @@
 package it.d4nguard.comicsimporter.bo;
 
 import it.d4nguard.comicsimporter.beans.Comic;
-import it.d4nguard.comicsimporter.parsers.feed.FeedParser;
-import it.d4nguard.comicsimporter.parsers.plain.PlainParser;
-import it.d4nguard.comicsimporter.utils.Pair;
-import it.d4nguard.comicsimporter.utils.ValueComparator;
+import it.d4nguard.comicsimporter.parsers.ComicsSourceParser;
+import it.d4nguard.comicsimporter.util.Pair;
+import it.d4nguard.comicsimporter.util.ValueComparator;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -14,7 +13,8 @@ import org.apache.commons.lang.text.StrBuilder;
 
 public class Comics extends HashSet<Comic> implements Serializable
 {
-	private static final long serialVersionUID = 4652226828232257234L;
+	private static final long serialVersionUID = -1845766907344653955L;
+
 	private int totalComics = 0;
 
 	public Comics()
@@ -27,20 +27,32 @@ public class Comics extends HashSet<Comic> implements Serializable
 		totalComics = loadLimit;
 	}
 
+	@Override
+	public boolean addAll(Collection<? extends Comic> c)
+	{
+		boolean ret = true;
+		if (c != null)
+		{
+			for (Comic comic : c)
+			{
+				if (!contains(comic.getTitle()))
+				{
+					ret &= add(comic);
+				}
+				else
+				{
+					ret &= true;
+				}
+			}
+		}
+		return ret;
+	}
+
 	public boolean contains(String comicTitle)
 	{
 		boolean ret = false;
-		for (final Iterator<Comic> it = iterator(); it.hasNext() && !ret;)
+		for (final Iterator<Comic> it = iterator(); it.hasNext() && !it.next().isMe(comicTitle);)
 		{
-			final Comic c = it.next();
-			comicTitle = comicTitle.toUpperCase();
-			final String ori = c.getOriginalTitle().toUpperCase();
-			ret = ori.contentEquals(comicTitle);
-			if ((c.getEnglishTitle() != null) && !c.getEnglishTitle().isEmpty())
-			{
-				final String eng = c.getEnglishTitle().toUpperCase();
-				ret |= eng.contentEquals(comicTitle);
-			}
 		}
 		return ret;
 	}
@@ -51,43 +63,37 @@ public class Comics extends HashSet<Comic> implements Serializable
 		for (final Iterator<Comic> it = iterator(); it.hasNext() && (ret == null);)
 		{
 			final Comic c = it.next();
-			comicTitle = comicTitle.toUpperCase();
-
-			boolean ok = false;
-			final String ori = c.getOriginalTitle().toUpperCase();
-			ok = ori.contentEquals(comicTitle);
-			if ((c.getEnglishTitle() != null) && !c.getEnglishTitle().isEmpty())
+			if (c.isMe(comicTitle))
 			{
-				final String eng = c.getEnglishTitle().toUpperCase();
-				ok |= eng.contentEquals(comicTitle);
+				ret = c;
 			}
-			if (ok) ret = c;
 		}
 		return ret;
 	}
 
 	public void setTotalComics(final int totalComics)
 	{
-		if (this.totalComics <= 0) this.totalComics = totalComics;
+		if (this.totalComics <= 0)
+		{
+			this.totalComics = totalComics;
+		}
 	}
 
-	public void syncFeeds(final List<FeedParser> feeds) throws IOException
+	public void sync(final Collection<ComicsSourceParser> collection) throws IOException
 	{
-		for (final FeedParser feed : feeds)
-			addAll(feed.parse(this));
-	}
-
-	public void syncPlain(final List<PlainParser> plainParsers) throws IOException
-	{
-		for (final PlainParser plainParser : plainParsers)
-			addAll(plainParser.parse(this));
+		for (final ComicsSourceParser parser : collection)
+		{
+			addAll(parser.parse(this));
+		}
 	}
 
 	public String toComicsString()
 	{
 		final StrBuilder sb = new StrBuilder();
 		for (final Comic c : this)
+		{
 			sb.appendln(c.getEnglishTitle());
+		}
 		return sb.toString();
 	}
 
@@ -113,10 +119,13 @@ public class Comics extends HashSet<Comic> implements Serializable
 				i = editors.get(c.getItalianEditor()).getKey() + 1;
 				list.addAll(editors.get(c.getItalianEditor()).getValue());
 			}
-			if (c.getItalianEditor() != null) if (!c.getItalianEditor().isEmpty())
+			if (c.getItalianEditor() != null)
 			{
-				list.add(c);
-				editors.put(c.getItalianEditor(), new Pair<Integer, List<Comic>>(i, list));
+				if (c.getItalianEditor() != null)
+				{
+					list.add(c);
+					editors.put(c.getItalianEditor().getName(), new Pair<Integer, List<Comic>>(i, list));
+				}
 			}
 		}
 
@@ -139,7 +148,9 @@ public class Comics extends HashSet<Comic> implements Serializable
 		builder.append(size());
 		builder.append(", elements:").append(System.getProperty("line.separator"));
 		for (final Comic c : this)
+		{
 			builder.append(c).append(",").append(System.getProperty("line.separator"));
+		}
 		builder.append("]");
 		return builder.toString();
 	}

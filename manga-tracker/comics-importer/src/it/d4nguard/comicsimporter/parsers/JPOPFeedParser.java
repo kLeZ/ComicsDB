@@ -1,0 +1,151 @@
+package it.d4nguard.comicsimporter.parsers;
+
+import it.d4nguard.comicsimporter.beans.Comic;
+import it.d4nguard.comicsimporter.beans.Editor;
+import it.d4nguard.comicsimporter.beans.Volume;
+import it.d4nguard.comicsimporter.bo.Comics;
+import it.d4nguard.comicsimporter.bo.Serie;
+import it.d4nguard.comicsimporter.feed.FeedReader;
+import it.d4nguard.comicsimporter.util.Convert;
+import it.d4nguard.comicsimporter.util.StringUtils;
+import it.d4nguard.comicsimporter.util.io.DeepCopy;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
+
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.FeedException;
+
+public class JPOPFeedParser extends AbstractFeedParser
+{
+	public static final Editor JPOP_EDITOR = new Editor("JPOP");
+	protected String url;
+	protected String configFileName;
+
+	public JPOPFeedParser()
+	{
+	}
+
+	/* (non-Javadoc)
+	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#parse(it.d4nguard.comicsimporter.bo.Comics)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Comic> parse(Comics comics) throws IOException
+	{
+		List<Comic> ret = new ArrayList<Comic>();
+		try
+		{
+			final FeedReader reader = new FeedReader(getUrl());
+			SyndFeed feed = reader.read();
+			for (final Iterator<SyndEntry> it = feed.getEntries().iterator(); it.hasNext();)
+			{
+				final SyndEntry entry = it.next();
+				if (entry.getTitle().startsWith("USCITE J-POP "))
+				{
+					final Scanner scn = new Scanner(getFeedContent(entry.getLink()));
+					int i = 0;
+					while (scn.hasNext())
+					{
+						i++;
+						String current = scn.nextLine();
+						if (!current.isEmpty() && current.startsWith("- "))
+						{
+							current = current.substring(2);
+							final String[] split = current.split("#");
+							if ((split.length == 2))
+							{
+								if (comics.contains(split[0].trim()))
+								{
+									String title = StringUtils.clean(split[0]);
+									final Comic c = DeepCopy.copy(comics.get(title));
+									final Volume searcher = new Volume(new Long(i), "", c.getEnglishTitle(), JPOP_EDITOR, false, null);
+									final int nvol = Convert.toInt(split[1]);
+									Volume v;
+									if (!c.getSerie().isEmpty())
+									{
+										Serie serie = new Serie(c.getSerie());
+										title = serie.adaptNextTitle(searcher, nvol);
+										searcher.setName(title);
+										v = new Volume(new Long(i), title);
+										final Volume last = serie.last(searcher);
+										if (last != null)
+										{
+											v.setPrice(DeepCopy.copy(last.getPrice()));
+										}
+										else
+										{
+											//TODO: Can I guess volume price from Jpop web site??
+										}
+										v.setEditor(JPOP_EDITOR);
+										v.setLast(false);
+									}
+									else
+									{
+										title = c.getEnglishTitle().concat(" ").concat(String.valueOf(nvol));
+										v = new Volume(new Long(i), title);
+										v.setPrice(null);
+										v.setEditor(JPOP_EDITOR);
+										v.setLast(false);
+									}
+									c.getSerie().add(v);
+									ret.add(c);
+								}
+								else
+								{
+									/* TODO: C'avrei da creare un nuovo Comic,
+									 * ma devo capire dove/come reperire le info. */
+								}
+							}
+						}
+					}
+					scn.close();
+				}
+			}
+		}
+		catch (IllegalArgumentException e)
+		{
+			e.printStackTrace();
+		}
+		catch (FeedException e)
+		{
+			e.printStackTrace();
+		}
+		return ret;
+	}
+
+	/* (non-Javadoc)
+	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#getUrl()
+	 */
+	public String getUrl()
+	{
+		return url;
+	}
+
+	/* (non-Javadoc)
+	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#setUrl(java.lang.String)
+	 */
+	public void setUrl(String url)
+	{
+		this.url = url;
+	}
+
+	/* (non-Javadoc)
+	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#getConfigFileName()
+	 */
+	public String getConfigFileName()
+	{
+		return configFileName;
+	}
+
+	/* (non-Javadoc)
+	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#setConfigFileName(java.lang.String)
+	 */
+	public void setConfigFileName(String configFileName)
+	{
+		this.configFileName = configFileName;
+	}
+}

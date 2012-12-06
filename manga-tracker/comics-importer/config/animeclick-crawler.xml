@@ -8,7 +8,10 @@
 	</var-def>
 	<var-def name="mangaxml">
 		<template>
-			<![CDATA[ <fumetti> ]]>
+			<![CDATA[
+				<?xml version="1.0" encoding="UTF-8"?>
+				<fumetti version="2">
+			]]>
 		</template>
 		<loop item="mangaurl" index="i">
 			<list>

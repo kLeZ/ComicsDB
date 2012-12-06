@@ -1,12 +1,15 @@
 package it.d4nguard.comicsimporter.importers;
 
 import it.d4nguard.comicsimporter.beans.mappers.xml.ComicsXmlMapper;
+import it.d4nguard.comicsimporter.beans.mappers.xml.Version;
 import it.d4nguard.comicsimporter.bo.Comics;
 import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
-import it.d4nguard.comicsimporter.utils.Pair;
-import it.d4nguard.comicsimporter.utils.WebScraper;
-import it.d4nguard.comicsimporter.utils.io.StreamUtils;
-import it.d4nguard.comicsimporter.utils.xml.XmlUtils;
+import it.d4nguard.comicsimporter.util.Convert;
+import it.d4nguard.comicsimporter.util.Pair;
+import it.d4nguard.comicsimporter.util.StringUtils;
+import it.d4nguard.comicsimporter.util.WebScraper;
+import it.d4nguard.comicsimporter.util.io.StreamUtils;
+import it.d4nguard.comicsimporter.util.xml.XmlUtils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,7 +22,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class ComicsImporter
@@ -48,13 +50,13 @@ public class ComicsImporter
 
 	public ComicsImporter(final String cacheFileName) throws FileNotFoundException
 	{
-		this.cacheFileName = cacheFileName;
-		src = new FileInputStream(cacheFileName);
+		this.cacheFileName = !StringUtils.isNullOrWhitespace(cacheFileName) ? cacheFileName : null;
+		src = !StringUtils.isNullOrWhitespace(cacheFileName) ? new FileInputStream(cacheFileName) : null;
 	}
 
-	public String comicsToXml()
+	public static String comicsToXml(Comics comics)
 	{
-		return XmlUtils.toString(doc, false, true);
+		return XmlUtils.toString(new ComicsXmlMapper().create(comics), true, true);
 	}
 
 	private Pair<String, Object>[] getArgs()
@@ -80,23 +82,29 @@ public class ComicsImporter
 			final String config = StreamUtils.getResourceAsString("animeclick-crawler.xml");
 
 			String mangaContents = "";
-			if (useCache()) mangaContents = WebScraper.scrap(config, "mangaxml", getArgs());
-			else mangaContents = WebScraper.scrap(config, "mangaxml");
+			if (useCache())
+			{
+				mangaContents = WebScraper.scrap(config, "mangaxml", getArgs());
+			}
+			else
+			{
+				mangaContents = WebScraper.scrap(config, "mangaxml");
+			}
 			src = StreamUtils.toInputStream(mangaContents);
-			try
-			{
-				doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
-				doc.getDocumentElement().normalize();
-				ret = loadComics(ncomics);
-			}
-			catch (final SAXException e)
-			{
-				throw new ComicsParseException(e);
-			}
-			catch (final ParserConfigurationException e)
-			{
-				throw new ComicsParseException(e);
-			}
+		}
+		try
+		{
+			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
+			doc.getDocumentElement().normalize();
+			ret = loadComics(ncomics);
+		}
+		catch (final SAXException e)
+		{
+			throw new ComicsParseException(e);
+		}
+		catch (final ParserConfigurationException e)
+		{
+			throw new ComicsParseException(e);
 		}
 		return ret;
 	}
@@ -107,10 +115,26 @@ public class ComicsImporter
 	private Comics loadComics(final int totalComics)
 	{
 		final Comics ret = new Comics(totalComics);
-		final Node root = doc.getElementsByTagName("fumetti").item(0);
+		Element root = ensureVersion((Element) doc.getElementsByTagName("fumetti").item(0));
 		ret.setTotalComics(doc.getElementsByTagName("fumetto").getLength());
-		ret.addAll(new ComicsXmlMapper().create((Element) root));
+		ret.addAll(new ComicsXmlMapper().create(root, null));
 		return ret;
+	}
+
+	/**
+	 * @param root
+	 * @return
+	 */
+	private Element ensureVersion(Element root)
+	{
+		int version = 1;
+		if (root.hasAttribute("version"))
+		{
+			version = Convert.toInt(root.getAttribute("version"));
+		}
+		root = Version.getInstance().translateVersion(root, version);
+		doc = root.getOwnerDocument();
+		return root;
 	}
 
 	public boolean useCache()

@@ -4,5 +4,7 @@ import org.w3c.dom.Element;
 
 public interface XmlMapper<T>
 {
-	T create(Element elem);
+	T create(Element elem, Long id);
+
+	Element create(T obj);
 }

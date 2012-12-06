@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 8-nov-2012 8.48.29 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="it.d4nguard.comicsimporter.beans.Genre" table="GENRE" lazy="false">
+		<id name="id" type="java.lang.Long" column="ID">
+			<generator class="increment" />
+		</id>
+		<property name="comicId" column="COMICID" type="java.lang.Long" access="field" />
+		<property name="name" column="NAME" type="java.lang.String" access="field" />
+	</class>
+</hibernate-mapping>
