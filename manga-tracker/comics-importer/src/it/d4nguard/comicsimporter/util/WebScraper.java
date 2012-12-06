@@ -13,8 +13,6 @@ import org.xml.sax.InputSource;
 
 public class WebScraper
 {
-	public static final String WORK_DIR = System.getProperty("work.dir");
-
 	private static WebScraper current;
 	private static ProxyInfo proxy;
 	private static boolean useProxy;
@@ -55,7 +53,7 @@ public class WebScraper
 	public void scrap()
 	{
 		final ScraperConfiguration configuration = new ScraperConfiguration(src);
-		final Scraper scraper = new Scraper(configuration, WORK_DIR);
+		final Scraper scraper = new Scraper(configuration, System.getProperty("work.dir"));
 		if (useProxy)
 		{
 			scraper.getHttpClientManager().setHttpProxy(proxy.getHostName(), proxy.getHostPort());

@@ -20,12 +20,15 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 public class ComicsImporter
 {
+	private static Logger log = Logger.getLogger(ComicsImporter.class);
+
 	public static ComicsImporter getInstance()
 	{
 		return new ComicsImporter();
@@ -69,27 +72,32 @@ public class ComicsImporter
 		return checked;
 	}
 
-	public Comics getComics() throws IOException, ComicsParseException
+	public Comics importComics() throws IOException, ComicsParseException
 	{
-		return getComics(-1);
+		return importComics(-1);
 	}
 
-	public Comics getComics(final int ncomics) throws IOException, ComicsParseException
+	public Comics importComics(final int ncomics) throws IOException, ComicsParseException
 	{
+		log.trace("Importing comics from main dump source <main-source-crawler.xml>");
 		Comics ret = null;
 		if (src == null)
 		{
-			final String config = StreamUtils.getResourceAsString("animeclick-crawler.xml");
+			log.trace("Read configuration xml for scraper engine");
+			final String config = StreamUtils.getResourceAsString("main-source-crawler.xml");
 
 			String mangaContents = "";
 			if (useCache())
 			{
+				log.trace("Scraping main source, and then saving dump to xml");
 				mangaContents = WebScraper.scrap(config, "mangaxml", getArgs());
 			}
 			else
 			{
+				log.trace("Scraping main source");
 				mangaContents = WebScraper.scrap(config, "mangaxml");
 			}
+			log.trace("Source scraped! Converting into InputStream");
 			src = StreamUtils.toInputStream(mangaContents);
 		}
 		try
@@ -127,11 +135,13 @@ public class ComicsImporter
 	 */
 	private Element ensureVersion(Element root)
 	{
+		log.trace("Checking version of scraped xml data");
 		int version = 1;
 		if (root.hasAttribute("version"))
 		{
 			version = Convert.toInt(root.getAttribute("version"));
 		}
+		log.trace("Version is: " + version + ", " + Version.getInstance().getLastVersion());
 		root = Version.getInstance().translateVersion(root, version);
 		doc = root.getOwnerDocument();
 		return root;

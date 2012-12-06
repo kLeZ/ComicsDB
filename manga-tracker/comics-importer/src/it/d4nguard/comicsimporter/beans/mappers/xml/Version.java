@@ -9,39 +9,17 @@ import java.util.ArrayList;
 
 import javax.xml.namespace.QName;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class Version
 {
-	private static Version instance;
+	private static Logger log = Logger.getLogger(Version.class);
 
+	// TODO: Change this type because we want a collection that could be synchronized, null aware, iteration predictable, navigable as an array, free from duplicates and fast.
 	private final ArrayList<VersionTranslator> translators;
-
-	public Version()
-	{
-		translators = new ArrayList<VersionTranslator>();
-	}
-
-	public ArrayList<VersionTranslator> getTranslators()
-	{
-		return translators;
-	}
-
-	public Element translateVersion(final Element root, int version)
-	{
-		return getTranslators().get(version).translate(root);
-	}
-
-	public static Version getInstance()
-	{
-		if (instance == null)
-		{
-			instance = new Version();
-		}
-		return instance;
-	}
 
 	/**
 	 * Predefined versions.
@@ -51,6 +29,7 @@ public class Version
 	{
 		getInstance().getTranslators().add(new VersionTranslator()
 		{//Version: 1
+			@Override
 			public Element translate(Element root)
 			{
 				Element ret = (Element) root.cloneNode(true);
@@ -61,6 +40,7 @@ public class Version
 
 		getInstance().getTranslators().add(new VersionTranslator()
 		{//Version: 2
+			@Override
 			public Element translate(Element root)
 			{
 				Element ret = (Element) root.cloneNode(true);
@@ -99,8 +79,8 @@ public class Version
 						}
 						else
 						{
-							System.out.println(e.getParentNode().getNodeName());
-							System.out.println(XmlUtils.toString(e, false, true));
+							log.debug(e.getParentNode().getNodeName());
+							log.debug(XmlUtils.toString(e, false, true));
 						}
 					}
 					else
@@ -108,12 +88,44 @@ public class Version
 						String xml = StringUtils.clean(XmlUtils.toString(node));
 						if (!xml.isEmpty())
 						{
-							System.out.println(xml);
+							log.debug(xml);
 						}
 					}
 				}
 				return ret;
 			}
 		});
+	}
+
+	public Version()
+	{
+		translators = new ArrayList<VersionTranslator>();
+	}
+
+	public ArrayList<VersionTranslator> getTranslators()
+	{
+		return translators;
+	}
+
+	public int getLastVersion()
+	{
+		return translators.size();
+	}
+
+	public Element translateVersion(final Element root, int version)
+	{
+		log.trace("Trying to translate to version " + version);
+		return getTranslators().get(version).translate(root);
+	}
+
+	private static Version instance;
+
+	public static Version getInstance()
+	{
+		if (instance == null)
+		{
+			instance = new Version();
+		}
+		return instance;
 	}
 }

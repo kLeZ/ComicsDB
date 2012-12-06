@@ -6,18 +6,24 @@ import it.d4nguard.comicsimporter.util.io.StreamUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.commons.cli.*;
+import org.apache.log4j.Logger;
 
 public class Configuration implements Commands
 {
+	private static Logger log = Logger.getLogger(Configuration.class);
+
 	public static final String MANGA_XML = "manga.xml";
 	public static final String COMICSIMPORTER_DIR = ".comicsimporter";
 	public static final String HOME = System.getProperty("user.home");
 	public static final String LS = System.getProperty("line.separator");
 	public static final String FS = System.getProperty("file.separator");
 	public static final String COMICS_IMPORTER_PROPERTIES = "comics-importer.properties";
+	public static final String CONFIG_FILE_NAME_PROP = ".configFileName";
+	public static final String URL_PROP = ".url";
 
 	private Properties config = new Properties();
 	private int ncomics = -1;
@@ -92,6 +98,7 @@ public class Configuration implements Commands
 		{
 			config.load(StreamUtils.toInputStream(getPropertiesContent()));
 
+			log.debug("Internal representation of the Properties object loaded from configuration file: " + config.toString());
 			if (config.getProperty(NUMBER_COMICS_CMD) != null)
 			{
 				ncomics = Convert.toInt(config.getProperty(NUMBER_COMICS_CMD));
@@ -175,14 +182,14 @@ public class Configuration implements Commands
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		return this;
 	}
 
 	public void printCliHelp(final String message)
 	{
-		System.out.println(message);
+		log.fatal(message);
 		final HelpFormatter formatter = new HelpFormatter();
 		formatter.printHelp("java -jar comics-importer.jar", createOptions());
 		System.exit(-1);
@@ -196,17 +203,20 @@ public class Configuration implements Commands
 	{
 		String ret = "";
 		File configdir = new File(HOME.concat(FS).concat(COMICSIMPORTER_DIR));
+		log.trace("Directory in which to search configuration file: " + HOME.concat(FS).concat(COMICSIMPORTER_DIR) + " | Exists: " + String.valueOf(configdir.exists()));
 		if (!configdir.exists())
 		{
 			configdir.mkdir();
 		}
 		File f = new File(configdir, COMICS_IMPORTER_PROPERTIES);
+		log.trace("Reading the file: " + f.toString());
 		if (f.exists())
 		{
 			ret = StreamUtils.readFile(f);
 		}
 		if (StringUtils.isNullOrWhitespace(ret))
 		{
+			log.trace("Configuration file on disk is empty or doesn't exists, reading the file in package as resource");
 			ret = StreamUtils.getResourceAsString(COMICS_IMPORTER_PROPERTIES);
 		}
 		return ret;
@@ -214,6 +224,7 @@ public class Configuration implements Commands
 
 	private CommandLine parseCmd(final String[] args)
 	{
+		log.trace("Passed command line arguments: " + StringUtils.join(" ", Arrays.asList(args)));
 		final CommandLineParser parser = new PosixParser();
 		CommandLine cmd = null;
 		try
@@ -222,6 +233,7 @@ public class Configuration implements Commands
 		}
 		catch (final ParseException e)
 		{
+			log.debug(e, e);
 			// something bad happened so output help message
 			printCliHelp("Error in parsing arguments:\n" + e.getMessage());
 		}
@@ -255,37 +267,18 @@ public class Configuration implements Commands
 	@Override
 	public String toString()
 	{
+		String sep = ", ";
 		StringBuilder builder = new StringBuilder();
-		builder.append("Configuration [config=");
-		builder.append(config);
-		builder.append(",").append(LS);
-		builder.append("ncomics=");
-		builder.append(ncomics);
-		builder.append(",").append(LS);
-		builder.append("printTitles=");
-		builder.append(printTitles);
-		builder.append(",").append(LS);
-		builder.append("refresh_cache_file=");
-		builder.append(refresh_cache_file);
-		builder.append(",").append(LS);
-		builder.append("cacheFile=");
-		builder.append(cacheFile);
-		builder.append(",").append(LS);
-		builder.append("wipeDB=");
-		builder.append(wipeDB);
-		builder.append(",").append(LS);
-		builder.append("sync=");
-		builder.append(sync);
-		builder.append(",").append(LS);
-		builder.append("persist=");
-		builder.append(persist);
-		builder.append(",").append(LS);
-		builder.append("load_persistence=");
-		builder.append(load_persistence);
-		builder.append(",").append(LS);
-		builder.append("save_cache=");
-		builder.append(save_cache);
-		builder.append("]");
+		builder.append("Configuration [config=").append(config).append(sep);
+		builder.append("ncomics=").append(ncomics).append(sep);
+		builder.append("printTitles=").append(printTitles).append(sep);
+		builder.append("refresh_cache_file=").append(refresh_cache_file).append(sep);
+		builder.append("cacheFile=").append(cacheFile).append(sep);
+		builder.append("wipeDB=").append(wipeDB).append(sep);
+		builder.append("sync=").append(sync).append(sep);
+		builder.append("persist=").append(persist).append(sep);
+		builder.append("load_persistence=").append(load_persistence).append(sep);
+		builder.append("save_cache=").append(save_cache).append("]");
 		return builder.toString();
 	}
 

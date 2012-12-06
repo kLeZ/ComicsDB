@@ -3,25 +3,25 @@ package it.d4nguard.comicsimporter.exceptions;
 /**
  * Represents Exceptions thrown by the Data Access Layer.
  */
-public class DataAccessLayerException extends RuntimeException
+public class PersistorException extends RuntimeException
 {
 	private static final long serialVersionUID = 180958402355795286L;
 
-	public DataAccessLayerException()
+	public PersistorException()
 	{
 	}
 
-	public DataAccessLayerException(String message)
+	public PersistorException(String message)
 	{
 		super(message);
 	}
 
-	public DataAccessLayerException(Throwable cause)
+	public PersistorException(Throwable cause)
 	{
 		super(cause);
 	}
 
-	public DataAccessLayerException(String message, Throwable cause)
+	public PersistorException(String message, Throwable cause)
 	{
 		super(message, cause);
 	}

@@ -1,12 +1,13 @@
 package it.d4nguard.comicsimporter.persistence;
 
-import it.d4nguard.comicsimporter.exceptions.DataAccessLayerException;
+import it.d4nguard.comicsimporter.exceptions.PersistorException;
 import it.d4nguard.comicsimporter.util.StatefulWork;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -14,6 +15,8 @@ import org.hibernate.Transaction;
 
 public class Persistor<E>
 {
+	private static Logger log = Logger.getLogger(Persistor.class);
+
 	private Session session;
 	private Transaction tx;
 
@@ -240,10 +243,11 @@ public class Persistor<E>
 		return ret;
 	}
 
-	protected void handleException(Throwable e) throws DataAccessLayerException
+	protected void handleException(Throwable e) throws PersistorException
 	{
+		log.error(e, e);
 		HibernateFactory.rollback(tx);
-		throw new DataAccessLayerException(e);
+		throw new PersistorException(e);
 	}
 
 	protected void startOperation() throws HibernateException

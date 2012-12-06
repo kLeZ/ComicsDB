@@ -1,5 +1,7 @@
 package it.d4nguard.comicsimporter.parsers;
 
+import it.d4nguard.comicsimporter.Configuration;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -8,9 +10,6 @@ import org.reflections.Reflections;
 
 public class ParserFactory
 {
-	public static final String CONFIG_FILE_NAME_PROP = ".configFileName";
-	public static final String URL_PROP = ".url";
-
 	public static Collection<ComicsSourceParser> getAll(Properties config)
 	{
 		return getAll(config, null);
@@ -21,17 +20,29 @@ public class ParserFactory
 		final List<ComicsSourceParser> ret = new ArrayList<ComicsSourceParser>();
 		for (final Class<? extends ComicsSourceParser> clazz : getClasses())
 		{
-			if (((clazz != null) && !Modifier.isAbstract(clazz.getModifiers())) &&
-			((excludes == null) || (excludes.size() == 0) || !excludes.contains(clazz)))
+			if (((clazz != null) && !Modifier.isAbstract(clazz.getModifiers())) && ((excludes == null) || (excludes.size() == 0) || !excludes.contains(clazz)))
 			{
 				ComicsSourceParser instance = getInstance(clazz);
 
 				if (instance != null)
 				{
-					instance.setUrl(config.getProperty(getFqn(clazz).concat(URL_PROP)));
-					instance.setConfigFileName(config.getProperty(getFqn(clazz).concat(CONFIG_FILE_NAME_PROP)));
+					instance.setUrl(config.getProperty(getFqn(clazz).concat(Configuration.URL_PROP)));
+					instance.setConfigFileName(config.getProperty(getFqn(clazz).concat(Configuration.CONFIG_FILE_NAME_PROP)));
 					ret.add(instance);
 				}
+			}
+		}
+		return ret;
+	}
+
+	public static List<String> getInstalledProviders()
+	{
+		final List<String> ret = new ArrayList<String>();
+		for (final Class<? extends ComicsSourceParser> clazz : getClasses())
+		{
+			if ((clazz != null) && !Modifier.isAbstract(clazz.getModifiers()))
+			{
+				ret.add(getFqn(clazz));
 			}
 		}
 		return ret;
