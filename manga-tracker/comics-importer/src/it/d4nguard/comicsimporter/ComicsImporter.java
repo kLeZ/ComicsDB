@@ -84,7 +84,7 @@ public class ComicsImporter
 			log.trace("Read configuration xml for scraper engine: start @" + elapsed.start() + " us");
 			final String config = StreamUtils.getResourceAsString("main-source-crawler.xml");
 			log.trace("Read configuration xml for scraper engine: stop @" + elapsed.stop() + " us");
-			log.trace("Read configuration xml for scraper engine: elapsed " + elapsed.get() + "us");
+			log.debug("Read configuration xml for scraper engine: elapsed " + elapsed.get() + "us");
 
 			String mangaContents = "";
 			if (useCache())
@@ -127,13 +127,13 @@ public class ComicsImporter
 		final Comics ret = new Comics(totalComics);
 		log.trace("Initialized " + totalComics + " comics");
 		Element root = ensureVersion((Element) doc.getElementsByTagName("fumetti").item(0));
-		log.trace("Found " + doc.getElementsByTagName("fumetto").getLength() + " comics in cache file");
+		log.debug("Found " + doc.getElementsByTagName("fumetto").getLength() + " comics in cache file");
 		ret.setTotalComics(doc.getElementsByTagName("fumetto").getLength());
 		TimeElapsed elapsed = new TimeElapsed();
 		log.trace("Adding read comics using xml mapper: start @ " + elapsed.start() + " us");
 		ret.addAll(new ComicsXmlMapper().create(root, null));
 		log.trace("Adding read comics using xml mapper: stop @ " + elapsed.stop() + " us");
-		log.trace("Adding read comics using xml mapper: elapsed " + elapsed.get() + " us");
+		log.debug("Adding read comics using xml mapper: elapsed " + elapsed.get() + " us");
 		return ret;
 	}
 
@@ -150,11 +150,11 @@ public class ComicsImporter
 			version = Convert.toInt(root.getAttribute("version"));
 		}
 		TimeElapsed elapsed = new TimeElapsed();
-		log.trace("Version is: " + version + ", " + Version.getInstance().getLastVersion());
+		log.debug("Version is: " + version + ", " + Version.getInstance().getLastVersion());
 		log.trace("Translation from version " + version + " to version " + Version.getInstance().getLastVersion() + " start @ " + elapsed.start() + " us");
 		root = Version.getInstance().translateVersion(root, version);
 		log.trace("Translation from version " + version + " to version " + Version.getInstance().getLastVersion() + " stop @ " + elapsed.stop() + " us");
-		log.trace("Translation from version " + version + " to version " + Version.getInstance().getLastVersion() + " elapsed " + elapsed.get() + " us");
+		log.debug("Translation from version " + version + " to version " + Version.getInstance().getLastVersion() + " elapsed " + elapsed.get() + " us");
 		doc = root.getOwnerDocument();
 		return root;
 	}

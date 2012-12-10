@@ -18,6 +18,11 @@ public class Version
 {
 	private static Logger log = Logger.getLogger(Version.class);
 
+	static
+	{
+		log.fatal("TODO: Change this type (ArrayList<VersionTranslator> translators) because we want a collection that could be synchronized, null aware, iteration predictable, navigable as an array, free from duplicates and fast.");
+	}
+
 	// TODO: Change this type because we want a collection that could be synchronized, null aware, iteration predictable, navigable as an array, free from duplicates and fast.
 	private final ArrayList<VersionTranslator> translators;
 

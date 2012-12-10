@@ -8,12 +8,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author Alessandro Accardo.<br>
  *         This class is an utility class for easily managing dates.
  */
 public class DateUtils
 {
+	private static Logger log = Logger.getLogger(DateUtils.class);
+
 	/**
 	 * This is the SHORT date format that is used like a pattern for returning a
 	 * date formatted like 01/01/07 format.
@@ -91,7 +95,7 @@ public class DateUtils
 		}
 		catch (final ParseException e)
 		{
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		return ret;
 	}
@@ -138,7 +142,9 @@ public class DateUtils
 	{
 		final Vector<Integer> ret = new Vector<Integer>();
 		for (int i = 1; i < 32; i++)
+		{
 			ret.addElement(new Integer(i));
+		}
 		return ret;
 	}
 
@@ -162,7 +168,9 @@ public class DateUtils
 	{
 		final Vector<String> ret = new Vector<String>();
 		for (int i = 0; i < 12; i++)
+		{
 			ret.addElement(getMonthString(i));
+		}
 		return ret;
 	}
 
@@ -183,7 +191,9 @@ public class DateUtils
 	{
 		final Vector<Integer> anni = new Vector<Integer>();
 		for (int i = start_year; i <= end_year; i++)
+		{
 			anni.add(new Integer(i));
+		}
 		return anni;
 	}
 
@@ -197,7 +207,7 @@ public class DateUtils
 		}
 		catch (final ParseException pe)
 		{
-			System.out.println("Data non valida: " + date);
+			log.error("Data non valida: " + date, pe);
 		}
 		return retVal;
 	}

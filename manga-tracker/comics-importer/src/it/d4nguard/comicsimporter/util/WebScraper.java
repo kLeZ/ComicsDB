@@ -59,7 +59,7 @@ public class WebScraper
 		final Scraper scraper = new Scraper(configuration, System.getProperty("work.dir"));
 		if (useProxy)
 		{
-			log.trace("Using a proxy as set, proxyInfos are: " + proxy.toString());
+			log.debug("Using a proxy as set, proxyInfos are: " + proxy.toString());
 			scraper.getHttpClientManager().setHttpProxy(proxy.getHostName(), proxy.getHostPort());
 			if (proxy.isUseCredentials())
 			{
@@ -68,14 +68,14 @@ public class WebScraper
 		}
 		if (hasContextVars())
 		{
-			log.trace("Adding variables to the context: { " + StringUtils.join(", ", contextVars) + " }");
+			log.debug("Adding variables to the context: { " + StringUtils.join(", ", contextVars) + " }");
 			scraper.addVariablesToContext(contextVars);
 		}
 		TimeElapsed elapsed = new TimeElapsed();
 		log.trace("Executing Scrap @ " + elapsed.start() + " us");
 		scraper.execute();
 		log.trace("Scrap executed! Stopped @ " + elapsed.stop() + " us");
-		log.trace("Elapsed time for scrap was " + elapsed.get() + " us");
+		log.debug("Elapsed time for scrap was " + elapsed.get() + " us");
 		ctx = scraper.getContext();
 	}
 

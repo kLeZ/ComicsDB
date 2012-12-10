@@ -47,7 +47,7 @@ public class Main
 				log.debug("After database load has completed the # Comics gained was: " + comics.size());
 			}
 
-			log.debug("ATTENTION! This operation normally takes about an hour to complete, then use it only if you really need it!  One refresh per day is the minimum refresh rate recommended, for this task to run. Others will run with the cache xml instead.");
+			log.warn("ATTENTION! This operation normally takes about an hour to complete, then use it only if you really need it! One refresh per day is the minimum refresh rate recommended, for this task to run. Others will run with the cache xml instead.");
 			ComicsImporter importer;
 			if (config.isRefreshCacheFile())
 			{
