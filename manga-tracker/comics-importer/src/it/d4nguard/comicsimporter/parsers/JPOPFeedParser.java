@@ -16,12 +16,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.log4j.Logger;
+
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 
 public class JPOPFeedParser extends AbstractFeedParser
 {
+	private static Logger log = Logger.getLogger(JPOPFeedParser.class);
+
 	public static final Editor JPOP_EDITOR = new Editor("JPOP");
 	protected String url;
 	protected String configFileName;
@@ -33,6 +37,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 	/* (non-Javadoc)
 	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#parse(it.d4nguard.comicsimporter.bo.Comics)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Comic> parse(Comics comics) throws IOException
 	{
@@ -44,6 +49,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 			for (final Iterator<SyndEntry> it = feed.getEntries().iterator(); it.hasNext();)
 			{
 				final SyndEntry entry = it.next();
+				log.trace("Feed JPOP, Title: \"" + entry.getTitle() + "\"");
 				if (entry.getTitle().startsWith("USCITE J-POP "))
 				{
 					final Scanner scn = new Scanner(getFeedContent(entry.getLink()));
@@ -52,6 +58,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 					{
 						i++;
 						String current = scn.nextLine();
+						log.trace("Parsing line \"" + current + "\"");
 						if (!current.isEmpty() && current.startsWith("- "))
 						{
 							current = current.substring(2);
@@ -78,6 +85,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 										}
 										else
 										{
+											log.fatal("TODO: Can I guess volume price from Jpop web site??");
 											//TODO: Can I guess volume price from Jpop web site??
 										}
 										v.setEditor(JPOP_EDITOR);
@@ -96,6 +104,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 								}
 								else
 								{
+									log.fatal("TODO: C'avrei da creare un nuovo Comic, ma devo capire dove/come reperire le info.");
 									/* TODO: C'avrei da creare un nuovo Comic,
 									 * ma devo capire dove/come reperire le info. */
 								}
@@ -108,11 +117,11 @@ public class JPOPFeedParser extends AbstractFeedParser
 		}
 		catch (IllegalArgumentException e)
 		{
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		catch (FeedException e)
 		{
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		return ret;
 	}
@@ -120,6 +129,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 	/* (non-Javadoc)
 	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#getUrl()
 	 */
+	@Override
 	public String getUrl()
 	{
 		return url;
@@ -128,6 +138,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 	/* (non-Javadoc)
 	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#setUrl(java.lang.String)
 	 */
+	@Override
 	public void setUrl(String url)
 	{
 		this.url = url;
@@ -136,6 +147,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 	/* (non-Javadoc)
 	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#getConfigFileName()
 	 */
+	@Override
 	public String getConfigFileName()
 	{
 		return configFileName;
@@ -144,6 +156,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 	/* (non-Javadoc)
 	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#setConfigFileName(java.lang.String)
 	 */
+	@Override
 	public void setConfigFileName(String configFileName)
 	{
 		this.configFileName = configFileName;

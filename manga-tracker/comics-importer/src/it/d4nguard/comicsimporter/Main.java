@@ -3,7 +3,6 @@ package it.d4nguard.comicsimporter;
 import it.d4nguard.comicsimporter.beans.Comic;
 import it.d4nguard.comicsimporter.bo.Comics;
 import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
-import it.d4nguard.comicsimporter.importers.ComicsImporter;
 import it.d4nguard.comicsimporter.parsers.ParserFactory;
 import it.d4nguard.comicsimporter.persistence.Persistor;
 import it.d4nguard.comicsimporter.util.Pair;

@@ -1,13 +1,10 @@
-package it.d4nguard.comicsimporter.importers;
+package it.d4nguard.comicsimporter;
 
 import it.d4nguard.comicsimporter.beans.mappers.xml.ComicsXmlMapper;
 import it.d4nguard.comicsimporter.beans.mappers.xml.Version;
 import it.d4nguard.comicsimporter.bo.Comics;
 import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
-import it.d4nguard.comicsimporter.util.Convert;
-import it.d4nguard.comicsimporter.util.Pair;
-import it.d4nguard.comicsimporter.util.StringUtils;
-import it.d4nguard.comicsimporter.util.WebScraper;
+import it.d4nguard.comicsimporter.util.*;
 import it.d4nguard.comicsimporter.util.io.StreamUtils;
 import it.d4nguard.comicsimporter.util.xml.XmlUtils;
 
@@ -83,8 +80,11 @@ public class ComicsImporter
 		Comics ret = null;
 		if (src == null)
 		{
-			log.trace("Read configuration xml for scraper engine");
+			TimeElapsed elapsed = new TimeElapsed();
+			log.trace("Read configuration xml for scraper engine: start @" + elapsed.start() + " us");
 			final String config = StreamUtils.getResourceAsString("main-source-crawler.xml");
+			log.trace("Read configuration xml for scraper engine: stop @" + elapsed.stop() + " us");
+			log.trace("Read configuration xml for scraper engine: elapsed " + elapsed.get() + "us");
 
 			String mangaContents = "";
 			if (useCache())
@@ -108,10 +108,12 @@ public class ComicsImporter
 		}
 		catch (final SAXException e)
 		{
+			log.error(e, e);
 			throw new ComicsParseException(e);
 		}
 		catch (final ParserConfigurationException e)
 		{
+			log.error(e, e);
 			throw new ComicsParseException(e);
 		}
 		return ret;
@@ -123,9 +125,15 @@ public class ComicsImporter
 	private Comics loadComics(final int totalComics)
 	{
 		final Comics ret = new Comics(totalComics);
+		log.trace("Initialized " + totalComics + " comics");
 		Element root = ensureVersion((Element) doc.getElementsByTagName("fumetti").item(0));
+		log.trace("Found " + doc.getElementsByTagName("fumetto").getLength() + " comics in cache file");
 		ret.setTotalComics(doc.getElementsByTagName("fumetto").getLength());
+		TimeElapsed elapsed = new TimeElapsed();
+		log.trace("Adding read comics using xml mapper: start @ " + elapsed.start() + " us");
 		ret.addAll(new ComicsXmlMapper().create(root, null));
+		log.trace("Adding read comics using xml mapper: stop @ " + elapsed.stop() + " us");
+		log.trace("Adding read comics using xml mapper: elapsed " + elapsed.get() + " us");
 		return ret;
 	}
 
@@ -141,8 +149,12 @@ public class ComicsImporter
 		{
 			version = Convert.toInt(root.getAttribute("version"));
 		}
+		TimeElapsed elapsed = new TimeElapsed();
 		log.trace("Version is: " + version + ", " + Version.getInstance().getLastVersion());
+		log.trace("Translation from version " + version + " to version " + Version.getInstance().getLastVersion() + " start @ " + elapsed.start() + " us");
 		root = Version.getInstance().translateVersion(root, version);
+		log.trace("Translation from version " + version + " to version " + Version.getInstance().getLastVersion() + " stop @ " + elapsed.stop() + " us");
+		log.trace("Translation from version " + version + " to version " + Version.getInstance().getLastVersion() + " elapsed " + elapsed.get() + " us");
 		doc = root.getOwnerDocument();
 		return root;
 	}

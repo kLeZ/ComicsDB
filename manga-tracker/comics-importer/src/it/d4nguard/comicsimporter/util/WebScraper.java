@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.webharvest.definition.ScraperConfiguration;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
@@ -13,6 +14,7 @@ import org.xml.sax.InputSource;
 
 public class WebScraper
 {
+	private static Logger log = Logger.getLogger(WebScraper.class);
 	private static WebScraper current;
 	private static ProxyInfo proxy;
 	private static boolean useProxy;
@@ -52,10 +54,12 @@ public class WebScraper
 
 	public void scrap()
 	{
+		log.trace("Loading ScraperConfiguration from given config file");
 		final ScraperConfiguration configuration = new ScraperConfiguration(src);
 		final Scraper scraper = new Scraper(configuration, System.getProperty("work.dir"));
 		if (useProxy)
 		{
+			log.trace("Using a proxy as set, proxyInfos are: " + proxy.toString());
 			scraper.getHttpClientManager().setHttpProxy(proxy.getHostName(), proxy.getHostPort());
 			if (proxy.isUseCredentials())
 			{
@@ -64,9 +68,14 @@ public class WebScraper
 		}
 		if (hasContextVars())
 		{
+			log.trace("Adding variables to the context: { " + StringUtils.join(", ", contextVars) + " }");
 			scraper.addVariablesToContext(contextVars);
 		}
+		TimeElapsed elapsed = new TimeElapsed();
+		log.trace("Executing Scrap @ " + elapsed.start() + " us");
 		scraper.execute();
+		log.trace("Scrap executed! Stopped @ " + elapsed.stop() + " us");
+		log.trace("Elapsed time for scrap was " + elapsed.get() + " us");
 		ctx = scraper.getContext();
 	}
 

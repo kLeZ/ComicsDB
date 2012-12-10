@@ -20,6 +20,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.text.StrBuilder;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,6 +29,8 @@ import org.xml.sax.SAXException;
 
 public class PlanetMangaParser implements ComicsSourceParser
 {
+	private static Logger log = Logger.getLogger(PlanetMangaParser.class);
+
 	protected String url;
 	protected String configFileName;
 
@@ -35,6 +38,7 @@ public class PlanetMangaParser implements ComicsSourceParser
 	{
 	}
 
+	@Override
 	public List<Comic> parse(Comics comics) throws IOException
 	{
 		final List<Comic> ret = new ArrayList<Comic>();
@@ -72,21 +76,25 @@ public class PlanetMangaParser implements ComicsSourceParser
 		return ret;
 	}
 
+	@Override
 	public String getUrl()
 	{
 		return url;
 	}
 
+	@Override
 	public void setUrl(String url)
 	{
 		this.url = url;
 	}
 
+	@Override
 	public String getConfigFileName()
 	{
 		return configFileName;
 	}
 
+	@Override
 	public void setConfigFileName(String configFileName)
 	{
 		this.configFileName = configFileName;
@@ -135,11 +143,11 @@ public class PlanetMangaParser implements ComicsSourceParser
 		}
 		catch (final SAXException e)
 		{
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		catch (final ParserConfigurationException e)
 		{
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		return ret;
 	}

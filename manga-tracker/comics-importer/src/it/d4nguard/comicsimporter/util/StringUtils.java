@@ -2,6 +2,7 @@ package it.d4nguard.comicsimporter.util;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 public class StringUtils
 {
@@ -58,14 +59,33 @@ public class StringUtils
 		return ret;
 	}
 
-	public static <T> String join(String separator, Collection<T> objs)
+	public static <K, V> String join(String separator, Map<K, V> map)
 	{
 		StringBuilder sb = new StringBuilder();
 		int i = 0;
-		for (T t : objs)
+		for (Map.Entry<K, V> entry : map.entrySet())
+		{
+			sb.append("{ ");
+			sb.append(String.valueOf(entry.getKey()));
+			sb.append(", ");
+			sb.append(String.valueOf(entry.getValue()));
+			sb.append(" }");
+			if (++i < map.size())
+			{
+				sb.append(clean(separator)).append(" ");
+			}
+		}
+		return sb.toString();
+	}
+
+	public static <T> String join(String separator, Collection<T> coll)
+	{
+		StringBuilder sb = new StringBuilder();
+		int i = 0;
+		for (T t : coll)
 		{
 			sb.append(String.valueOf(t));
-			if (++i < objs.size())
+			if (++i < coll.size())
 			{
 				sb.append(clean(separator)).append(" ");
 			}
