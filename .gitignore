@@ -4,3 +4,36 @@
 .*swp
 *bak
 .*bak
+
+#java binaries
+*.class
+
+# Package Files #
+*.war
+*.ear
+
+## Eclipse specific
+*.pydevproject
+.project
+.metadata
+bin/
+tmp/**
+tmp/**/*
+*.tmp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
