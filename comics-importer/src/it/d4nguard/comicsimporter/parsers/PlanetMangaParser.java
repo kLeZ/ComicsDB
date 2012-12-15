@@ -1,5 +1,6 @@
 package it.d4nguard.comicsimporter.parsers;
 
+import it.d4nguard.comicsimporter.Configuration;
 import it.d4nguard.comicsimporter.beans.Comic;
 import it.d4nguard.comicsimporter.beans.Volume;
 import it.d4nguard.comicsimporter.beans.mappers.xml.VolumeXmlMapper;
@@ -45,7 +46,7 @@ public class PlanetMangaParser implements ComicsSourceParser
 		final Calendar next = DateUtils.setCalendar(1);
 		final Calendar limit = DateUtils.setCalendar(1);
 		limit.add(Calendar.MONTH, 2);
-		final String config = StreamUtils.getResourceAsString(getConfigFileName());
+		final String config = Configuration.getInstance().getConfigContent(getConfigFileName());
 		final StrBuilder sb = new StrBuilder();
 		for (; next.before(limit); next.add(Calendar.WEEK_OF_YEAR, 1))
 		{

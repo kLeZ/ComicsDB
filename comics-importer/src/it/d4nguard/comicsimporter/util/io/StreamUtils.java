@@ -1,15 +1,12 @@
 package it.d4nguard.comicsimporter.util.io;
 
+import it.d4nguard.comicsimporter.Configuration;
+
 import java.io.*;
 import java.util.Scanner;
 
 public class StreamUtils
 {
-	/**
-	 * 
-	 */
-	private static final String NL = System.getProperty("line.separator");
-
 	public static String getResourceAsString(final String resourceName) throws IOException
 	{
 		final ClassLoader cl = ClassLoader.getSystemClassLoader();
@@ -19,7 +16,7 @@ public class StreamUtils
 		String line;
 		while ((line = br.readLine()) != null)
 		{
-			sb.append(line).append(NL);
+			sb.append(line).append(Configuration.LS);
 		}
 		return sb.toString();
 	}
@@ -62,7 +59,7 @@ public class StreamUtils
 		{
 			while (scanner.hasNextLine())
 			{
-				ret.append(scanner.nextLine()).append(NL);
+				ret.append(scanner.nextLine()).append(Configuration.LS);
 			}
 		}
 		finally

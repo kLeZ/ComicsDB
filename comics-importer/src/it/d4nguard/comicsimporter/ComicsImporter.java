@@ -82,7 +82,7 @@ public class ComicsImporter
 		{
 			TimeElapsed elapsed = new TimeElapsed();
 			log.trace("Read configuration xml for scraper engine: start @" + elapsed.start() + " us");
-			final String config = StreamUtils.getResourceAsString("main-source-crawler.xml");
+			final String config = Configuration.getInstance().getConfigContent("main-source-crawler.xml");
 			log.trace("Read configuration xml for scraper engine: stop @" + elapsed.stop() + " us");
 			log.debug("Read configuration xml for scraper engine: elapsed " + elapsed.get() + "us");
 

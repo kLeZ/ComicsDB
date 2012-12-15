@@ -16,11 +16,12 @@ public class Configuration implements Commands
 {
 	private static Logger log = Logger.getLogger(Configuration.class);
 
-	public static final String MANGA_XML = "manga.xml";
-	public static final String COMICSIMPORTER_DIR = ".comicsimporter";
 	public static final String HOME = System.getProperty("user.home");
 	public static final String LS = System.getProperty("line.separator");
 	public static final String FS = System.getProperty("file.separator");
+	public static final String MANGA_XML = "manga.xml";
+	public static final String COMICSIMPORTER_DIR = ".comicsimporter";
+	public static final String CONFIG_DIR = HOME.concat(FS).concat(COMICSIMPORTER_DIR).concat(FS);
 	public static final String COMICS_IMPORTER_PROPERTIES = "comics-importer.properties";
 	public static final String CONFIG_FILE_NAME_PROP = ".configFileName";
 	public static final String URL_PROP = ".url";
@@ -29,7 +30,7 @@ public class Configuration implements Commands
 	private int ncomics = -1;
 	private boolean printTitles = true;
 	private boolean refresh_cache_file = false;
-	private String cacheFile = HOME.concat(FS).concat(COMICSIMPORTER_DIR).concat(FS).concat(MANGA_XML);
+	private String cacheFile = CONFIG_DIR.concat(MANGA_XML);
 	private boolean wipeDB = false;
 	private boolean sync = true;
 	private boolean persist = true;
@@ -99,86 +100,16 @@ public class Configuration implements Commands
 			config.load(StreamUtils.toInputStream(getPropertiesContent()));
 
 			log.debug("Internal representation of the Properties object loaded from configuration file: " + config.toString());
-			if (config.getProperty(NUMBER_COMICS_CMD) != null)
-			{
-				ncomics = Convert.toInt(config.getProperty(NUMBER_COMICS_CMD));
-			}
-			else if (cmd.hasOption('n') || cmd.hasOption(NUMBER_COMICS_CMD))
-			{
-				ncomics = Integer.parseInt(cmd.getOptionValue(NUMBER_COMICS_CMD));
-			}
 
-			if (config.getProperty(PRINT_TITLES_CMD) != null)
-			{
-				printTitles = Convert.toBool(config.getProperty(PRINT_TITLES_CMD));
-			}
-			else if (cmd.hasOption('p') || cmd.hasOption(PRINT_TITLES_CMD))
-			{
-				printTitles = true;
-			}
-
-			if (config.getProperty(REFRESH_CACHE_FILE_CMD) != null)
-			{
-				refresh_cache_file = Convert.toBool(config.getProperty(REFRESH_CACHE_FILE_CMD));
-			}
-			else if (cmd.hasOption('r') || cmd.hasOption(REFRESH_CACHE_FILE_CMD))
-			{
-				refresh_cache_file = true;
-			}
-
-			if (config.getProperty(CACHE_FILE_CMD) != null)
-			{
-				cacheFile = config.getProperty(CACHE_FILE_CMD);
-			}
-			else if (cmd.hasOption('f') || cmd.hasOption(CACHE_FILE_CMD))
-			{
-				cacheFile = cmd.getOptionValue(CACHE_FILE_CMD);
-			}
-
-			if (config.getProperty(WIPE_DB_CMD) != null)
-			{
-				wipeDB = Convert.toBool(config.getProperty(WIPE_DB_CMD));
-			}
-			else if (cmd.hasOption('w') || cmd.hasOption(WIPE_DB_CMD))
-			{
-				wipeDB = true;
-			}
-
-			if (config.getProperty(SYNC_CMD) != null)
-			{
-				sync = Convert.toBool(config.getProperty(SYNC_CMD));
-			}
-			else if (cmd.hasOption('s') || cmd.hasOption(SYNC_CMD))
-			{
-				sync = true;
-			}
-
-			if (config.getProperty(PERSIST_CMD) != null)
-			{
-				persist = Convert.toBool(config.getProperty(PERSIST_CMD));
-			}
-			else if (cmd.hasOption('P') || cmd.hasOption(PERSIST_CMD))
-			{
-				persist = true;
-			}
-
-			if (config.getProperty(LOAD_PERSISTENCE_CMD) != null)
-			{
-				load_persistence = Convert.toBool(config.getProperty(LOAD_PERSISTENCE_CMD));
-			}
-			else if (cmd.hasOption('l') || cmd.hasOption(LOAD_PERSISTENCE_CMD))
-			{
-				load_persistence = true;
-			}
-
-			if (config.getProperty(SAVE_CACHE_CMD) != null)
-			{
-				save_cache = Convert.toBool(config.getProperty(SAVE_CACHE_CMD));
-			}
-			else if (cmd.hasOption('S') || cmd.hasOption(SAVE_CACHE_CMD))
-			{
-				save_cache = true;
-			}
+			ncomics = getConfigValue(NUMBER_COMICS_CMD, Integer.class, config, cmd);
+			printTitles = getConfigValue(PRINT_TITLES_CMD, Boolean.class, config, cmd);
+			refresh_cache_file = getConfigValue(REFRESH_CACHE_FILE_CMD, Boolean.class, config, cmd);
+			cacheFile = getConfigValue(CACHE_FILE_CMD, String.class, config, cmd);
+			wipeDB = getConfigValue(WIPE_DB_CMD, Boolean.class, config, cmd);
+			sync = getConfigValue(SYNC_CMD, Boolean.class, config, cmd);
+			persist = getConfigValue(PERSIST_CMD, Boolean.class, config, cmd);
+			load_persistence = getConfigValue(LOAD_PERSISTENCE_CMD, Boolean.class, config, cmd);
+			save_cache = getConfigValue(SAVE_CACHE_CMD, Boolean.class, config, cmd);
 		}
 		catch (IOException e)
 		{
@@ -195,20 +126,16 @@ public class Configuration implements Commands
 		System.exit(-1);
 	}
 
-	/**
-	 * @return
-	 * @throws IOException
-	 */
-	private String getPropertiesContent() throws IOException
+	public String getConfigContent(String configName) throws IOException
 	{
 		String ret = "";
-		File configdir = new File(HOME.concat(FS).concat(COMICSIMPORTER_DIR));
-		log.trace("Directory in which to search configuration file: " + HOME.concat(FS).concat(COMICSIMPORTER_DIR) + " | Exists: " + String.valueOf(configdir.exists()));
+		File configdir = new File(CONFIG_DIR);
+		log.trace("Directory in which to search configuration file: " + CONFIG_DIR + " | Exists: " + String.valueOf(configdir.exists()));
 		if (!configdir.exists())
 		{
 			configdir.mkdir();
 		}
-		File f = new File(configdir, COMICS_IMPORTER_PROPERTIES);
+		File f = new File(configdir, configName);
 		log.trace("Reading the file: " + f.toString());
 		if (f.exists())
 		{
@@ -217,9 +144,75 @@ public class Configuration implements Commands
 		if (StringUtils.isNullOrWhitespace(ret))
 		{
 			log.trace("Configuration file on disk is empty or doesn't exists, reading the file in package as resource");
-			ret = StreamUtils.getResourceAsString(COMICS_IMPORTER_PROPERTIES);
+			ret = StreamUtils.getResourceAsString(configName);
+			log.trace("Writing read resource to disk in '" + f.toString() + "'");
+			StreamUtils.writeFile(f.toString(), ret, false);
 		}
 		return ret;
+	}
+
+	protected char getShortOpt(String longOpt, CommandLine cmd)
+	{
+		char ret = '\0';
+		for (Option opt : cmd.getOptions())
+		{
+			if (opt.getLongOpt().compareTo(longOpt) == 0)
+			{
+				ret = opt.getOpt().charAt(0);
+				break;
+			}
+		}
+		return ret;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <T> T getConfigValue(String valueName, Class<T> returnType, Properties config, CommandLine cmd)
+	{
+		T ret = null;
+		String temp = "";
+
+		// I check commandline after properties because of priority of commandline modifiers
+		// Checking properties
+		if (config.getProperty(valueName) != null)
+		{
+			temp = config.getProperty(valueName);
+		}
+		// Checking Commandline
+		if (cmd.hasOption(getShortOpt(valueName, cmd)) || cmd.hasOption(valueName))
+		{
+			temp = cmd.getOptionValue(valueName);
+		}
+
+		if (returnType.equals(Integer.class) && !StringUtils.isNullOrWhitespace(temp))
+		{
+			ret = (T) Convert.toInt(temp);
+		}
+		else if (returnType.equals(Short.class) && !StringUtils.isNullOrWhitespace(temp))
+		{
+			ret = (T) Convert.toShort(temp);
+		}
+		else if (returnType.equals(Long.class) && !StringUtils.isNullOrWhitespace(temp))
+		{
+			ret = (T) Convert.toLong(temp);
+		}
+		else if (returnType.equals(Boolean.class))
+		{
+			ret = (T) new Boolean(cmd.hasOption(getShortOpt(valueName, cmd)) || cmd.hasOption(valueName));
+		}
+		else if (returnType.equals(String.class) && !StringUtils.isNullOrWhitespace(temp))
+		{
+			ret = (T) temp;
+		}
+		return ret;
+	}
+
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	private String getPropertiesContent() throws IOException
+	{
+		return getConfigContent(COMICS_IMPORTER_PROPERTIES);
 	}
 
 	private CommandLine parseCmd(final String[] args)
