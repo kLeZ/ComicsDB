@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project comics-importer with Jar-in-Jar Loader">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/home/kLeZ-hAcK/projects/jar-packages/comics-importer.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="it.d4nguard.comicsimporter.Main"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ rome-1.0.jar jdom-1.1.3.jar reflections-0.9.8.jar dom4j-1.6.1.jar gson-1.4.jar guava-11.0.2.jar javassist-3.12.1.GA.jar jsr305-1.3.9.jar slf4j-api-1.6.1.jar slf4j-simple-1.6.1.jar xml-apis-1.0.b2.jar commons-lang-2.4.jar activation.jar commons-cli-1.1.jar commons-codec-1.3.jar commons-collections-3.1.jar commons-email-1.1.jar commons-httpclient-3.1.jar commons-net-ftp-2.0.jar groovy-all-1.0.jar htmlcleaner.jar js.jar log4j-1.2.13.jar mail.jar saxon9-dom.jar saxon9.jar webharvest_2.jar easymock-3.1.jar antlr-2.7.7.jar avro-1.6.3.jar bsh-2.0b4.jar commons-logging-1.0.4.jar hibernate-commons-annotations-4.0.1.Final.jar hibernate-core-4.1.6.Final.jar jackson-core-asl-1.9.2.jar jackson-mapper-asl-1.9.2.jar javassist-3.15.0-GA.jar jboss-logging-3.1.0.GA.jar lucene-core-3.6.1.jar paranamer-2.3.jar snappy-java-1.0.4.1.jar mysql-connector-java-5.1.22-bin.jar jta-1.1.jar hibernate-jpa-2.0-api-1.0.1.Final.jar jms-1.1.jar junit.jar org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/bin"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="rome-1.0.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="jdom-1.1.3.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="reflections-0.9.8.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="dom4j-1.6.1.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="gson-1.4.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="guava-11.0.2.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="javassist-3.12.1.GA.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="jsr305-1.3.9.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="slf4j-api-1.6.1.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="slf4j-simple-1.6.1.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="xml-apis-1.0.b2.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="commons-lang-2.4.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="activation.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="commons-cli-1.1.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="commons-codec-1.3.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="commons-collections-3.1.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="commons-email-1.1.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="commons-httpclient-3.1.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="commons-net-ftp-2.0.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="groovy-all-1.0.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="htmlcleaner.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="js.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="log4j-1.2.13.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="mail.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="saxon9-dom.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="saxon9.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="webharvest_2.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib/easymock-3.1" includes="easymock-3.1.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="antlr-2.7.7.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="avro-1.6.3.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="bsh-2.0b4.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="commons-logging-1.0.4.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="hibernate-commons-annotations-4.0.1.Final.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="hibernate-core-4.1.6.Final.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="jackson-core-asl-1.9.2.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="jackson-mapper-asl-1.9.2.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="javassist-3.15.0-GA.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="jboss-logging-3.1.0.GA.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="lucene-core-3.6.1.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="paranamer-2.3.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="snappy-java-1.0.4.1.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="mysql-connector-java-5.1.22-bin.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="jta-1.1.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/projects/ComicsDB/comics-importer/lib" includes="jms-1.1.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/bin/eclipse.d/plugins/org.junit_4.10.0.v4_10_0_v20120426-0900" includes="junit.jar"/>
+            <zipfileset dir="/home/kLeZ-hAcK/bin/eclipse.d/plugins" includes="org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+        </jar>
+    </target>
+</project>

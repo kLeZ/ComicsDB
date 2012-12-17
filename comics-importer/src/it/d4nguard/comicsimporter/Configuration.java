@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.commons.cli.*;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 public class Configuration implements Commands
 {
@@ -39,6 +41,17 @@ public class Configuration implements Commands
 
 	public Configuration()
 	{
+		BasicConfigurator.configure();
+		Properties log4j = new Properties();
+		try
+		{
+			log4j.load(StreamUtils.toInputStream(getConfigContent("log4j.properties")));
+		}
+		catch (IOException e)
+		{
+			log.error(e, e);
+		}
+		PropertyConfigurator.configure(log4j);
 	}
 
 	public Properties getProperties()
@@ -158,7 +171,10 @@ public class Configuration implements Commands
 		{
 			if (opt.getLongOpt().compareTo(longOpt) == 0)
 			{
-				ret = opt.getOpt().charAt(0);
+				if (opt.getOpt().length() > 0)
+				{
+					ret = opt.getOpt().charAt(0);
+				}
 				break;
 			}
 		}
@@ -183,21 +199,28 @@ public class Configuration implements Commands
 			temp = cmd.getOptionValue(valueName);
 		}
 
-		if (returnType.equals(Integer.class) && !StringUtils.isNullOrWhitespace(temp))
+		if (returnType.equals(Boolean.class))
 		{
-			ret = (T) Convert.toInt(temp);
+			if (!StringUtils.isNullOrWhitespace(temp))
+			{
+				ret = (T) Convert.toBool(temp);
+			}
+			else
+			{
+				ret = (T) new Boolean(cmd.hasOption(getShortOpt(valueName, cmd)) || cmd.hasOption(valueName));
+			}
 		}
 		else if (returnType.equals(Short.class) && !StringUtils.isNullOrWhitespace(temp))
 		{
 			ret = (T) Convert.toShort(temp);
 		}
+		else if (returnType.equals(Integer.class) && !StringUtils.isNullOrWhitespace(temp))
+		{
+			ret = (T) Convert.toInt(temp);
+		}
 		else if (returnType.equals(Long.class) && !StringUtils.isNullOrWhitespace(temp))
 		{
 			ret = (T) Convert.toLong(temp);
-		}
-		else if (returnType.equals(Boolean.class))
-		{
-			ret = (T) new Boolean(cmd.hasOption(getShortOpt(valueName, cmd)) || cmd.hasOption(valueName));
 		}
 		else if (returnType.equals(String.class) && !StringUtils.isNullOrWhitespace(temp))
 		{

@@ -72,10 +72,10 @@ public class WebScraper
 			scraper.addVariablesToContext(contextVars);
 		}
 		TimeElapsed elapsed = new TimeElapsed();
-		log.trace("Executing Scrap @ " + elapsed.start() + " us");
+		log.trace(elapsed.startFormatted("Scrap"));
 		scraper.execute();
-		log.trace("Scrap executed! Stopped @ " + elapsed.stop() + " us");
-		log.debug("Elapsed time for scrap was " + elapsed.get() + " us");
+		log.trace(elapsed.stopFormatted("Scrap"));
+		log.debug(elapsed.getFormatted("Scrap"));
 		ctx = scraper.getContext();
 	}
 

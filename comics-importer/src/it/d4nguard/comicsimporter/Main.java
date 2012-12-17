@@ -73,9 +73,8 @@ public class Main
 			{
 				log.trace("Syncing with feeds providers installed on the system. Feed Providers are: [" + StringUtils.join(", ", ParserFactory.getInstalledProviders()) + "]");
 				comics.sync(ParserFactory.getAll(config.getProperties()));
+				log.debug("After sync has completed the # Comics gained was: " + comics.size());
 			}
-
-			log.debug("After sync has completed the # Comics gained was: " + comics.size());
 
 			if (config.isPersist())
 			{
