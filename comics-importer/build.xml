@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<project name="comics-importer" default="dist" basedir=".">
+	<description>
+		Build file for the comics-importer package
+	</description>
+
+	<!-- set global properties for this build -->
+	<property name="src" location="src" />
+	<property name="build" location="bin" />
+	<property name="dist" location="dist" />
+	<property name="lib" location="lib" />
+
+	<path id="libs.path">
+		<fileset dir="${lib}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<fileset dir="${lib}" id="libs" includes="**/*.jar">
+		<exclude name="**/*-javadoc.jar" />
+		<exclude name="**/*-sources.jar" />
+		<exclude name="**/*-samples.jar" />
+		<exclude name="**/*-tests.jar" />
+	</fileset>
+	<property name="libs.list" refid="libs" />
+
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp />
+		<echo>${libs.list}</echo>
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}" />
+	</target>
+
+	<target name="compile" depends="init" description="compile the source">
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+			<classpath refid="libs.path" />
+			<compilerarg value="-Xlint:unchecked" />
+		</javac>
+	</target>
+
+	<target name="dist" depends="compile" description="generate the distribution">
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}" />
+
+		<!-- Put everything in ${build} into the comics-importer-${DSTAMP}.jar file -->
+		<jar destfile="${dist}/comics-importer-${DSTAMP}.jar" basedir="${build}">
+			<manifest>
+				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
+				<attribute name="Rsrc-Main-Class" value="it.d4nguard.comicsimporter.Main" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Rsrc-Class-Path" value="./ ${libs.list}" />
+			</manifest>
+			<zipfileset src="jar-in-jar-loader.zip" />
+			<fileset dir="bin" />
+			<zipfileset dir="${lib}" includes="**/*.jar" />
+		</jar>
+	</target>
+
+	<target name="clean" description="clean up">
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+	</target>
+</project>
