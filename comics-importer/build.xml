@@ -10,12 +10,7 @@
 	<property name="build" location="bin" />
 	<property name="dist" location="dist" />
 	<property name="lib" location="lib" />
-
-	<path id="libs.path">
-		<fileset dir="${lib}">
-			<include name="**/*.jar" />
-		</fileset>
-	</path>
+	<property name="tmp.file" value="cp.~" />
 
 	<fileset dir="${lib}" id="libs" includes="**/*.jar">
 		<exclude name="**/*-javadoc.jar" />
@@ -23,12 +18,21 @@
 		<exclude name="**/*-samples.jar" />
 		<exclude name="**/*-tests.jar" />
 	</fileset>
-	<property name="libs.list" refid="libs" />
+	<property name="libs.path" refid="libs" />
+
+	<echo message="${libs.path}" file="${tmp.file}" />
+	<loadfile property="libs.list" srcFile="${tmp.file}">
+		<filterchain>
+			<tokenfilter>
+				<replaceregex pattern=";" replace=" " flags="g" />
+			</tokenfilter>
+		</filterchain>
+	</loadfile>
+	<delete file="${tmp.file}" />
 
 	<target name="init">
 		<!-- Create the time stamp -->
 		<tstamp />
-		<echo>${libs.list}</echo>
 		<!-- Create the build directory structure used by compile -->
 		<mkdir dir="${build}" />
 	</target>
