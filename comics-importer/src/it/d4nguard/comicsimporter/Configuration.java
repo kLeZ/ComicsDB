@@ -7,6 +7,7 @@ import it.d4nguard.comicsimporter.util.io.StreamUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Properties;
 
 import org.apache.commons.cli.*;
@@ -106,13 +107,13 @@ public class Configuration implements Commands
 
 	public Configuration load(final String[] args)
 	{
-		final CommandLine cmd = parseCmd(args);
-
 		try
 		{
 			config.load(StreamUtils.toInputStream(getPropertiesContent()));
 
 			log.debug("Internal representation of the Properties object loaded from configuration file: " + config.toString());
+
+			final CommandLine cmd = parseCmd(args);
 
 			ncomics = getConfigValue(NUMBER_COMICS_CMD, Integer.class, config, cmd);
 			printTitles = getConfigValue(PRINT_TITLES_CMD, Boolean.class, config, cmd);
@@ -128,15 +129,34 @@ public class Configuration implements Commands
 		{
 			log.error(e, e);
 		}
+		log.debug("Configurazione con command line applicata:\n" + config.toString());
 		return this;
 	}
 
-	public void printCliHelp(final String message)
+	public void printCliHelp(int exitStatus)
 	{
-		log.fatal(message);
 		final HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("java -jar comics-importer.jar", createOptions());
-		System.exit(-1);
+		File moduleFile;
+		String jar = "comics-importer.jar";
+		try
+		{
+			log.trace(StreamUtils.findPathJar(getClass()));
+			moduleFile = new File(StreamUtils.findPathJar(getClass()));
+			if (moduleFile.exists())
+			{
+				jar = moduleFile.getName();
+			}
+		}
+		catch (IllegalStateException e)
+		{
+			log.error(e, e);
+		}
+		catch (ClassNotFoundException e)
+		{
+			log.error(e, e);
+		}
+		formatter.printHelp(String.format("java -jar %s", jar), createOptions());
+		System.exit(exitStatus);
 	}
 
 	public String getConfigContent(String configName) throws IOException
@@ -194,9 +214,9 @@ public class Configuration implements Commands
 			temp = config.getProperty(valueName);
 		}
 		// Checking Commandline
-		if (cmd.hasOption(getShortOpt(valueName, cmd)) || cmd.hasOption(valueName))
+		if (cmd.hasOption(getShortOpt(removePrefix(valueName), cmd)) || cmd.hasOption(removePrefix(valueName)))
 		{
-			temp = cmd.getOptionValue(valueName);
+			temp = cmd.getOptionValue(removePrefix(valueName));
 		}
 
 		if (returnType.equals(Boolean.class))
@@ -207,7 +227,7 @@ public class Configuration implements Commands
 			}
 			else
 			{
-				ret = (T) new Boolean(cmd.hasOption(getShortOpt(valueName, cmd)) || cmd.hasOption(valueName));
+				ret = (T) new Boolean(cmd.hasOption(getShortOpt(removePrefix(valueName), cmd)) || cmd.hasOption(removePrefix(valueName)));
 			}
 		}
 		else if (returnType.equals(Short.class) && !StringUtils.isNullOrWhitespace(temp))
@@ -245,13 +265,25 @@ public class Configuration implements Commands
 		CommandLine cmd = null;
 		try
 		{
+			if (Arrays.binarySearch(args, "--help", new Comparator<String>()
+			{
+				@Override
+				public int compare(String o1, String o2)
+				{
+					return o1.compareTo(o2);
+				}
+			}) > -1)
+			{
+				printCliHelp(0);
+			}
 			cmd = parser.parse(createOptions(), args);
 		}
 		catch (final ParseException e)
 		{
 			log.debug(e, e);
 			// something bad happened so output help message
-			printCliHelp("Error in parsing arguments:\n" + e.getMessage());
+			log.fatal("Error in parsing arguments:\n" + e.getMessage());
+			printCliHelp(-1);
 		}
 		return cmd;
 	}
@@ -259,24 +291,38 @@ public class Configuration implements Commands
 	private Options createOptions()
 	{
 		final Options opts = new Options();
-		StringBuilder sb = new StringBuilder();
-		sb.append("Specify whether to refresh comics cache file from the main source.\n");
-		sb.append("ATTENTION!\n");
-		sb.append("This operation normally takes about an hour to complete,\n");
-		sb.append("then use it only if you really need it!\n");
-		sb.append("\n");
-		sb.append("One refresh per day is the minimum refresh rate recommended,\n");
-		sb.append("for this task to run. Others will run with the cache xml instead.");
+		Option opt = new Option("r", removePrefix(REFRESH_CACHE_FILE_CMD), true, "Specify whether to refresh comics cache file from the main source.");
+		opt.setOptionalArg(true);
+		opts.addOption(opt);
 
-		opts.addOption("r", REFRESH_CACHE_FILE_CMD, false, sb.toString());
-		opts.addOption("n", NUMBER_COMICS_CMD, true, "Specify the number of comics you want to get from the main comics source.");
-		opts.addOption("p", PRINT_TITLES_CMD, false, "Specify whether to print imported comics titles or not.");
-		opts.addOption("f", CACHE_FILE_CMD, true, "Specify the cache file to use for the main import process.");
-		opts.addOption("w", WIPE_DB_CMD, false, "Specify wether to wipe or not the comics database");
-		opts.addOption("s", SYNC_CMD, false, "Specify wether to sync or not the feeds and plain pages of updates given by editors' sites.");
-		opts.addOption("P", PERSIST_CMD, false, "Specify wether to use persistence on the comics loaded in the entire process.");
-		opts.addOption("l", LOAD_PERSISTENCE_CMD, false, "Specify wether to load the comics using persistent data previously saved.");
-		opts.addOption("S", SAVE_CACHE_CMD, false, "Specify wether to save the current comics db in the given cache file.");
+		opts.addOption("n", removePrefix(NUMBER_COMICS_CMD), true, "Specify the number of comics you want to get from the main comics source.");
+
+		opt = new Option("p", removePrefix(PRINT_TITLES_CMD), true, "Specify whether to print imported comics titles or not.");
+		opt.setOptionalArg(true);
+		opts.addOption(opt);
+
+		opts.addOption("f", removePrefix(CACHE_FILE_CMD), true, "Specify the cache file to use for the main import process.");
+
+		opt = new Option("w", removePrefix(WIPE_DB_CMD), true, "Specify wether to wipe or not the comics database");
+		opt.setOptionalArg(true);
+		opts.addOption(opt);
+
+		opt = new Option("s", removePrefix(SYNC_CMD), true, "Specify wether to sync or not the feeds and plain pages of updates given by editors' sites.");
+		opt.setOptionalArg(true);
+		opts.addOption(opt);
+
+		opt = new Option("P", removePrefix(PERSIST_CMD), true, "Specify wether to use persistence on the comics loaded in the entire process.");
+		opt.setOptionalArg(true);
+		opts.addOption(opt);
+
+		opt = new Option("l", removePrefix(LOAD_PERSISTENCE_CMD), true, "Specify wether to load the comics using persistent data previously saved.");
+		opt.setOptionalArg(true);
+		opts.addOption(opt);
+
+		opt = new Option("S", removePrefix(SAVE_CACHE_CMD), true, "Specify wether to save the current comics db in the given cache file.");
+		opt.setOptionalArg(true);
+		opts.addOption(opt);
+
 		return opts;
 	}
 
@@ -296,6 +342,11 @@ public class Configuration implements Commands
 		builder.append("load_persistence=").append(load_persistence).append(sep);
 		builder.append("save_cache=").append(save_cache).append("]");
 		return builder.toString();
+	}
+
+	public static String removePrefix(String cmd)
+	{
+		return cmd.substring(Commands.class.getName().length() + 1);
 	}
 
 	private static Configuration instance;

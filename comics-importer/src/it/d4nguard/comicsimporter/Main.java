@@ -36,13 +36,12 @@ public class Main
 				new Persistor<Object>(p);
 			}
 
-			Persistor<Comic> db = null;
+			Persistor<Comic> db = new Persistor<Comic>();
 			Comics comics = new Comics();
 
 			if (config.isLoadPersistence())
 			{
 				log.trace("Loading database contents with hibernate calling: comics.addAll(db.findAll(Comic.class))");
-				db = new Persistor<Comic>(new Properties());
 				comics.addAll(db.findAll(Comic.class));
 				log.debug("After database load has completed the # Comics gained was: " + comics.size());
 			}

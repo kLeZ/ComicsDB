@@ -138,4 +138,11 @@ public class StreamUtils
 		}
 		throw new UnsupportedOperationException("Cannot list files for URL " + dirURL);
 	}
+
+	public static String findPathJar(Class<?> context) throws IllegalStateException, ClassNotFoundException
+	{
+		URL location = ClassLoader.getSystemClassLoader().loadClass(context.getName()).getResource('/' + context.getName().replace(".", "/") + ".class");
+		String jarPath = location.getPath();
+		return jarPath.substring("file:".length(), jarPath.lastIndexOf("!"));
+	}
 }

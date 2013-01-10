@@ -6,16 +6,15 @@ import it.d4nguard.comicsimporter.bo.Comics;
 import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
 import it.d4nguard.comicsimporter.util.*;
 import it.d4nguard.comicsimporter.util.io.StreamUtils;
-import it.d4nguard.comicsimporter.util.xml.XmlUtils;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -36,6 +35,11 @@ public class ComicsImporter
 		return new ComicsImporter(src);
 	}
 
+	public static ComicsImporter getInstance(final String cacheFileName, final InputStream src) throws FileNotFoundException
+	{
+		return new ComicsImporter(cacheFileName, src);
+	}
+
 	private InputStream src;
 
 	private Document doc;
@@ -54,9 +58,47 @@ public class ComicsImporter
 		src = !StringUtils.isNullOrWhitespace(cacheFileName) ? new FileInputStream(cacheFileName) : null;
 	}
 
+	public ComicsImporter(final String cacheFileName, final InputStream src) throws FileNotFoundException
+	{
+		this.cacheFileName = !StringUtils.isNullOrWhitespace(cacheFileName) ? cacheFileName : null;
+		this.src = !StringUtils.isNullOrWhitespace(cacheFileName) ? src : null;
+	}
+
 	public static String comicsToXml(Comics comics)
 	{
-		return XmlUtils.toString(new ComicsXmlMapper().create(comics), true, true);
+		String ret = "";
+		try
+		{
+			Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+			Element el = new ComicsXmlMapper().create(doc, comics);
+
+			TransformerFactory transfac = TransformerFactory.newInstance();
+			Transformer trans = transfac.newTransformer();
+			trans.setOutputProperty(OutputKeys.METHOD, "xml");
+			trans.setOutputProperty(OutputKeys.INDENT, "yes");
+			trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+			trans.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+			StringWriter sw = new StringWriter();
+			StreamResult result = new StreamResult(sw);
+			DOMSource source = new DOMSource(el);
+
+			trans.transform(source, result);
+			ret = sw.toString();
+		}
+		catch (ParserConfigurationException e)
+		{
+			log.error(e, e);
+		}
+		catch (TransformerConfigurationException e)
+		{
+			log.error(e, e);
+		}
+		catch (TransformerException e)
+		{
+			log.error(e, e);
+		}
+		return ret;
 	}
 
 	private Pair<String, Object>[] getArgs()
@@ -126,7 +168,7 @@ public class ComicsImporter
 	{
 		final Comics ret = new Comics(totalComics);
 		log.trace("Initialized " + totalComics + " comics");
-		Element root = ensureVersion((Element) doc.getElementsByTagName("fumetti").item(0));
+		Element root = ensureVersion(doc.getDocumentElement());
 		log.debug("Found " + doc.getElementsByTagName("fumetto").getLength() + " comics in cache file");
 		ret.setTotalComics(doc.getElementsByTagName("fumetto").getLength());
 		TimeElapsed elapsed = new TimeElapsed();

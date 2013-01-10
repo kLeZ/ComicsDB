@@ -8,10 +8,9 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.hibernate.*;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 
 public class Persistor<E>
 {
@@ -19,6 +18,11 @@ public class Persistor<E>
 
 	private Session session;
 	private Transaction tx;
+
+	public Persistor()
+	{
+		this(new Properties());
+	}
 
 	public Persistor(Properties extraProperties)
 	{
@@ -179,13 +183,44 @@ public class Persistor<E>
 	}
 
 	@SuppressWarnings("unchecked")
-	public E find(Class<E> clazz, Long id)
+	public E findById(Class<E> clazz, Long id)
 	{
 		E obj = null;
 		try
 		{
 			startOperation();
 			obj = (E) session.load(clazz, id);
+			tx.commit();
+		}
+		catch (Throwable e)
+		{
+			handleException(e);
+		}
+		finally
+		{
+			HibernateFactory.close(session);
+		}
+		return obj;
+	}
+
+	public E findByEqField(Class<E> clazz, String fieldName, Object fieldValue)
+	{
+		return findByCriterion(clazz, Restrictions.eq(fieldName, fieldValue));
+	}
+
+	@SuppressWarnings("unchecked")
+	public E findByCriterion(Class<E> clazz, Criterion... criterions)
+	{
+		E obj = null;
+		try
+		{
+			startOperation();
+			Criteria c = session.createCriteria(clazz);
+			for (Criterion crit : criterions)
+			{
+				c.add(crit);
+			}
+			obj = (E) c.uniqueResult();
 			tx.commit();
 		}
 		catch (Throwable e)

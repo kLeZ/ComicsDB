@@ -126,6 +126,11 @@ public class Comic
 		return artworker;
 	}
 
+	public Author getArtworkerSafe()
+	{
+		return artworker == null ? new Author() : artworker;
+	}
+
 	public void setArtworker(Author artworker)
 	{
 		this.artworker = artworker;
@@ -134,6 +139,11 @@ public class Comic
 	public Author getStorywriter()
 	{
 		return storywriter;
+	}
+
+	public Author getStorywriterSafe()
+	{
+		return storywriter == null ? new Author() : storywriter;
 	}
 
 	public void setStorywriter(Author storywriter)
@@ -146,6 +156,11 @@ public class Comic
 		return originalEditor;
 	}
 
+	public Editor getOriginalEditorSafe()
+	{
+		return originalEditor == null ? new Editor() : originalEditor;
+	}
+
 	public void setOriginalEditor(Editor originalEditor)
 	{
 		this.originalEditor = originalEditor;
@@ -156,6 +171,11 @@ public class Comic
 		return italianEditor;
 	}
 
+	public Editor getItalianEditorSafe()
+	{
+		return italianEditor == null ? new Editor() : italianEditor;
+	}
+
 	public void setItalianEditor(Editor italianEditor)
 	{
 		this.italianEditor = italianEditor;
@@ -164,6 +184,11 @@ public class Comic
 	public Typology getTypology()
 	{
 		return typology;
+	}
+
+	public Typology getTypologySafe()
+	{
+		return typology == null ? new Typology() : typology;
 	}
 
 	public void setTypology(Typology typology)

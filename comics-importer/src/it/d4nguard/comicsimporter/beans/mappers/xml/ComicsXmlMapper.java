@@ -1,12 +1,11 @@
 package it.d4nguard.comicsimporter.beans.mappers.xml;
 
-import static it.d4nguard.comicsimporter.util.xml.XmlUtils.getElement;
-import static it.d4nguard.comicsimporter.util.xml.XmlUtils.getGQName;
+import static it.d4nguard.comicsimporter.util.xml.StdXmlUtils.getElement;
 import it.d4nguard.comicsimporter.beans.Comic;
 import it.d4nguard.comicsimporter.bo.Comics;
 import it.d4nguard.comicsimporter.bo.Serie;
-import it.d4nguard.comicsimporter.util.xml.XmlUtils;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -28,7 +27,7 @@ public class ComicsXmlMapper implements XmlMapper<Comics>
 			if (node.getNodeType() == Node.ELEMENT_NODE)
 			{
 				final Comic comic = new ComicXmlMapper().create((Element) node, new Long(i));
-				final Serie serie = new SeriesXmlMapper().create(getElement(node, getGQName("serie")), new Long(i));
+				final Serie serie = new SeriesXmlMapper().create(getElement((Element) node, "serie"), new Long(i));
 				comic.setSerie(serie.toVolumes());
 				ret.add(comic);
 			}
@@ -40,15 +39,15 @@ public class ComicsXmlMapper implements XmlMapper<Comics>
 	 * @see it.d4nguard.comicsimporter.beans.mappers.xml.XmlMapper#create(java.lang.Object)
 	 */
 	@Override
-	public Element create(Comics obj)
+	public Element create(Document ownerDoc, Comics obj)
 	{
-		Element ret = XmlUtils.createElement(getGQName("fumetti"));
-		ComicXmlMapper fumettomapper = new ComicXmlMapper();
-		SeriesXmlMapper seriemapper = new SeriesXmlMapper();
+		Element ret = ownerDoc.createElement("fumetti");
+		ComicXmlMapper m_comic = new ComicXmlMapper();
+		SeriesXmlMapper m_serie = new SeriesXmlMapper();
 		for (Comic c : obj)
 		{
-			Element fumetto = fumettomapper.create(c);
-			fumetto.appendChild(seriemapper.create(new Serie(c.getSerie())));
+			Element fumetto = m_comic.create(ownerDoc, c);
+			fumetto.appendChild(m_serie.create(ownerDoc, new Serie(c.getSerie())));
 			ret.appendChild(fumetto);
 		}
 		return ret;

@@ -4,8 +4,8 @@ import it.d4nguard.comicsimporter.beans.Editor;
 import it.d4nguard.comicsimporter.beans.Volume;
 import it.d4nguard.comicsimporter.util.Money;
 import it.d4nguard.comicsimporter.util.StringUtils;
-import it.d4nguard.comicsimporter.util.xml.XmlUtils;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class VolumeXmlMapper implements XmlMapper<Volume>
@@ -31,9 +31,9 @@ public class VolumeXmlMapper implements XmlMapper<Volume>
 	 * @see it.d4nguard.comicsimporter.beans.mappers.xml.XmlMapper#create(java.lang.Object)
 	 */
 	@Override
-	public Element create(Volume obj)
+	public Element create(Document ownerDocument, Volume obj)
 	{
-		Element ret = XmlUtils.createElement(XmlUtils.getGQName("volume"));
+		Element ret = ownerDocument.createElement("volume");
 		ret.setAttribute("nome", obj.getName());
 		ret.setAttribute("serie", obj.getSerie());
 		ret.setAttribute("editore", obj.getEditor().getName());
