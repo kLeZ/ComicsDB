@@ -8,6 +8,26 @@ import java.util.Map;
 
 public class GenericsUtils<T>
 {
+	public static <T> T safeGetter(T value, Class<T> type)
+	{
+		T ret = null;
+		try
+		{
+			ret = value == null ? type.newInstance() : value;
+		}
+		catch (InstantiationException e)
+		{
+			String fmt = "Type %s cannot be instantiated. Please ensure this call is well-formed.";
+			throw new RuntimeException(String.format(fmt, type.getName()));
+		}
+		catch (IllegalAccessException e)
+		{
+			String fmt = "Type %s cannot be instantiated. Please ensure this call is well-formed.";
+			throw new RuntimeException(String.format(fmt, type.getName()));
+		}
+		return ret;
+	}
+
 	/**
 	 * Get the underlying class for a type, or null if the type is a variable
 	 * type.

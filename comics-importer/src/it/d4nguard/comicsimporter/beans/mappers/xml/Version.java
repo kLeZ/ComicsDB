@@ -119,8 +119,17 @@ public class Version
 
 	public Element translateVersion(final Element root, int version)
 	{
-		log.trace("Trying to translate to version " + version);
-		return getTranslators().get(version).translate(root);
+		Element ret = null;
+		if (version == getTranslators().size())
+		{
+			ret = root;
+		}
+		else
+		{
+			log.trace("Trying to translate to version " + version);
+			ret = getTranslators().get(version).translate(root);
+		}
+		return ret;
 	}
 
 	private static Version instance;

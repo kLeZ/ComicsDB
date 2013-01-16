@@ -3,7 +3,7 @@ package it.d4nguard.comicsimporter.beans;
 import it.d4nguard.comicsimporter.util.StringUtils;
 
 import java.net.URL;
-import java.util.List;
+import java.util.Set;
 
 public class Comic
 {
@@ -16,11 +16,11 @@ public class Comic
 	private Editor originalEditor;
 	private Editor italianEditor;
 	private Typology typology;
-	private List<Genre> genres;
+	private Set<Genre> genres;
 	private short year;
 	private boolean complete;
 	private boolean completeInCountry;
-	private List<Volume> serie;
+	private Set<Volume> serie;
 
 	public Comic()
 	{
@@ -32,7 +32,7 @@ public class Comic
 		this.id = id;
 	}
 
-	public Comic(Long id, URL url, String originalTitle, String englishTitle, Author artworker, Author storywriter, Editor originalEditor, Editor italianEditor, Typology typology, List<Genre> genres, short year, boolean complete, boolean completeInCountry, List<Volume> serie)
+	public Comic(Long id, URL url, String originalTitle, String englishTitle, Author artworker, Author storywriter, Editor originalEditor, Editor italianEditor, Typology typology, Set<Genre> genres, short year, boolean complete, boolean completeInCountry, Set<Volume> serie)
 	{
 		this.id = id;
 		this.url = url;
@@ -126,11 +126,6 @@ public class Comic
 		return artworker;
 	}
 
-	public Author getArtworkerSafe()
-	{
-		return artworker == null ? new Author() : artworker;
-	}
-
 	public void setArtworker(Author artworker)
 	{
 		this.artworker = artworker;
@@ -139,11 +134,6 @@ public class Comic
 	public Author getStorywriter()
 	{
 		return storywriter;
-	}
-
-	public Author getStorywriterSafe()
-	{
-		return storywriter == null ? new Author() : storywriter;
 	}
 
 	public void setStorywriter(Author storywriter)
@@ -156,11 +146,6 @@ public class Comic
 		return originalEditor;
 	}
 
-	public Editor getOriginalEditorSafe()
-	{
-		return originalEditor == null ? new Editor() : originalEditor;
-	}
-
 	public void setOriginalEditor(Editor originalEditor)
 	{
 		this.originalEditor = originalEditor;
@@ -169,11 +154,6 @@ public class Comic
 	public Editor getItalianEditor()
 	{
 		return italianEditor;
-	}
-
-	public Editor getItalianEditorSafe()
-	{
-		return italianEditor == null ? new Editor() : italianEditor;
 	}
 
 	public void setItalianEditor(Editor italianEditor)
@@ -186,22 +166,17 @@ public class Comic
 		return typology;
 	}
 
-	public Typology getTypologySafe()
-	{
-		return typology == null ? new Typology() : typology;
-	}
-
 	public void setTypology(Typology typology)
 	{
 		this.typology = typology;
 	}
 
-	public List<Genre> getGenres()
+	public Set<Genre> getGenres()
 	{
 		return genres;
 	}
 
-	public void setGenres(List<Genre> genres)
+	public void setGenres(Set<Genre> genres)
 	{
 		this.genres = genres;
 	}
@@ -236,12 +211,12 @@ public class Comic
 		this.completeInCountry = completeInCountry;
 	}
 
-	public List<Volume> getSerie()
+	public Set<Volume> getSerie()
 	{
 		return serie;
 	}
 
-	public void setSerie(List<Volume> serie)
+	public void setSerie(Set<Volume> serie)
 	{
 		this.serie = serie;
 	}

@@ -82,13 +82,7 @@ public class Author
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
-		builder.append("Author [name=");
-		builder.append(name);
-		builder.append(", mansion=");
-		builder.append(mansion);
-		builder.append("]");
-		return builder.toString();
+		return name;
 	}
 
 	public static Author get(String name, AuthorMansion mansion)

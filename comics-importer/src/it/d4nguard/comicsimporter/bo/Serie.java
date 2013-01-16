@@ -5,20 +5,17 @@ import it.d4nguard.comicsimporter.beans.Volume;
 import it.d4nguard.comicsimporter.util.Money;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-public class Serie extends HashSet<Volume> implements Serializable
+public class Serie extends LinkedHashSet<Volume> implements Serializable
 {
 	public Serie()
 	{
 	}
 
-	public Serie(List<Volume> volumes)
+	public Serie(Set<Volume> set)
 	{
-		for (Volume volume : volumes)
+		for (Volume volume : set)
 		{
 			add(volume);
 		}
@@ -250,9 +247,9 @@ public class Serie extends HashSet<Volume> implements Serializable
 		return builder.toString();
 	}
 
-	public List<Volume> toVolumes()
+	public Set<Volume> toVolumes()
 	{
-		ArrayList<Volume> ret = new ArrayList<Volume>();
+		LinkedHashSet<Volume> ret = new LinkedHashSet<Volume>();
 		for (Volume volume : this)
 		{
 			ret.add(volume);

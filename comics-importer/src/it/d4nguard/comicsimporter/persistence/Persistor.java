@@ -3,9 +3,8 @@ package it.d4nguard.comicsimporter.persistence;
 import it.d4nguard.comicsimporter.exceptions.PersistorException;
 import it.d4nguard.comicsimporter.util.StatefulWork;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.hibernate.*;
@@ -203,24 +202,34 @@ public class Persistor<E>
 		return obj;
 	}
 
-	public E findByEqField(Class<E> clazz, String fieldName, Object fieldValue)
+	public List<E> findByEqField(Class<E> clazz, String fieldName, Object fieldValue)
 	{
 		return findByCriterion(clazz, Restrictions.eq(fieldName, fieldValue));
 	}
 
-	@SuppressWarnings("unchecked")
-	public E findByCriterion(Class<E> clazz, Criterion... criterions)
+	public List<E> findByCriterion(Class<E> clazz, Criterion... criterions)
 	{
-		E obj = null;
+		return findByCriterion(clazz, new HashMap<String, String>(), criterions);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<E> findByCriterion(Class<E> clazz, HashMap<String, String> aliases, Criterion... criterions)
+	{
+		List<E> objs = null;
 		try
 		{
 			startOperation();
 			Criteria c = session.createCriteria(clazz);
+			for (Entry<String, String> entry : aliases.entrySet())
+			{
+				c.createAlias(entry.getKey(), entry.getValue());
+			}
+
 			for (Criterion crit : criterions)
 			{
 				c.add(crit);
 			}
-			obj = (E) c.uniqueResult();
+			objs = c.list();
 			tx.commit();
 		}
 		catch (Throwable e)
@@ -231,7 +240,7 @@ public class Persistor<E>
 		{
 			HibernateFactory.close(session);
 		}
-		return obj;
+		return objs;
 	}
 
 	@SuppressWarnings("unchecked")

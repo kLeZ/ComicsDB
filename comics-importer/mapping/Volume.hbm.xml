@@ -7,7 +7,6 @@
 		<id name="id" type="java.lang.Long" column="ID">
 			<generator class="increment" />
 		</id>
-		<property name="comicId" type="java.lang.Long" access="field" column="COMICID" />
 		<property name="name" type="java.lang.String" column="NAME" />
 		<property name="serie" type="java.lang.String" column="SERIE" />
 		<many-to-one name="editor" cascade="save-update" class="it.d4nguard.comicsimporter.beans.Editor" fetch="join" column="EDITOR" />

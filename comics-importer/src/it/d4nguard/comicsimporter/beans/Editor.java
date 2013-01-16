@@ -68,11 +68,7 @@ public class Editor
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
-		builder.append("Editor [name=");
-		builder.append(name);
-		builder.append("]");
-		return builder.toString();
+		return name;
 	}
 
 	public static Editor get(String name)

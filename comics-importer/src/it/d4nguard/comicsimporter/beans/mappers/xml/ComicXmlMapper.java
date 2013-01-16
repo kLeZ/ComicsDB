@@ -1,5 +1,6 @@
 package it.d4nguard.comicsimporter.beans.mappers.xml;
 
+import static it.d4nguard.comicsimporter.util.GenericsUtils.safeGetter;
 import static it.d4nguard.comicsimporter.util.xml.StdXmlUtils.getAttribute;
 import static it.d4nguard.comicsimporter.util.xml.StdXmlUtils.getTextContent;
 import it.d4nguard.comicsimporter.beans.*;
@@ -8,8 +9,8 @@ import it.d4nguard.comicsimporter.util.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -47,9 +48,9 @@ public class ComicXmlMapper implements XmlMapper<Comic>
 		return comic;
 	}
 
-	public static ArrayList<Genre> getGenres(final List<String> genres)
+	public static LinkedHashSet<Genre> getGenres(final List<String> genres)
 	{
-		final ArrayList<Genre> ret = new ArrayList<Genre>();
+		final LinkedHashSet<Genre> ret = new LinkedHashSet<Genre>();
 		for (final String genre : genres)
 		{
 			ret.add(Genre.get(genre));
@@ -57,9 +58,9 @@ public class ComicXmlMapper implements XmlMapper<Comic>
 		return ret;
 	}
 
-	public static ArrayList<Genre> getGenres(final String genres)
+	public static LinkedHashSet<Genre> getGenres(final String genres)
 	{
-		ArrayList<Genre> ret = new ArrayList<Genre>();
+		LinkedHashSet<Genre> ret = new LinkedHashSet<Genre>();
 		if ((genres != null) && !genres.isEmpty())
 		{
 			final String[] genresStrings = genres.split(", ");
@@ -83,17 +84,17 @@ public class ComicXmlMapper implements XmlMapper<Comic>
 		ret.appendChild(titolo);
 
 		Element autore = ownerDocument.createElement("autore");
-		autore.setAttribute("disegni", obj.getArtworkerSafe().getName());
-		autore.setAttribute("storia", obj.getStorywriterSafe().getName());
+		autore.setAttribute("disegni", safeGetter(obj.getArtworker(), Author.class).getName());
+		autore.setAttribute("storia", safeGetter(obj.getStorywriter(), Author.class).getName());
 		ret.appendChild(autore);
 
 		Element editore = ownerDocument.createElement("editore");
-		editore.setAttribute("originale", obj.getOriginalEditorSafe().getName());
-		editore.setAttribute("italiano", obj.getItalianEditorSafe().getName());
+		editore.setAttribute("originale", safeGetter(obj.getOriginalEditor(), Editor.class).getName());
+		editore.setAttribute("italiano", safeGetter(obj.getItalianEditor(), Editor.class).getName());
 		ret.appendChild(editore);
 
 		Element tipologia = ownerDocument.createElement("tipologia");
-		tipologia.setTextContent(obj.getTypologySafe().getName());
+		tipologia.setTextContent(safeGetter(obj.getTypology(), Typology.class).getName());
 		ret.appendChild(tipologia);
 
 		Element generi = ownerDocument.createElement("genere");
