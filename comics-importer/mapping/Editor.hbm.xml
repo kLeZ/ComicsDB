@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated 8-nov-2012 8.48.29 by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-	<class name="it.d4nguard.comicsimporter.beans.Editor" table="EDITOR" lazy="false">
+	<class name="it.d4nguard.comics.beans.Editor" table="EDITOR" lazy="false">
 		<id name="id" type="java.lang.Long" column="ID">
 			<generator class="increment" />
 		</id>

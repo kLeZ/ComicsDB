@@ -1,11 +1,13 @@
 package it.d4nguard.comicsimporter;
 
-import it.d4nguard.comicsimporter.beans.mappers.xml.ComicsXmlMapper;
-import it.d4nguard.comicsimporter.beans.mappers.xml.Version;
-import it.d4nguard.comicsimporter.bo.Comics;
+import it.d4nguard.comics.beans.bo.Comics;
+import it.d4nguard.comics.beans.mappers.xml.ComicsXmlMapper;
+import it.d4nguard.comics.beans.mappers.xml.Version;
+import it.d4nguard.comics.utils.*;
+import it.d4nguard.comics.utils.collections.Pair;
+import it.d4nguard.comics.utils.io.StreamUtils;
+import it.d4nguard.comics.utils.web.WebScraper;
 import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
-import it.d4nguard.comicsimporter.util.*;
-import it.d4nguard.comicsimporter.util.io.StreamUtils;
 
 import java.io.*;
 import java.util.ArrayList;

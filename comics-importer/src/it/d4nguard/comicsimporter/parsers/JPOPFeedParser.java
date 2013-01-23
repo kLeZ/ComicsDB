@@ -1,14 +1,14 @@
 package it.d4nguard.comicsimporter.parsers;
 
-import it.d4nguard.comicsimporter.beans.Comic;
-import it.d4nguard.comicsimporter.beans.Editor;
-import it.d4nguard.comicsimporter.beans.Volume;
-import it.d4nguard.comicsimporter.bo.Comics;
-import it.d4nguard.comicsimporter.bo.Serie;
-import it.d4nguard.comicsimporter.feed.FeedReader;
-import it.d4nguard.comicsimporter.util.Convert;
-import it.d4nguard.comicsimporter.util.StringUtils;
-import it.d4nguard.comicsimporter.util.io.DeepCopy;
+import it.d4nguard.comics.beans.Comic;
+import it.d4nguard.comics.beans.Editor;
+import it.d4nguard.comics.beans.Volume;
+import it.d4nguard.comics.beans.bo.Comics;
+import it.d4nguard.comics.beans.bo.Serie;
+import it.d4nguard.comics.feed.FeedReader;
+import it.d4nguard.comics.utils.Convert;
+import it.d4nguard.comics.utils.StringUtils;
+import it.d4nguard.comics.utils.io.DeepCopy;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 	}
 
 	/* (non-Javadoc)
-	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#parse(it.d4nguard.comicsimporter.bo.Comics)
+	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#parse(it.d4nguard.comics.beans.bo.Comics)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

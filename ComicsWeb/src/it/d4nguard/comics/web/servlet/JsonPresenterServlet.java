@@ -1,10 +1,9 @@
 package it.d4nguard.comics.web.servlet;
 
-import it.d4nguard.comics.web.utils.ComicsUtils;
-import it.d4nguard.comics.web.utils.HtmlTable;
-import it.d4nguard.comics.web.utils.ServletUtils;
-import it.d4nguard.comics.web.utils.WebUtils;
-import it.d4nguard.comicsimporter.bo.Comics;
+import it.d4nguard.comics.beans.bo.Comics;
+import it.d4nguard.comics.utils.web.ComicsUtils;
+import it.d4nguard.comics.utils.web.HtmlTable;
+import it.d4nguard.comics.utils.web.WebUtils;
 
 import java.io.IOException;
 import java.util.Map;

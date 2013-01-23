@@ -3,4 +3,17 @@
 	<string name="app_name">ComicsDB</string>
 	<string name="hello_world">Hello world!</string>
 	<string name="menu_settings">Settings</string>
+	<string name="bSearch_text">Search with given filter</string>
+	<string name="bGetAll_text">Get all</string>
+	<string name="eq">Equals</string>
+	<string name="ne">Not Equals</string>
+	<string name="like">Like</string>
+	<string name="gt">Greater than</string>
+	<string name="ge">Greater than or Equal to</string>
+	<string name="lt">Lesser than</string>
+	<string name="le">Lesser than or Equal to</string>
+	<string name="isNull">Null</string>
+	<string name="isNotNull">Not Null</string>
+	<string name="isEmpty">Empty</string>
+	<string name="isNotEmpty">Not Empty</string>
 </resources>

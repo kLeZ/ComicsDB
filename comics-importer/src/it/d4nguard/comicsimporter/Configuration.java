@@ -1,8 +1,8 @@
 package it.d4nguard.comicsimporter;
 
-import it.d4nguard.comicsimporter.util.Convert;
-import it.d4nguard.comicsimporter.util.StringUtils;
-import it.d4nguard.comicsimporter.util.io.StreamUtils;
+import it.d4nguard.comics.utils.Convert;
+import it.d4nguard.comics.utils.StringUtils;
+import it.d4nguard.comics.utils.io.StreamUtils;
 
 import java.io.File;
 import java.io.IOException;

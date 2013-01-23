@@ -1,19 +1,18 @@
 package it.d4nguard.comicsimporter;
 
-import it.d4nguard.comicsimporter.beans.Comic;
-import it.d4nguard.comicsimporter.bo.Comics;
+import it.d4nguard.comics.beans.Comic;
+import it.d4nguard.comics.beans.bo.Comics;
+import it.d4nguard.comics.persistence.Persistor;
+import it.d4nguard.comics.utils.StringUtils;
+import it.d4nguard.comics.utils.collections.Pair;
+import it.d4nguard.comics.utils.io.StreamUtils;
 import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
+import it.d4nguard.comicsimporter.parsers.ComicsSourceParser;
 import it.d4nguard.comicsimporter.parsers.ParserFactory;
-import it.d4nguard.comicsimporter.persistence.Persistor;
-import it.d4nguard.comicsimporter.util.Pair;
-import it.d4nguard.comicsimporter.util.StringUtils;
-import it.d4nguard.comicsimporter.util.io.StreamUtils;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -71,7 +70,8 @@ public class Main
 			if (config.isSync())
 			{
 				log.trace("Syncing with feeds providers installed on the system. Feed Providers are: [" + StringUtils.join(", ", ParserFactory.getInstalledProviders()) + "]");
-				comics.sync(ParserFactory.getAll(config.getProperties()));
+
+				sync(comics, ParserFactory.getAll(config.getProperties()));
 				log.debug("After sync has completed the # Comics gained was: " + comics.size());
 			}
 
@@ -120,6 +120,14 @@ public class Main
 		catch (final ComicsParseException e)
 		{
 			log.fatal(e, e);
+		}
+	}
+
+	public static void sync(Comics comics, final Collection<ComicsSourceParser> collection) throws IOException
+	{
+		for (final ComicsSourceParser parser : collection)
+		{
+			comics.addAll(parser.parse(comics));
 		}
 	}
 }

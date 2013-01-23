@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="get_id_reflection_denied">Error in getting resource value from resources %s.</string>
+	<string name="hibernate_restriction_cause">for HibernateRestriction value</string>
+	<string name="malformed_url">Passed URL (%s) not in a correct format.</string>
+</resources>

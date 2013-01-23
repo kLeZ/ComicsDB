@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated 8-nov-2012 8.48.29 by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-	<class name="it.d4nguard.comicsimporter.beans.Author" table="AUTHOR" lazy="false">
+	<class name="it.d4nguard.comics.beans.Author" table="AUTHOR" lazy="false">
 		<id name="id" type="java.lang.Long" column="ID">
 			<generator class="increment" />
 		</id>
@@ -11,7 +11,7 @@
 		<property name="mansion" column="MANSION">
 			<type name="org.hibernate.type.EnumType">
 				<param name="type">12</param>
-				<param name="enumClass">it.d4nguard.comicsimporter.beans.AuthorMansion</param>
+				<param name="enumClass">it.d4nguard.comics.beans.AuthorMansion</param>
 			</type>
 		</property>
 	</class>

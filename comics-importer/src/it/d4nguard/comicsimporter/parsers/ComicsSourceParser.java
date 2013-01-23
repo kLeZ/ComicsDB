@@ -1,7 +1,7 @@
 package it.d4nguard.comicsimporter.parsers;
 
-import it.d4nguard.comicsimporter.beans.Comic;
-import it.d4nguard.comicsimporter.bo.Comics;
+import it.d4nguard.comics.beans.Comic;
+import it.d4nguard.comics.beans.bo.Comics;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,10 +1,11 @@
 package it.d4nguard.comics.rs.webservices;
 
-import static it.d4nguard.comicsimporter.util.BlankRemover.itrim;
-import static it.d4nguard.comicsimporter.util.BlankRemover.lrtrim;
-import it.d4nguard.comicsimporter.beans.Comic;
-import it.d4nguard.comicsimporter.bo.Comics;
-import it.d4nguard.comicsimporter.persistence.Persistor;
+import static it.d4nguard.comics.persistence.HibernateRestriction.getCriterion;
+import static it.d4nguard.comics.utils.BlankRemover.itrim;
+import static it.d4nguard.comics.utils.BlankRemover.lrtrim;
+import it.d4nguard.comics.beans.Comic;
+import it.d4nguard.comics.beans.bo.Comics;
+import it.d4nguard.comics.persistence.Persistor;
 
 import java.util.HashMap;
 
@@ -15,8 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
 
 @Path("/ComicsDB/comics")
 @Produces(MediaType.APPLICATION_JSON)
@@ -55,11 +54,10 @@ public class ComicsResource
 		Persistor<Comic> db = new Persistor<Comic>();
 		String field = "";
 		HashMap<String, String> aliases = new HashMap<String, String>();
-		Criterion crit = null;
 
-		param = itrim(lrtrim(param));
-		method = itrim(lrtrim(method));
-		value = itrim(lrtrim(value));
+		param = itrim(lrtrim(param)).toString();
+		method = itrim(lrtrim(method)).toString();
+		value = itrim(lrtrim(value)).toString();
 
 		if (param.indexOf('.') >= 0)
 		{
@@ -74,20 +72,7 @@ public class ComicsResource
 
 		try
 		{
-			Class<Restrictions> rsc = Restrictions.class;
-			Class<String> str = String.class;
-			Class<Object> obj = Object.class;
-
-			if (method.startsWith("is"))
-			{
-				crit = (Criterion) rsc.getMethod(method, str).invoke(null, field);
-			}
-			else
-			{
-				crit = (Criterion) rsc.getMethod(method, str, obj).invoke(null, field, value);
-			}
-
-			ret.addAll(db.findByCriterion(Comic.class, aliases, crit));
+			ret.addAll(db.findByCriterion(Comic.class, aliases, getCriterion(method, field, value)));
 		}
 		catch (Throwable e)
 		{
