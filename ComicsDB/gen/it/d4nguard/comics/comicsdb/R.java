@@ -9,10 +9,8 @@ package it.d4nguard.comics.comicsdb;
 
 public final class R {
     public static final class array {
-        public static final int pref_example_list_titles=0x7f060000;
-        public static final int pref_example_list_values=0x7f060001;
-        public static final int pref_sync_frequency_titles=0x7f060002;
-        public static final int pref_sync_frequency_values=0x7f060003;
+        public static final int pref_sync_frequency_titles=0x7f060000;
+        public static final int pref_sync_frequency_values=0x7f060001;
     }
     public static final class attr {
     }
@@ -54,26 +52,17 @@ public final class R {
         public static final int menu_settings=0x7f050005;
         public static final int ne=0x7f050009;
         public static final int pref_default_base_url=0x7f050018;
-        public static final int pref_description_have_web_service=0x7f050016;
-        /**  Example settings for Data & Sync 
-         */
-        public static final int pref_header_data_sync=0x7f05001a;
+        public static final int pref_description_use_web_service=0x7f050016;
         /**  Strings related to Settings 
  Example General settings 
          */
         public static final int pref_header_general=0x7f050014;
-        /**  Example settings for Notifications 
-         */
-        public static final int pref_header_notifications=0x7f05001d;
-        public static final int pref_ringtone_silent=0x7f050020;
-        public static final int pref_title_add_friends_to_messages=0x7f050019;
         public static final int pref_title_base_url=0x7f050017;
-        public static final int pref_title_have_web_service=0x7f050015;
-        public static final int pref_title_new_message_notifications=0x7f05001e;
-        public static final int pref_title_ringtone=0x7f05001f;
-        public static final int pref_title_sync_frequency=0x7f05001b;
-        public static final int pref_title_system_sync_settings=0x7f05001c;
-        public static final int pref_title_vibrate=0x7f050021;
+        /**  Example settings for Data & Sync 
+         */
+        public static final int pref_title_sync_frequency=0x7f050019;
+        public static final int pref_title_system_sync_settings=0x7f05001a;
+        public static final int pref_title_use_web_service=0x7f050015;
         public static final int title_activity_settings=0x7f050013;
     }
     public static final class style {
@@ -105,9 +94,7 @@ public final class R {
         public static final int AppTheme=0x7f070001;
     }
     public static final class xml {
-        public static final int pref_data_sync=0x7f040000;
-        public static final int pref_general=0x7f040001;
-        public static final int pref_headers=0x7f040002;
-        public static final int pref_notification=0x7f040003;
+        public static final int pref_general=0x7f040000;
+        public static final int pref_headers=0x7f040001;
     }
 }

@@ -1,6 +1,6 @@
 package it.d4nguard.comics.persistence;
 
-import it.d4nguard.comics.utils.data.BooleanOperatorType;
+import it.d4nguard.michelle.utils.data.BooleanOperatorType;
 
 import java.lang.reflect.InvocationTargetException;
 

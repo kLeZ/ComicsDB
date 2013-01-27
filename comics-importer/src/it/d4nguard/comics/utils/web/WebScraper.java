@@ -1,10 +1,10 @@
 package it.d4nguard.comics.utils.web;
 
-import it.d4nguard.comics.utils.Convert;
-import it.d4nguard.comics.utils.ProxyInfo;
-import it.d4nguard.comics.utils.StringUtils;
-import it.d4nguard.comics.utils.TimeElapsed;
-import it.d4nguard.comics.utils.collections.Pair;
+import it.d4nguard.michelle.utils.Convert;
+import it.d4nguard.michelle.utils.ProxyInfo;
+import it.d4nguard.michelle.utils.StringUtils;
+import it.d4nguard.michelle.utils.TimeElapsed;
+import it.d4nguard.michelle.utils.collections.Pair;
 
 import java.io.StringReader;
 import java.util.HashMap;

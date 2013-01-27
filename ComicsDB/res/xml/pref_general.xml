@@ -2,10 +2,8 @@
 	<CheckBoxPreference
 		android:defaultValue="false"
 		android:key="UseWS"
-		android:summary="@string/pref_description_have_web_service"
-		android:title="@string/pref_title_have_web_service" />
-	<!-- NOTE: EditTextPreference accepts EditText attributes. -->
-	<!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+		android:summary="@string/pref_description_use_web_service"
+		android:title="@string/pref_title_use_web_service" />
 	<EditTextPreference
 		android:defaultValue="@string/pref_default_base_url"
 		android:inputType="text"
@@ -14,11 +12,6 @@
 		android:selectAllOnFocus="false"
 		android:singleLine="true"
 		android:title="@string/pref_title_base_url" />
-	<!--
-         NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
-         dismiss it.
-	-->
-	<!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
 	<ListPreference
 		android:defaultValue="360"
 		android:entries="@array/pref_sync_frequency_titles"

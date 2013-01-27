@@ -3,12 +3,12 @@ package it.d4nguard.comicsimporter;
 import it.d4nguard.comics.beans.Comic;
 import it.d4nguard.comics.beans.bo.Comics;
 import it.d4nguard.comics.persistence.Persistor;
-import it.d4nguard.comics.utils.StringUtils;
-import it.d4nguard.comics.utils.collections.Pair;
-import it.d4nguard.comics.utils.io.StreamUtils;
 import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
 import it.d4nguard.comicsimporter.parsers.ComicsSourceParser;
 import it.d4nguard.comicsimporter.parsers.ParserFactory;
+import it.d4nguard.michelle.utils.StringUtils;
+import it.d4nguard.michelle.utils.collections.Pair;
+import it.d4nguard.michelle.utils.io.StreamUtils;
 
 import java.io.IOException;
 import java.util.*;

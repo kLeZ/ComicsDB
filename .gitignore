@@ -24,6 +24,9 @@ dist/**
 dist/**/*
 tmp/**
 tmp/**/*
+ucdetector_reports/
+ucdetector_reports/**
+ucdetector_reports/**/*
 *.tmp
 *~.nib
 local.properties

@@ -1,8 +1,8 @@
 package it.d4nguard.comicsimporter.parsers;
 
-import it.d4nguard.comics.utils.collections.Pair;
 import it.d4nguard.comics.utils.web.WebScraper;
 import it.d4nguard.comicsimporter.Configuration;
+import it.d4nguard.michelle.utils.collections.Pair;
 
 import java.io.IOException;
 

@@ -1,8 +1,8 @@
 package it.d4nguard.comics.rs.webservices;
 
 import static it.d4nguard.comics.persistence.HibernateRestriction.getCriterion;
-import static it.d4nguard.comics.utils.BlankRemover.itrim;
-import static it.d4nguard.comics.utils.BlankRemover.lrtrim;
+import static it.d4nguard.michelle.utils.BlankRemover.itrim;
+import static it.d4nguard.michelle.utils.BlankRemover.lrtrim;
 import it.d4nguard.comics.beans.Comic;
 import it.d4nguard.comics.beans.bo.Comics;
 import it.d4nguard.comics.persistence.Persistor;

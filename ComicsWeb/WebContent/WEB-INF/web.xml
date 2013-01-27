@@ -17,7 +17,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>JsonPresenter</servlet-name>
-		<url-pattern>/JsonPresenterServlet</url-pattern>
+		<url-pattern>/JsonPresenter</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Resteasy</servlet-name>

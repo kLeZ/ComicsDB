@@ -1,6 +1,6 @@
 package it.d4nguard.comics.utils.data;
 
-import it.d4nguard.comics.utils.Money;
+import it.d4nguard.michelle.utils.Money;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

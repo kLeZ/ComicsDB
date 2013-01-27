@@ -11,11 +11,11 @@ function getBy() {
 	var methods = document.getElementById('method');
 	switch (value) {
 	case 'id':
-		url = './JsonPresenterServlet?q=/ComicsDB/comics/' + value + '/'
+		url = './JsonPresenter?q=/ComicsDB/comics/' + value + '/'
 				+ document.getElementById('comic_' + value).value;
 		break;
 	case 'field':
-		url = './JsonPresenterServlet?q=/ComicsDB/comics/'
+		url = './JsonPresenter?q=/ComicsDB/comics/'
 				+ document.getElementById('comic_param').value + '/'
 				+ methods.options[methods.selectedIndex].value + '/'
 				+ document.getElementById('comic_value').value + '/';

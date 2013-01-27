@@ -6,9 +6,9 @@ import it.d4nguard.comics.beans.Volume;
 import it.d4nguard.comics.beans.bo.Comics;
 import it.d4nguard.comics.beans.bo.Serie;
 import it.d4nguard.comics.feed.FeedReader;
-import it.d4nguard.comics.utils.Convert;
-import it.d4nguard.comics.utils.StringUtils;
-import it.d4nguard.comics.utils.io.DeepCopy;
+import it.d4nguard.michelle.utils.Convert;
+import it.d4nguard.michelle.utils.StringUtils;
+import it.d4nguard.michelle.utils.io.DeepCopy;
 
 import java.io.IOException;
 import java.util.ArrayList;

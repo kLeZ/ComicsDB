@@ -5,11 +5,11 @@ import it.d4nguard.comics.beans.Volume;
 import it.d4nguard.comics.beans.bo.Comics;
 import it.d4nguard.comics.beans.bo.Serie;
 import it.d4nguard.comics.beans.mappers.xml.VolumeXmlMapper;
-import it.d4nguard.comics.utils.DateUtils;
-import it.d4nguard.comics.utils.collections.Pair;
-import it.d4nguard.comics.utils.io.StreamUtils;
 import it.d4nguard.comics.utils.web.WebScraper;
 import it.d4nguard.comicsimporter.Configuration;
+import it.d4nguard.michelle.utils.DateUtils;
+import it.d4nguard.michelle.utils.collections.Pair;
+import it.d4nguard.michelle.utils.io.StreamUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

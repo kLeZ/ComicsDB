@@ -1,17 +1,20 @@
 package it.d4nguard.comicsimporter;
 
+import static it.d4nguard.michelle.utils.Convert.toBool;
+import static it.d4nguard.michelle.utils.xml.XmlUtils.*;
 import it.d4nguard.comics.beans.bo.Comics;
 import it.d4nguard.comics.beans.mappers.xml.ComicsXmlMapper;
-import it.d4nguard.comics.beans.mappers.xml.Version;
-import it.d4nguard.comics.utils.*;
-import it.d4nguard.comics.utils.collections.Pair;
-import it.d4nguard.comics.utils.io.StreamUtils;
 import it.d4nguard.comics.utils.web.WebScraper;
 import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
+import it.d4nguard.michelle.utils.*;
+import it.d4nguard.michelle.utils.collections.Pair;
+import it.d4nguard.michelle.utils.io.StreamUtils;
+import it.d4nguard.michelle.utils.xml.XmlUtils;
 
 import java.io.*;
 import java.util.ArrayList;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
@@ -21,6 +24,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class ComicsImporter
@@ -40,6 +45,82 @@ public class ComicsImporter
 	public static ComicsImporter getInstance(final String cacheFileName, final InputStream src) throws FileNotFoundException
 	{
 		return new ComicsImporter(cacheFileName, src);
+	}
+
+	/**
+	 * Predefined versions.
+	 * Actually it loads V1, V2
+	 */
+	static
+	{
+		Version.getInstance().getTranslators().add(new VersionTranslator()
+		{//Version: 1
+			@Override
+			public Element translate(Element root)
+			{
+				Element ret = (Element) root.cloneNode(true);
+				ret.setAttribute("version", "1");
+				return ret;
+			}
+		});
+
+		Version.getInstance().getTranslators().add(new VersionTranslator()
+		{//Version: 2
+			@Override
+			public Element translate(Element root)
+			{
+				Element ret = (Element) root.cloneNode(true);
+				ret.setAttribute("version", "2");
+				NodeList nodes = ret.getChildNodes();
+				boolean completa = false, inpatria = false;
+				for (int i = 0; i < nodes.getLength(); i++)
+				{
+					Node node = nodes.item(i);
+					if (node.getNodeType() == Node.ELEMENT_NODE)
+					{
+						// <fumetto/>
+						Element e = (Element) nodes.item(i);
+
+						Element serie = getElement(e, getGQName("serie"));
+
+						if (serie != null)
+						{
+							e.removeChild(serie);
+							ret.removeChild(e);
+
+							completa = toBool(getAttribute(serie, getGQName("completa")));
+							inpatria = toBool(getAttribute(serie, getGQName("completa_in_patria")));
+
+							serie.removeAttribute("completa");
+							serie.removeAttribute("completa_in_patria");
+
+							Element e_completa = createElement(new QName("completa"));
+							setElementText(e_completa, String.valueOf(completa));
+							e_completa.setAttribute("in_patria", String.valueOf(inpatria));
+
+							setElement(e, new QName("completa"), e_completa);
+							setElement(e, new QName("serie"), serie);
+
+							setElement(ret, new QName("fumetto"), e);
+						}
+						else
+						{
+							log.trace(e.getParentNode().getNodeName());
+							log.trace(XmlUtils.toString(e, false, true));
+						}
+					}
+					else
+					{
+						String xml = StringUtils.clean(XmlUtils.toString(node));
+						if (!xml.isEmpty())
+						{
+							log.trace(xml);
+						}
+					}
+				}
+				return ret;
+			}
+		});
 	}
 
 	private InputStream src;

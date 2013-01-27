@@ -1,8 +1,8 @@
 <%TimeElapsed elapsed = new TimeElapsed(); elapsed.start();%>
 <?xml version="1.0" encoding="UTF-8" ?>
 <%@ page import="java.util.*" %>
-<%@ page import="it.d4nguard.comics.utils.*" %>
-<%@ page import="it.d4nguard.comics.utils.web.Tablizer" %>
+<%@ page import="it.d4nguard.michelle.utils.*" %>
+<%@ page import="it.d4nguard.michelle.utils.web.Tablizer" %>
 <%@ page import="it.d4nguard.comics.beans.*" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="false" %>
 
@@ -20,7 +20,7 @@
 	</div>
 	<div id="col1">
 		<ul>
-			<li><a href="/JsonPresenterServlet?q=/ComicsDB/comics">GetAll</a> | Prints an xml with
+			<li><a href="./JsonPresenter?q=/ComicsDB/comics">GetAll</a> | Prints an xml with
 				all the Comics loaded from database (now 3012)</li>
 			<li><a href="javascript:getBy();">GetBy</a><br /> {<input
 				type="radio" name="getBy" value="id" checked="checked" />Id: <input
