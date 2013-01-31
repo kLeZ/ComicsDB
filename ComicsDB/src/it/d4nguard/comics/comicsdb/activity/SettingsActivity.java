@@ -7,6 +7,7 @@ import java.util.List;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -61,14 +62,6 @@ public class SettingsActivity extends PreferenceActivity
 		switch (item.getItemId())
 		{
 			case android.R.id.home:
-				// This ID represents the Home or Up button. In the case of this
-				// activity, the Up button is shown. Use NavUtils to allow users
-				// to navigate up one level in the application structure. For
-				// more details, see the Navigation pattern on Android Design:
-				//
-				// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-				//
-				// that hierarchy.
 				NavUtils.navigateUpFromSameTask(this);
 				return true;
 		}
@@ -79,7 +72,6 @@ public class SettingsActivity extends PreferenceActivity
 	protected void onPostCreate(Bundle savedInstanceState)
 	{
 		super.onPostCreate(savedInstanceState);
-
 		setupSimplePreferencesScreen();
 	}
 
@@ -92,22 +84,8 @@ public class SettingsActivity extends PreferenceActivity
 	private void setupSimplePreferencesScreen()
 	{
 		if (!isSimplePreferences(this)) { return; }
-
-		// In the simplified UI, fragments are not used at all and we instead
-		// use the older PreferenceActivity APIs.
-
-		// Add 'general' preferences.
 		addPreferencesFromResource(R.xml.pref_general);
-
-		// Bind the summaries of EditText/List/Dialog/Ringtone preferences to
-		// their values. When their values change, their summaries are updated
-		// to reflect the new value, per the Android Design guidelines.
-		Preference useWs = findPreference(ComicsDBPreferences.USE_WS);
-		useWs.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-		sBindPreferenceSummaryToValueListener.onPreferenceChange(useWs, PreferenceManager.getDefaultSharedPreferences(useWs.getContext()).getBoolean(useWs.getKey(), false));
-
-		bindPreferenceSummaryToValue(findPreference(ComicsDBPreferences.BASE_URL));
-		bindPreferenceSummaryToValue(findPreference(ComicsDBPreferences.SYNC_FREQ));
+		bindSettings(this);
 	}
 
 	/** {@inheritDoc} */
@@ -181,25 +159,6 @@ public class SettingsActivity extends PreferenceActivity
 	};
 
 	/**
-	 * Binds a preference's summary to its value. More specifically, when the
-	 * preference's value is changed, its summary (line of text below the
-	 * preference title) is updated to reflect the value. The summary is also
-	 * immediately updated upon calling this method. The exact display format is
-	 * dependent on the type of preference.
-	 * 
-	 * @see #sBindPreferenceSummaryToValueListener
-	 */
-	private static void bindPreferenceSummaryToValue(Preference preference)
-	{
-		// Set the listener to watch for value changes.
-		preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-
-		// Trigger the listener immediately with the preference's
-		// current value.
-		sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, PreferenceManager.getDefaultSharedPreferences(preference.getContext()).getString(preference.getKey(), ""));
-	}
-
-	/**
 	 * This fragment shows general preferences only. It is used when the
 	 * activity is showing a two-pane settings UI.
 	 */
@@ -211,18 +170,91 @@ public class SettingsActivity extends PreferenceActivity
 		{
 			super.onCreate(savedInstanceState);
 			addPreferencesFromResource(R.xml.pref_general);
-
-			// Bind the summaries of EditText/List/Dialog/Ringtone preferences
-			// to their values. When their values change, their summaries are
-			// updated to reflect the new value, per the Android Design
-			// guidelines.
-
-			Preference useWs = findPreference(ComicsDBPreferences.USE_WS);
-			useWs.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-			sBindPreferenceSummaryToValueListener.onPreferenceChange(useWs, PreferenceManager.getDefaultSharedPreferences(useWs.getContext()).getBoolean(useWs.getKey(), false));
-
-			bindPreferenceSummaryToValue(findPreference(ComicsDBPreferences.BASE_URL));
-			bindPreferenceSummaryToValue(findPreference(ComicsDBPreferences.SYNC_FREQ));
+			bindSettings(this);
 		}
+
+		public static void bindSettings(PreferenceFragment pref)
+		{
+			bindPref(pref.findPreference(ComicsDBPreferences.USE_WS), Boolean.class, false);
+			//		Preference useWs = pref.findPreference(ComicsDBPreferences.USE_WS);
+			//		useWs.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+			//		sBindPreferenceSummaryToValueListener.onPreferenceChange(useWs, PreferenceManager.getDefaultSharedPreferences(useWs.getContext()).getBoolean(useWs.getKey(), false));
+
+			bindPref(pref.findPreference(ComicsDBPreferences.SYNC_FREQ), String.class, "360");
+			//		Preference syncFreq = pref.findPreference(ComicsDBPreferences.SYNC_FREQ);
+			//		syncFreq.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+			//		sBindPreferenceSummaryToValueListener.onPreferenceChange(syncFreq, PreferenceManager.getDefaultSharedPreferences(syncFreq.getContext()).getInt(syncFreq.getKey(), -1));
+
+			bindPref(pref.findPreference(ComicsDBPreferences.HTTP_REQUEST_METHOD), String.class, "1");
+			//		Preference reqMethod = pref.findPreference(ComicsDBPreferences.HTTP_REQUEST_METHOD);
+			//		reqMethod.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+			//		sBindPreferenceSummaryToValueListener.onPreferenceChange(reqMethod, PreferenceManager.getDefaultSharedPreferences(reqMethod.getContext()).getInt(reqMethod.getKey(), 1));
+
+			bindPref(pref.findPreference(ComicsDBPreferences.BASE_URL), String.class, "");
+			//		bindPreferenceSummaryToValue(pref.findPreference(ComicsDBPreferences.BASE_URL));
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public static void bindSettings(PreferenceActivity pref)
+	{
+		bindPref(pref.findPreference(ComicsDBPreferences.USE_WS), Boolean.class, false);
+		//		Preference useWs = pref.findPreference(ComicsDBPreferences.USE_WS);
+		//		useWs.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+		//		sBindPreferenceSummaryToValueListener.onPreferenceChange(useWs, PreferenceManager.getDefaultSharedPreferences(useWs.getContext()).getBoolean(useWs.getKey(), false));
+
+		bindPref(pref.findPreference(ComicsDBPreferences.SYNC_FREQ), String.class, "360");
+		//		Preference syncFreq = pref.findPreference(ComicsDBPreferences.SYNC_FREQ);
+		//		syncFreq.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+		//		sBindPreferenceSummaryToValueListener.onPreferenceChange(syncFreq, PreferenceManager.getDefaultSharedPreferences(syncFreq.getContext()).getInt(syncFreq.getKey(), -1));
+
+		bindPref(pref.findPreference(ComicsDBPreferences.HTTP_REQUEST_METHOD), String.class, "1");
+		//		Preference reqMethod = pref.findPreference(ComicsDBPreferences.HTTP_REQUEST_METHOD);
+		//		reqMethod.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+		//		sBindPreferenceSummaryToValueListener.onPreferenceChange(reqMethod, PreferenceManager.getDefaultSharedPreferences(reqMethod.getContext()).getInt(reqMethod.getKey(), 1));
+
+		bindPref(pref.findPreference(ComicsDBPreferences.BASE_URL), String.class, "");
+		//		bindPreferenceSummaryToValue(pref.findPreference(ComicsDBPreferences.BASE_URL));
+	}
+
+	public static <T> void bindPref(Preference pref, Class<T> type, T defaultVal)
+	{
+		pref.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(pref.getContext());
+		Object val = null;
+
+		if (type.equals(String.class))
+		{
+			val = sharedPrefs.getString(pref.getKey(), (String) defaultVal);
+		}
+		/*
+		 * This type can be evaluated only on Honeycomb API and greater.
+		 * I cannot make a single method that does only this
+		 * so when I pass the app to a better API level I will decomment it.
+		 */
+		/*
+		else if (type.equals(Set.class) && type.getTypeParameters()[0].getClass().equals(String.class))
+		{
+			val = sharedPrefs.getStringSet(pref.getKey(), (Set<String>) defaultVal);
+		}
+		*/
+		else if (type.equals(Boolean.class))
+		{
+			val = sharedPrefs.getBoolean(pref.getKey(), (Boolean) defaultVal);
+		}
+		else if (type.equals(Float.class))
+		{
+			val = sharedPrefs.getFloat(pref.getKey(), (Float) defaultVal);
+		}
+		else if (type.equals(Integer.class))
+		{
+			val = sharedPrefs.getInt(pref.getKey(), (Integer) defaultVal);
+		}
+		else if (type.equals(Long.class))
+		{
+			val = sharedPrefs.getLong(pref.getKey(), (Long) defaultVal);
+		}
+
+		sBindPreferenceSummaryToValueListener.onPreferenceChange(pref, val);
 	}
 }

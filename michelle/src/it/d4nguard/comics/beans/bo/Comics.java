@@ -85,6 +85,11 @@ public class Comics extends HashSet<Comic> implements Serializable
 		return sb.toString();
 	}
 
+	public List<Comic> toList()
+	{
+		return Arrays.asList(toArray(new Comic[] {}));
+	}
+
 	/**
 	 * This method orders the Comics list by Editors, counting all of the
 	 * publications and including the list of comics per editor.

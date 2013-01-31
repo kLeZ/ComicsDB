@@ -2,8 +2,12 @@ package it.d4nguard.comics.beans;
 
 import it.d4nguard.michelle.utils.Money;
 
-public class Volume
+import java.io.Serializable;
+
+public class Volume implements Serializable
 {
+	private static final long serialVersionUID = -2233198130283684217L;
+
 	private Long id;
 	private Long comicId;
 	private String name;

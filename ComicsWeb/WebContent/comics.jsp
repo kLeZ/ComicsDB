@@ -10,6 +10,9 @@
 	<script language="javascript" type="text/javascript" src="js/rest-util.js"></script>
 </head>
 <body>
+	<a href=".">Return to Home</a><br /><hr />
 	${Comics}
+	<hr />
+	<p>System took <strong>${NanoTiming} ns</strong> (${NanoTimingFormatted}) to get <span>${TotalComics}</span> total comic(s)</p>
 </body>
 </html>

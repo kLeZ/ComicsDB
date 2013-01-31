@@ -2,10 +2,13 @@ package it.d4nguard.comics.beans;
 
 import it.d4nguard.michelle.utils.StringUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Typology
+public class Typology implements Serializable
 {
+	private static final long serialVersionUID = -5626007508089971048L;
+
 	private static ArrayList<Typology> typologies = new ArrayList<Typology>();
 
 	private Long id;

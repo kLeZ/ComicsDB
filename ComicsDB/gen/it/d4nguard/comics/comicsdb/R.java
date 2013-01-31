@@ -9,6 +9,8 @@ package it.d4nguard.comics.comicsdb;
 
 public final class R {
     public static final class array {
+        public static final int pref_http_request_method_titles=0x7f060002;
+        public static final int pref_http_request_method_values=0x7f060003;
         public static final int pref_sync_frequency_titles=0x7f060000;
         public static final int pref_sync_frequency_values=0x7f060001;
     }
@@ -33,13 +35,12 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f050003;
-        public static final int bGetAll_text=0x7f050007;
-        public static final int bSearch_text=0x7f050006;
+        public static final int bGetAll_text=0x7f050006;
+        public static final int bSearch_text=0x7f050005;
         public static final int eq=0x7f050008;
         public static final int ge=0x7f05000c;
         public static final int get_id_reflection_denied=0x7f050000;
         public static final int gt=0x7f05000b;
-        public static final int hello_world=0x7f050004;
         public static final int hibernate_restriction_cause=0x7f050001;
         public static final int isEmpty=0x7f050011;
         public static final int isNotEmpty=0x7f050012;
@@ -49,21 +50,18 @@ public final class R {
         public static final int like=0x7f05000a;
         public static final int lt=0x7f05000d;
         public static final int malformed_url=0x7f050002;
-        public static final int menu_settings=0x7f050005;
+        public static final int menu_settings=0x7f050004;
         public static final int ne=0x7f050009;
-        public static final int pref_default_base_url=0x7f050018;
-        public static final int pref_description_use_web_service=0x7f050016;
-        /**  Strings related to Settings 
- Example General settings 
-         */
-        public static final int pref_header_general=0x7f050014;
-        public static final int pref_title_base_url=0x7f050017;
-        /**  Example settings for Data & Sync 
-         */
-        public static final int pref_title_sync_frequency=0x7f050019;
-        public static final int pref_title_system_sync_settings=0x7f05001a;
-        public static final int pref_title_use_web_service=0x7f050015;
-        public static final int title_activity_settings=0x7f050013;
+        public static final int pref_default_base_url=0x7f050019;
+        public static final int pref_description_use_web_service=0x7f050017;
+        public static final int pref_header_general=0x7f050015;
+        public static final int pref_title_base_url=0x7f050018;
+        public static final int pref_title_http_request_method=0x7f05001b;
+        public static final int pref_title_sync_frequency=0x7f05001a;
+        public static final int pref_title_use_web_service=0x7f050016;
+        public static final int processing_message=0x7f050007;
+        public static final int title_activity_comic_list=0x7f050013;
+        public static final int title_activity_settings=0x7f050014;
     }
     public static final class style {
         /** 

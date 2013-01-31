@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Money implements Serializable
 {
@@ -122,11 +124,18 @@ public class Money implements Serializable
 		Pair<Currency, Locale> entry;
 		for (final Locale loc : locs)
 		{
-			// Filters IllegalArgumentException given by passing Language Locales instead of Country ones.
-			if (loc.getCountry().length() == 2)
+			try
 			{
-				entry = new Pair<Currency, Locale>(Currency.getInstance(loc), loc);
-				ret.add(entry);
+				// Filters IllegalArgumentException given by passing Language Locales instead of Country ones.
+				if (loc.getCountry().length() == 2)
+				{
+					entry = new Pair<Currency, Locale>(Currency.getInstance(loc), loc);
+					ret.add(entry);
+				}
+			}
+			catch (IllegalArgumentException e)
+			{
+				Logger.getLogger(Money.class.getName()).log(Level.FINER, e.getLocalizedMessage(), e);
 			}
 		}
 		return ret;
@@ -135,12 +144,20 @@ public class Money implements Serializable
 	public static Currency getCurrency(final String symbol)
 	{
 		Currency ret = null;
-		for (final Map.Entry<Currency, Locale> e : getAllCurrencies())
+		boolean isDefault = Currency.getInstance(Locale.getDefault()).getSymbol().contentEquals(symbol);
+		if (isDefault)
 		{
-			if (e.getKey().getSymbol().contentEquals(symbol))
+			ret = Currency.getInstance(Locale.getDefault());
+		}
+		else
+		{
+			for (final Map.Entry<Currency, Locale> e : getAllCurrencies())
 			{
-				ret = e.getKey();
-				break;
+				if (e.getKey().getSymbol().contentEquals(symbol))
+				{
+					ret = e.getKey();
+					break;
+				}
 			}
 		}
 		return ret;
@@ -150,12 +167,20 @@ public class Money implements Serializable
 	{
 		Locale ret = null;
 		final Iterator<Map.Entry<Currency, Locale>> it = getAllCurrencies().iterator();
-		while (it.hasNext() && (ret == null))
+		boolean isDefault = Currency.getInstance(Locale.getDefault()).getSymbol().contentEquals(symbol);
+		if (isDefault)
 		{
-			final Map.Entry<Currency, Locale> current = it.next();
-			if (current.getKey().getSymbol().contentEquals(symbol))
+			ret = Locale.getDefault();
+		}
+		else
+		{
+			while (it.hasNext() && (ret == null))
 			{
-				ret = current.getValue();
+				final Map.Entry<Currency, Locale> current = it.next();
+				if (current.getKey().getSymbol().contentEquals(symbol))
+				{
+					ret = current.getValue();
+				}
 			}
 		}
 		return ret;

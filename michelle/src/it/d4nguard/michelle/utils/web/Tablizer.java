@@ -33,19 +33,22 @@ public class Tablizer<T> implements HtmlElement
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields)
 		{
-			String type = "";
-			if (field.getGenericType() instanceof ParameterizedType)
+			if (!field.getName().equalsIgnoreCase("id") && !field.getName().equalsIgnoreCase("serialVersionUID"))
 			{
-				ParameterizedType pt = (ParameterizedType) field.getGenericType();
-				Class<?> typec = (Class<?>) pt.getRawType();
-				Class<?> typegen = (Class<?>) pt.getActualTypeArguments()[0];
-				type = String.format("%s Of %s", typec.getSimpleName(), typegen.getSimpleName());
+				String type = "";
+				if (field.getGenericType() instanceof ParameterizedType)
+				{
+					ParameterizedType pt = (ParameterizedType) field.getGenericType();
+					Class<?> typec = (Class<?>) pt.getRawType();
+					Class<?> typegen = (Class<?>) pt.getActualTypeArguments()[0];
+					type = String.format("%s Of %s", typec.getSimpleName(), typegen.getSimpleName());
+				}
+				else
+				{
+					type = field.getType().getSimpleName();
+				}
+				table.add(type, field.getName(), clazz.getSimpleName());
 			}
-			else
-			{
-				type = field.getType().getSimpleName();
-			}
-			table.add(type, field.getName(), clazz.getSimpleName());
 		}
 		return table;
 	}

@@ -6,8 +6,116 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GenericsUtils<T>
+public class GenericsUtils
 {
+	private static final HashMap<String, Class<?>> primitives = new HashMap<String, Class<?>>();
+	static
+	{
+		primitives.put("boolean", Boolean.class);
+		primitives.put("byte", Byte.class);
+		primitives.put("char", Character.class);
+		primitives.put("double", Double.class);
+		primitives.put("float", Float.class);
+		primitives.put("int", Integer.class);
+		primitives.put("long", Long.class);
+		primitives.put("short", Short.class);
+	}
+
+	public static <T> T valueOf(Class<T> valueType, String value)
+	{
+		return unsafeValueOf(valueType, value, null);
+	}
+
+	public static <T> T valueOf(Class<T> valueType, String value, Object defaultValue)
+	{
+		return unsafeValueOf(valueType, value, defaultValue);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> T unsafeValueOf(Class<T> valueType, String value, Object defaultValue)
+	{
+		T ret = null;
+		if (valueType.isInstance(value))
+		{
+			ret = (T) value;
+		}
+		else if (isPrimitiveOrPrimitiveWrapper(valueType) && !valueType.equals(Character.class))
+		{
+			try
+			{
+				// Character has only valueOf(char)
+				// All primitives have valueOf(String) except Character
+				ret = (T) valueType.getMethod("valueOf", String.class).invoke(null, value);
+			}
+			catch (IllegalAccessException e)
+			{
+				e.printStackTrace();
+			}
+			catch (IllegalArgumentException e)
+			{
+				e.printStackTrace();
+			}
+			catch (InvocationTargetException e)
+			{
+				e.printStackTrace();
+			}
+			catch (NoSuchMethodException e)
+			{
+				e.printStackTrace();
+			}
+			catch (SecurityException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		else if (valueType.equals(Character.class))
+		{
+			String v = String.valueOf(value);
+			ret = (T) new Character(v.isEmpty() ? 0 : v.charAt(0));
+		}
+		else if (valueType.equals(String.class))
+		{
+			ret = (T) String.valueOf(value);
+		}
+
+		if (ret == null)
+		{
+			ret = (T) defaultValue;
+		}
+		return ret;
+	}
+
+	/**
+	 * @param type
+	 * @return
+	 */
+	public static boolean isPrimitiveOrPrimitiveWrapper(Class<?> type)
+	{
+		return type.isPrimitive() || primitives.values().contains(type);
+	}
+
+	public static Class<?> getFieldType(Class<?> fieldContainer, String fieldName)
+	{
+		Class<?> t = null;
+		Field[] fields = fieldContainer.getDeclaredFields();
+		for (Field field : fields)
+		{
+			if (field.getName().equalsIgnoreCase(fieldName))
+			{
+				if (field.getType().isPrimitive())
+				{
+					t = primitives.get(field.getType().getName());
+				}
+				else
+				{
+					t = field.getType();
+				}
+				break;
+			}
+		}
+		return t;
+	}
+
 	public static <T> T safeGetter(T value, Class<T> type)
 	{
 		T ret = null;

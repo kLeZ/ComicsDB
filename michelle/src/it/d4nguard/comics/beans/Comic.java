@@ -2,11 +2,14 @@ package it.d4nguard.comics.beans;
 
 import it.d4nguard.michelle.utils.StringUtils;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Set;
 
-public class Comic
+public class Comic implements Serializable
 {
+	private static final long serialVersionUID = -1699848708467851429L;
+
 	private Long id;
 	private URL url;
 	private String originalTitle;
@@ -70,13 +73,19 @@ public class Comic
 	public String getTitle()
 	{
 		String ret = "";
-		if (!StringUtils.isNullOrWhitespace(getOriginalTitle()) && !StringUtils.isNullOrWhitespace(ret))
+		if (!StringUtils.isNullOrWhitespace(getOriginalTitle()))
 		{
-			ret = getOriginalTitle().toUpperCase();
+			if (StringUtils.isNullOrWhitespace(ret))
+			{
+				ret = getOriginalTitle().toUpperCase();
+			}
 		}
-		if (!StringUtils.isNullOrWhitespace(getEnglishTitle()) && !StringUtils.isNullOrWhitespace(ret))
+		if (!StringUtils.isNullOrWhitespace(getEnglishTitle()))
 		{
-			ret = getEnglishTitle().toUpperCase();
+			if (StringUtils.isNullOrWhitespace(ret))
+			{
+				ret = getEnglishTitle().toUpperCase();
+			}
 		}
 		return ret;
 	}

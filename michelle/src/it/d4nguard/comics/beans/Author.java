@@ -2,10 +2,13 @@ package it.d4nguard.comics.beans;
 
 import it.d4nguard.michelle.utils.StringUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Author
+public class Author implements Serializable
 {
+	private static final long serialVersionUID = 8975130996029130784L;
+
 	private static ArrayList<Author> authors = new ArrayList<Author>();
 
 	private Long id;

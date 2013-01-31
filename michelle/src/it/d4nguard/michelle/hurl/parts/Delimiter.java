@@ -111,7 +111,7 @@ public final class Delimiter
 			{
 				sb.append(delimiter);
 			}
-			if (String.valueOf(o).startsWith(delimiter))
+			if (String.valueOf(o).startsWith(delimiter) && (sb.lastIndexOf(delimiter) > -1))
 			{
 				sb.deleteCharAt(sb.lastIndexOf(delimiter));
 			}

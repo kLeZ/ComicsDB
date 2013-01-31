@@ -13,6 +13,9 @@ import it.d4nguard.michelle.utils.data.DataTable;
 import it.d4nguard.michelle.utils.data.MoneyJsonDeserializer;
 import it.d4nguard.michelle.utils.data.MoneyJsonSerializer;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,33 +26,68 @@ import com.google.gson.reflect.TypeToken;
 
 public class ComicsUtils
 {
-	@SuppressWarnings("unchecked")
+	public static final Type ComicListType = new TypeToken<ArrayList<Comic>>()
+	{
+	}.getType();
+	public static final Type ComicType = new TypeToken<Comic>()
+	{
+	}.getType();
+
 	public static Comics getComicsFromJson(String json, boolean isArray)
 	{
 		Comics comics = new Comics();
 		if (!StringUtils.isNullOrWhitespace(json))
 		{
-			GsonBuilder gsonBuilder = new GsonBuilder();
-			gsonBuilder.registerTypeAdapter(Money.class, new MoneyJsonSerializer());
-			gsonBuilder.registerTypeAdapter(Money.class, new MoneyJsonDeserializer());
-			Gson gson = gsonBuilder.create();
-			Type t = null;
-			if (isArray)
-			{
-				t = new TypeToken<ArrayList<Comic>>()
-				{
-				}.getType();
-				comics.addAll((Collection<Comic>) gson.fromJson(json, t));
-			}
-			else
-			{
-				t = new TypeToken<Comic>()
-				{
-				}.getType();
-				comics.add((Comic) gson.fromJson(json, t));
-			}
+			comics.addAll(getComicsFromJson(new StringReader(json), isArray));
 		}
 		return comics;
+	}
+
+	public static Comics getComicsFromJson(Reader json, boolean isArray)
+	{
+		Comics comics = new Comics();
+		try
+		{
+			if ((json != null) && json.ready())
+			{
+				Gson gson = createJsonParser();
+				Collection<Comic> retrieved = fromJson(json, isArray, gson);
+				comics.addAll(retrieved);
+			}
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		return comics;
+	}
+
+	public static Gson createJsonParser()
+	{
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Money.class, new MoneyJsonSerializer());
+		gsonBuilder.registerTypeAdapter(Money.class, new MoneyJsonDeserializer());
+		Gson gson = gsonBuilder.create();
+		return gson;
+	}
+
+	public static Collection<Comic> fromJson(String json, boolean isArray, Gson gson)
+	{
+		return fromJson(new StringReader(json), isArray, gson);
+	}
+
+	public static Collection<Comic> fromJson(Reader json, boolean isArray, Gson gson)
+	{
+		Collection<Comic> retrieved = new ArrayList<Comic>();
+		if (isArray)
+		{
+			retrieved.addAll(gson.<Collection<Comic>> fromJson(json, ComicListType));
+		}
+		else
+		{
+			retrieved.add(gson.<Comic> fromJson(json, ComicType));
+		}
+		return retrieved;
 	}
 
 	public static DataTable comicsToDataTable(Comics comics)

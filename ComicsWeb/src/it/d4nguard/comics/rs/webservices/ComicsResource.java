@@ -6,6 +6,7 @@ import static it.d4nguard.michelle.utils.BlankRemover.lrtrim;
 import it.d4nguard.comics.beans.Comic;
 import it.d4nguard.comics.beans.bo.Comics;
 import it.d4nguard.comics.persistence.Persistor;
+import it.d4nguard.michelle.utils.GenericsUtils;
 
 import java.util.HashMap;
 
@@ -40,7 +41,7 @@ public class ComicsResource
 	@Path("{param}/{method}/{value}")
 	/**
 	 * 
-	 * Esempio di chiamata rest: http://<url>/<app>/ComicsDB/comic/englishTitle/eq/Air Gear
+	 * Esempio di chiamata rest: http://<url>/<app>/ComicsDB/comics/englishTitle/eq/Air Gear
 	 * 
 	 * @param param
 	 * @param method
@@ -58,21 +59,27 @@ public class ComicsResource
 		param = itrim(lrtrim(param)).toString();
 		method = itrim(lrtrim(method)).toString();
 		value = itrim(lrtrim(value)).toString();
+		Class<?> valueType = null;
 
 		if (param.indexOf('.') >= 0)
 		{
 			String[] split = param.split("\\.");
 			aliases.put(split[0], "z");
 			field = String.format("z.%s", split[1]);
+			Class<?> paramType = GenericsUtils.getFieldType(Comic.class, split[0]);
+			valueType = GenericsUtils.getFieldType(paramType, split[1]);
 		}
 		else
 		{
 			field = param;
+			valueType = GenericsUtils.getFieldType(Comic.class, param);
 		}
+
+		Object val = GenericsUtils.valueOf(valueType, value, value);
 
 		try
 		{
-			ret.addAll(db.findByCriterion(Comic.class, aliases, getCriterion(method, field, value)));
+			ret.addAll(db.findByCriterion(Comic.class, aliases, getCriterion(method, field, val)));
 		}
 		catch (Throwable e)
 		{

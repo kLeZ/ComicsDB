@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
@@ -18,6 +19,21 @@ import java.util.Map;
  */
 public class WebUtils
 {
+	public static String uriToString(URI uri)
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("Uri params [");
+		sb.append("Scheme: ").append(uri.getScheme()).append(", ");
+		sb.append("SchemeSpecificPart: ").append(uri.getSchemeSpecificPart()).append(", ");
+		sb.append("Authority: ").append(uri.getAuthority()).append(", ");
+		sb.append("UserInfo: ").append(uri.getUserInfo()).append(", ");
+		sb.append("Host: ").append(uri.getHost()).append(", ");
+		sb.append("Port: ").append(uri.getPort()).append(", ");
+		sb.append("Path: ").append(uri.getPath()).append(", ");
+		sb.append("Query: ").append(uri.getQuery()).append("]");
+		return sb.toString();
+	}
+
 	public static Map<String, String> getQueryMap(String query)
 	{
 		String[] params = query.split("&");

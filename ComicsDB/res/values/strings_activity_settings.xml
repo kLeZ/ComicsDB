@@ -1,13 +1,10 @@
 <resources>
 	<string name="title_activity_settings">Settings</string>
-	<!-- Strings related to Settings -->
-	<!-- Example General settings -->
 	<string name="pref_header_general">General</string>
 	<string name="pref_title_use_web_service">Enable use of internet fetch services</string>
 	<string name="pref_description_use_web_service">Check if you want to use the internet service to fetch new comics.</string>
 	<string name="pref_title_base_url">Web site of fetch service</string>
-	<string name="pref_default_base_url">http://10.0.2.2/ComicsWeb/</string>
-	<!-- Example settings for Data & Sync -->
+	<string name="pref_default_base_url">http://10.0.2.2:8080/ComicsWeb/</string>
 	<string name="pref_title_sync_frequency">Sync frequency</string>
 	<string-array name="pref_sync_frequency_titles">
 		<item>15 minutes</item>
@@ -25,6 +22,13 @@
 		<item>360</item>
 		<item>-1</item>
 	</string-array>
-	<string name="pref_title_system_sync_settings">System sync settings</string>
-	<!-- Example settings for Notifications -->
+	<string name="pref_title_http_request_method">Web Request Method</string>
+	<string-array name="pref_http_request_method_titles">
+		<item>Http Client (Default)</item>
+		<item>Url Connection (More simple)</item>
+	</string-array>
+	<string-array name="pref_http_request_method_values">
+		<item>1</item>
+		<item>2</item>
+	</string-array>
 </resources>

@@ -94,7 +94,7 @@ public class TimeElapsed
 		return formatted(appendFirst, nanotime, true);
 	}
 
-	public String formatted(String appendFirst, long nanotime, boolean human)
+	public static String formatted(String appendFirst, long nanotime, boolean human)
 	{
 		String ret = "";
 		if (human)

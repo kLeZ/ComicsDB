@@ -9,12 +9,12 @@ import org.hibernate.criterion.Restrictions;
 
 public class HibernateRestriction
 {
-	public static Criterion getCriterion(String method, String field, String value) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException
+	public static <T> Criterion getCriterion(String method, String field, T value) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException
 	{
 		return getCriterion(BooleanOperatorType.valueOf(method), field, value);
 	}
 
-	public static Criterion getCriterion(BooleanOperatorType res, String field, String value) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException
+	public static <T> Criterion getCriterion(BooleanOperatorType res, String field, T value) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException
 	{
 		Criterion crit = null;
 		Class<Restrictions> rsc = Restrictions.class;

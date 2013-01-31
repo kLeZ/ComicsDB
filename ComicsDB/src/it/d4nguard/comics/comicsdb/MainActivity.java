@@ -1,14 +1,16 @@
 package it.d4nguard.comics.comicsdb;
 
-import it.d4nguard.comics.beans.Comic;
 import it.d4nguard.comics.beans.bo.Comics;
+import it.d4nguard.comics.comicsdb.activity.ComicListActivity;
 import it.d4nguard.comics.comicsdb.activity.SettingsActivity;
 import it.d4nguard.comics.comicsdb.data.ComicsDBPreferences;
 import it.d4nguard.comics.comicsdb.logic.FetchComicsTask;
+import it.d4nguard.comics.comicsdb.utils.WebClientUtils;
 import it.d4nguard.michelle.hurl.build.PathBuilder;
 import it.d4nguard.michelle.hurl.build.UriBuilder;
 import it.d4nguard.michelle.utils.BlankRemover;
 import it.d4nguard.michelle.utils.data.BooleanOperatorType;
+import it.d4nguard.michelle.utils.web.WebUtils;
 
 import java.net.URI;
 import java.util.LinkedHashMap;
@@ -33,6 +35,7 @@ public class MainActivity extends Activity
 
 	private String baseUrl = "";
 	private boolean useWs = false;
+	private int requestType = 1;
 
 	ComicsDBPreferences prefs = null;
 
@@ -54,6 +57,7 @@ public class MainActivity extends Activity
 
 		baseUrl = prefs.getBaseUrl();
 		useWs = prefs.useWs();
+		requestType = Integer.valueOf(prefs.getHttpRequestMethod());
 
 		prefs.getDebugToast(this, Toast.LENGTH_LONG).show();
 
@@ -117,39 +121,67 @@ public class MainActivity extends Activity
 
 	public void search(View view)
 	{
-		new Comics();
-		PathBuilder path = PathBuilder.create().parse(baseUrl, "/ComicsDB/comics");
-		path.addElement(getField()).addElement(getMethodName()).addElement(getValue());
+		executeSearch(true);
+	}
 
-		URI uri = UriBuilder.create().setPath(path).build().normalize();
+	public void getAll(View view)
+	{
+		executeSearch(false);
+	}
 
-		Toast.makeText(this, uri.toASCIIString(), Toast.LENGTH_LONG).show();
-		if (useWs)
+	public void executeSearch(boolean addParams)
+	{
+		UriBuilder builder = UriBuilder.create(baseUrl);
+		PathBuilder path = PathBuilder.create().parse(builder.getPath(), "/ComicsDB/comics");
+		if (addParams)
 		{
-			FetchComicsTask fetcher = createComicsFetcher();
-			fetcher.execute(uri);
+			path.addElement(getField()).addElement(getMethodName()).addElement(getValue());
+		}
+
+		URI uri = builder.setPath(path).build().normalize();
+
+		Log.d(TAG, WebUtils.uriToString(uri));
+		Toast.makeText(this, uri.toASCIIString(), Toast.LENGTH_LONG).show();
+		if (useWs && (uri.getHost() != null))
+		{
+			if (WebClientUtils.isDeviceConnected(this))
+			{
+				FetchComicsTask fetcher = createComicsFetcher();
+				fetcher.execute(uri);
+			}
+			else
+			{
+				Log.e(TAG, "No network connected!");
+				Toast.makeText(getApplicationContext(), "No network connected!", Toast.LENGTH_LONG).show();
+			}
 		}
 	}
 
-	/**
-	 * @return
-	 */
 	public FetchComicsTask createComicsFetcher()
 	{
-		FetchComicsTask fetcher = new FetchComicsTask();
+		final FetchComicsTask fetcher = new FetchComicsTask(WebClientUtils.GET_TASK, requestType, this, this, getString(R.string.processing_message));
 		fetcher.setOnProgressUpdateListener(new FetchComicsTask.OnProgressUpdateListener()
 		{
 			@Override
 			public void doProgressUpdate(Integer... values)
 			{
-				//current.size(), comics.size(), i, params.length
 				StringBuilder sb = new StringBuilder();
 				sb.append(String.format("Current set of comics came with %d elements", values[0]));
+				sb.append(System.getProperty("line.separator"));
 				sb.append(String.format("Total set of comics has %d elements", values[1]));
+				sb.append(System.getProperty("line.separator"));
 				sb.append(String.format("Current url iteration index is %d", values[2]));
+				sb.append(System.getProperty("line.separator"));
 				sb.append(String.format("Total url iterations are %d", values[3]));
+				sb.append(System.getProperty("line.separator"));
 
-				Toast.makeText(getApplicationContext(), sb.toString(), Toast.LENGTH_LONG).show();
+				Toast.makeText(getParent().getCaller(), sb.toString(), Toast.LENGTH_LONG).show();
+			}
+
+			@Override
+			public FetchComicsTask getParent()
+			{
+				return fetcher;
 			}
 		});
 		fetcher.setOnPostExecuteListener(new FetchComicsTask.OnSomeActionWithResultListener()
@@ -157,12 +189,16 @@ public class MainActivity extends Activity
 			@Override
 			public void doSomeActionWithResult(Comics result)
 			{
-				Toast.makeText(getApplicationContext(), "Finished!", Toast.LENGTH_LONG).show();
+				Toast.makeText(getParent().getCaller(), "Finished!", Toast.LENGTH_LONG).show();
+				Intent comicsList = new Intent(getParent().getCaller(), ComicListActivity.class);
+				comicsList = comicsList.putExtra(ComicListActivity.COMICS_EXTRA_NAME, result);
+				getParent().getCaller().startActivity(comicsList);
+			}
 
-				for (Comic comic : result)
-				{
-					Toast.makeText(getApplicationContext(), comic.toString(), Toast.LENGTH_LONG).show();
-				}
+			@Override
+			public FetchComicsTask getParent()
+			{
+				return fetcher;
 			}
 		});
 		return fetcher;
@@ -194,10 +230,5 @@ public class MainActivity extends Activity
 	{
 		String field = BlankRemover.trim(etSearchField.getText()).toString();
 		return field;
-	}
-
-	public void getAll(View view)
-	{
-		Toast.makeText(this, "GetAll tapped!", Toast.LENGTH_LONG).show();
 	}
 }
