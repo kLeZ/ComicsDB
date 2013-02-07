@@ -3,48 +3,10 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	tools:context=".MainActivity" >
-	<EditText
-		android:id="@+id/etSearchField"
-		android:layout_width="match_parent"
+	<TextView
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentRight="true"
-		android:layout_alignParentTop="true"
-		android:ems="10"
-		android:inputType="textAutoComplete" >
-		<requestFocus />
-	</EditText>
-	<Spinner
-		android:id="@+id/sSearchOperator"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentLeft="true"
-		android:layout_below="@+id/etSearchField" />
-	<EditText
-		android:id="@+id/etSearchValue"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentRight="true"
-		android:layout_below="@+id/sSearchOperator"
-		android:ems="10"
-		android:inputType="text" />
-	<Button
-		android:id="@+id/bSearch"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentRight="true"
+		android:layout_centerHorizontal="true"
 		android:layout_centerVertical="true"
-		android:onClick="search"
-		android:text="@string/bSearch_text" />
-	<Button
-		android:id="@+id/bGetAll"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentRight="true"
-		android:onClick="getAll"
-		android:text="@string/bGetAll_text" />
+		android:text="@string/hello_world" />
 </RelativeLayout>

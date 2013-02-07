@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.*;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.w3c.dom.Document;
 
 public class Persistor<E>
 {
@@ -17,15 +18,51 @@ public class Persistor<E>
 
 	private Session session;
 	private Transaction tx;
+	private final Document config;
+	private final Properties toOverrideProperties;
+	private final Properties extraProperties;
 
 	public Persistor()
 	{
-		this(new Properties());
+		this(null, null, null);
 	}
 
-	public Persistor(Properties extraProperties)
+	public Persistor(Properties toOverrideProperties)
 	{
-		HibernateFactory.buildIfNeeded(extraProperties);
+		this(null, toOverrideProperties, null);
+	}
+
+	public Persistor(Document config, Properties toOverrideProperties)
+	{
+		this(config, toOverrideProperties, null);
+	}
+
+	public Persistor(Properties toOverrideProperties, Properties extraProperties)
+	{
+		this(null, toOverrideProperties, extraProperties);
+	}
+
+	public Persistor(Document config, Properties toOverrideProperties, Properties extraProperties)
+	{
+		this.config = config;
+		this.toOverrideProperties = toOverrideProperties;
+		this.extraProperties = extraProperties;
+		HibernateFactory.buildIfNeeded(config, toOverrideProperties, extraProperties);
+	}
+
+	public Document getConfig()
+	{
+		return config;
+	}
+
+	public Properties getOverrideProperties()
+	{
+		return toOverrideProperties;
+	}
+
+	public Properties getExtraProperties()
+	{
+		return extraProperties;
 	}
 
 	public void save(E obj)
@@ -296,7 +333,7 @@ public class Persistor<E>
 
 	protected void startOperation() throws HibernateException
 	{
-		session = HibernateFactory.openSession();
+		session = HibernateFactory.openSession(getConfig(), getOverrideProperties(), getExtraProperties());
 		tx = session.beginTransaction();
 	}
 }

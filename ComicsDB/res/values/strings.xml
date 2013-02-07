@@ -17,4 +17,7 @@
 	<string name="isEmpty">Empty</string>
 	<string name="isNotEmpty">Not Empty</string>
 	<string name="title_activity_comic_list">Comics List</string>
+	<string name="title_activity_search">Search Comics</string>
+	<string name="hello_world">Hello world!</string>
+	<string name="title_activity_main">MainActivity</string>
 </resources>

@@ -20,11 +20,53 @@
 package it.d4nguard.comics.web.servlet;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Map.Entry;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 
 public class ServletUtils
 {
+	/**
+	 * @param request
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	public static void printRequest(HttpServletRequest request) throws IOException, ServletException
+	{
+		System.out.println("--- Start Attributes");
+		while (request.getAttributeNames().hasMoreElements())
+		{
+			System.out.println(request.getAttributeNames().nextElement());
+		}
+		System.out.println("--- End Attributes");
+
+		System.out.println("--- Start Parameter Map");
+		for (Entry<String, String[]> entry : request.getParameterMap().entrySet())
+		{
+			System.out.println(entry.getKey());
+			for (int i = 0; i < entry.getValue().length; i++)
+			{
+				System.out.println(entry.getValue()[i]);
+			}
+			System.out.println("\t---");
+		}
+		System.out.println("--- End Parameter Map");
+
+		System.out.println("--- Start Parts");
+		for (Part part : request.getParts())
+		{
+			System.out.println(String.format("%s (%d) : %s", part.getName(), part.getSize(), part.getContentType()));
+			for (String header : part.getHeaderNames())
+			{
+				System.out.println(header);
+			}
+			System.out.println("\t---");
+		}
+		System.out.println("--- End Parts");
+	}
 
 	/**
 	 * NOT UNIT TESTED Returns the URL (including query parameters) minus the
@@ -70,5 +112,18 @@ public class ServletUtils
 	public static File getRealFile(HttpServletRequest request, String path)
 	{
 		return new File(request.getSession().getServletContext().getRealPath(path));
+	}
+
+	public static String getFilename(Part part)
+	{
+		for (String cd : part.getHeader("content-disposition").split(";"))
+		{
+			if (cd.trim().startsWith("filename"))
+			{
+				String filename = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
+				return filename.substring(filename.lastIndexOf('/') + 1).substring(filename.lastIndexOf('\\') + 1); // MSIE fix.
+			}
+		}
+		return null;
 	}
 }

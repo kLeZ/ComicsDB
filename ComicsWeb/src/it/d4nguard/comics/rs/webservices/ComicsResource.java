@@ -6,6 +6,7 @@ import static it.d4nguard.michelle.utils.BlankRemover.lrtrim;
 import it.d4nguard.comics.beans.Comic;
 import it.d4nguard.comics.beans.bo.Comics;
 import it.d4nguard.comics.persistence.Persistor;
+import it.d4nguard.comics.web.servlet.ConfManServlet;
 import it.d4nguard.michelle.utils.GenericsUtils;
 
 import java.util.HashMap;
@@ -24,35 +25,36 @@ public class ComicsResource
 {
 	private static Logger log = Logger.getLogger(ComicsResource.class);
 
-	@GET()
 	/**
 	 * Esempio di chiamata rest: http://<url>/<app>/ComicsDB/comics
+	 * 
 	 * @return Comics
 	 */
+	@GET()
 	public Comics getAllComics()
 	{
-		Persistor<Comic> db = new Persistor<Comic>();
+		Persistor<Comic> db = getDatabase();
 		Comics comics = new Comics();
 		comics.addAll(db.findAll(Comic.class));
 		return comics;
 	}
 
-	@GET()
-	@Path("{param}/{method}/{value}")
 	/**
-	 * 
-	 * Esempio di chiamata rest: http://<url>/<app>/ComicsDB/comics/englishTitle/eq/Air Gear
+	 * Esempio di chiamata rest:
+	 * http://<url>/<app>/ComicsDB/comics/englishTitle/eq/Air Gear
 	 * 
 	 * @param param
 	 * @param method
 	 * @param value
 	 * @return Comics
 	 */
+	@GET()
+	@Path("{param}/{method}/{value}")
 	public Comics getComicsByParam(@PathParam("param") String param, @PathParam("method") String method, @PathParam("value") String value)
 	{
 		Comics ret = new Comics();
 
-		Persistor<Comic> db = new Persistor<Comic>();
+		Persistor<Comic> db = getDatabase();
 		String field = "";
 		HashMap<String, String> aliases = new HashMap<String, String>();
 
@@ -88,16 +90,26 @@ public class ComicsResource
 		return ret;
 	}
 
-	@GET()
-	@Path("id/{id: [0-9]+}")
 	/**
-	 * Esempio di chiamata rest: http://<url>/<app>/ComicsDB/comic/1
+	 * Esempio di chiamata rest: http://<url>/<app>/ComicsDB/comics/id/1
+	 * 
 	 * @param id
 	 * @return Comic
 	 */
+	@GET()
+	@Path("id/{id: [0-9]+}")
 	public Comic getComicById(@PathParam("id") Long id)
 	{
-		Persistor<Comic> db = new Persistor<Comic>();
+		Persistor<Comic> db = getDatabase();
 		return db.findById(Comic.class, id);
+	}
+
+	/**
+	 * @return
+	 */
+	private Persistor<Comic> getDatabase()
+	{
+		Persistor<Comic> db = new Persistor<Comic>(ConfManServlet.getDBConnectionInfo());
+		return db;
 	}
 }

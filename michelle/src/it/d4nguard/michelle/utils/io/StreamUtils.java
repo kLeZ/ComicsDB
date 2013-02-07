@@ -49,6 +49,25 @@ public class StreamUtils
 		bw.close();
 	}
 
+	/**
+	 * @param is
+	 * @param file
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public void writeFile(InputStream is, String file) throws FileNotFoundException, IOException
+	{
+		FileOutputStream fos = new FileOutputStream(file);
+		byte[] buffer = new byte[4096];
+		int offset = 0;
+		while (is.read(buffer, offset, buffer.length) > -1)
+		{
+			fos.write(buffer, offset, buffer.length);
+			offset += buffer.length;
+		}
+		fos.close();
+	}
+
 	public static String readFile(final File file) throws FileNotFoundException
 	{
 		return readFile(new FileInputStream(file));

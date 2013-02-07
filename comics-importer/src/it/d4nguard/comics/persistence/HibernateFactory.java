@@ -2,6 +2,8 @@ package it.d4nguard.comics.persistence;
 
 import it.d4nguard.comicsimporter.exceptions.PersistorException;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -12,49 +14,52 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
+import org.w3c.dom.Document;
 
 public class HibernateFactory
 {
 	private static SessionFactory sessionFactory;
 	private static Logger log = Logger.getLogger(HibernateFactory.class);
-
-	/**
-	 * Builds a SessionFactory, if it hasn't been already.
-	 */
-	public static SessionFactory buildIfNeeded(Properties extraProperties) throws PersistorException
-	{
-		if (sessionFactory != null)
-		{
-			log.trace("Cached sessionFactory, returning");
-			return sessionFactory;
-		}
-		try
-		{
-			log.trace("No sessionFactory, configuring a new one");
-			return configureSessionFactory(extraProperties);
-		}
-		catch (HibernateException e)
-		{
-			log.error(e, e);
-			throw new PersistorException(e);
-		}
-	}
+	private static Configuration configuration;
 
 	public static SessionFactory getSessionFactory()
 	{
 		return sessionFactory;
 	}
 
-	public static Session openSession() throws HibernateException
+	public static Configuration getConfiguration()
 	{
-		return openSession(new Properties());
+		if (configuration == null)
+		{
+			configuration = new Configuration();
+		}
+		return configuration;
 	}
 
-	public static Session openSession(Properties extraProperties) throws HibernateException
+	public static Session openSession() throws HibernateException
 	{
-		log.trace("Trying to open a session, CALLING { buildIfNeeded(extraProperties) }");
-		log.trace("Extra properties passed are: " + extraProperties.toString());
-		buildIfNeeded(extraProperties);
+		return openSession(null, null, null);
+	}
+
+	public static Session openSession(Properties toOverrideProperties) throws HibernateException
+	{
+		return openSession(null, toOverrideProperties, null);
+	}
+
+	public static Session openSession(Document config, Properties toOverrideProperties) throws HibernateException
+	{
+		return openSession(config, toOverrideProperties, null);
+	}
+
+	public static Session openSession(Properties toOverrideProperties, Properties extraProperties) throws HibernateException
+	{
+		return openSession(null, toOverrideProperties, extraProperties);
+	}
+
+	public static Session openSession(Document config, Properties toOverrideProperties, Properties extraProperties) throws HibernateException
+	{
+		log.trace("Trying to open a session, CALLING { buildIfNeeded(config, toOverrideProperties, extraProperties) }");
+		configureSessionFactory(config, toOverrideProperties, extraProperties);
 		log.trace("Built, opening session");
 		return sessionFactory.openSession();
 	}
@@ -68,9 +73,13 @@ public class HibernateFactory
 				log.trace("Closing sessionFactory session");
 				sessionFactory.close();
 			}
-			catch (HibernateException ignored)
+			catch (HibernateException e)
 			{
-				log.error("Couldn't close SessionFactory", ignored);
+				log.error("Couldn't close SessionFactory", e);
+			}
+			finally
+			{
+				sessionFactory = null;
 			}
 		}
 	}
@@ -87,6 +96,10 @@ public class HibernateFactory
 			catch (HibernateException ignored)
 			{
 				log.error("Couldn't close Session", ignored);
+			}
+			finally
+			{
+				session = null;
 			}
 		}
 	}
@@ -111,21 +124,87 @@ public class HibernateFactory
 	 * @return
 	 * @throws HibernateException
 	 */
-	private static SessionFactory configureSessionFactory(Properties extraProperties) throws HibernateException
+	private static SessionFactory configureSessionFactory(Document config, Properties toOverrideProperties, Properties extraProperties) throws HibernateException
 	{
-		Configuration configuration = new Configuration();
-		log.trace("Configuring Hibernate with default cfg file: CALLING { configuration.configure() }");
-		configuration.configure();
+		if (configuration == null)
+		{
+			if (config == null)
+			{
+				log.trace("Configuring Hibernate with default cfg file: CALLING { configuration.configure() }");
+				getConfiguration().configure();
+			}
+			else
+			{
+				log.trace("Configuring Hibernate with provided cfg file: CALLING { configuration.configure(config) }");
+				getConfiguration().configure(config);
+			}
+		}
+
+		if ((toOverrideProperties != null) && !toOverrideProperties.isEmpty())
+		{
+			log.trace("Overriding properties: { " + toOverrideProperties.toString() + " }");
+			// Given the properties structure inside the configuration object,
+			// I will replace its properties with mine and then merge the old,
+			// taking only those extra properties not contained in my override
+
+			/*
+			 * The getProperties() method gives the integral properties object
+			 * So I can choose to back it up
+			 */
+			Properties old = getConfiguration().getProperties();
+
+			/*
+			 * The setProperties(Properties) method overrides directly with a variable reset
+			 * So I can choose to override totally with my properties
+			 */
+			getConfiguration().setProperties(toOverrideProperties);
+
+			/*
+			 * The mergeProperties(Properties) method merges two Properties objects
+			 * Given its decision to not to replace existing properties I can choose
+			 * to pass the full old Properties object knowing that it will not replace my
+			 * just set Properties.
+			 */
+			getConfiguration().mergeProperties(old);
+		}
+
 		if ((extraProperties != null) && !extraProperties.isEmpty())
 		{
 			log.trace("Adding extra properties: { " + extraProperties.toString() + " }");
-			configuration.addProperties(extraProperties);
+			getConfiguration().addProperties(extraProperties);
 		}
+		StringWriter out = new StringWriter();
+		PrintWriter pw = new PrintWriter(out);
+		getConfiguration().getProperties().list(pw);
+		log.info(out.toString());
+
 		log.trace("Building ServiceRegistry passing all the properties (configured and runtime added)");
-		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
+		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(getConfiguration().getProperties()).buildServiceRegistry();
 		log.trace("Setting sessionFactory var: CALLING { sessionFactory = configuration.buildSessionFactory(serviceRegistry) }");
-		sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+		sessionFactory = getConfiguration().buildSessionFactory(serviceRegistry);
 		log.trace("Well done, SessionFactory configured!");
 		return sessionFactory;
+	}
+
+	/**
+	 * Builds a SessionFactory, if it hasn't been already.
+	 */
+	public static SessionFactory buildIfNeeded(Document config, Properties toOverrideProperties, Properties extraProperties) throws PersistorException
+	{
+		if (sessionFactory != null)
+		{
+			log.trace("Cached sessionFactory, returning");
+			return sessionFactory;
+		}
+		try
+		{
+			log.trace("No sessionFactory, configuring a new one");
+			return configureSessionFactory(config, toOverrideProperties, extraProperties);
+		}
+		catch (HibernateException e)
+		{
+			log.error(e, e);
+			throw new PersistorException(e);
+		}
 	}
 }
