@@ -72,7 +72,7 @@ public class StringUtils
 			sb.append(" }");
 			if (++i < map.size())
 			{
-				sb.append(clean(separator)).append(" ");
+				sb.append(separator);
 			}
 		}
 		return sb.toString();
@@ -87,7 +87,22 @@ public class StringUtils
 			sb.append(String.valueOf(t));
 			if (++i < coll.size())
 			{
-				sb.append(clean(separator)).append(" ");
+				sb.append(separator);
+			}
+		}
+		return sb.toString();
+	}
+
+	public static <T> String join(String separator, T... coll)
+	{
+		StringBuilder sb = new StringBuilder();
+		int i = 0;
+		for (T t : coll)
+		{
+			sb.append(String.valueOf(t));
+			if (++i < coll.length)
+			{
+				sb.append(separator);
 			}
 		}
 		return sb.toString();

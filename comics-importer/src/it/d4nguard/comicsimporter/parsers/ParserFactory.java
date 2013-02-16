@@ -1,6 +1,6 @@
 package it.d4nguard.comicsimporter.parsers;
 
-import it.d4nguard.comicsimporter.Configuration;
+import it.d4nguard.comicsimporter.ComicsConfiguration;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -26,8 +26,8 @@ public class ParserFactory
 
 				if (instance != null)
 				{
-					instance.setUrl(config.getProperty(getFqn(clazz).concat(Configuration.URL_PROP)));
-					instance.setConfigFileName(config.getProperty(getFqn(clazz).concat(Configuration.CONFIG_FILE_NAME_PROP)));
+					instance.setUrl(config.getProperty(getFqn(clazz).concat(ComicsConfiguration.URL_PROP)));
+					instance.setConfigFileName(config.getProperty(getFqn(clazz).concat(ComicsConfiguration.CONFIG_FILE_NAME_PROP)));
 					ret.add(instance);
 				}
 			}

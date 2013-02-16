@@ -2,8 +2,6 @@ package it.d4nguard.comics.persistence;
 
 import it.d4nguard.comicsimporter.exceptions.PersistorException;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -173,10 +171,6 @@ public class HibernateFactory
 			log.trace("Adding extra properties: { " + extraProperties.toString() + " }");
 			getConfiguration().addProperties(extraProperties);
 		}
-		StringWriter out = new StringWriter();
-		PrintWriter pw = new PrintWriter(out);
-		getConfiguration().getProperties().list(pw);
-		log.info(out.toString());
 
 		log.trace("Building ServiceRegistry passing all the properties (configured and runtime added)");
 		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(getConfiguration().getProperties()).buildServiceRegistry();

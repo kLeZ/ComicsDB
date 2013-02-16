@@ -22,7 +22,7 @@ public class Main
 
 	public static void main(final String[] args)
 	{
-		Configuration config = Configuration.getInstance().load(args);
+		ComicsConfiguration config = ComicsConfiguration.getInstance().load(args);
 		log.debug(config.toString());
 
 		try
@@ -104,7 +104,7 @@ public class Main
 						{
 							System.out.println(c.getOriginalTitle());
 						}
-						System.out.println(Configuration.FS);
+						System.out.println(ComicsConfiguration.FS);
 					}
 				}
 			}

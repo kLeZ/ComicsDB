@@ -74,4 +74,22 @@ public class Progress implements Serializable
 	{
 		this.statusMessage = statusMessage;
 	}
+
+	@Override
+	public String toString()
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append("Progress [timeElapsedForLastOperation=");
+		builder.append(timeElapsedForLastOperation);
+		builder.append(", progressIndex=");
+		builder.append(progressIndex);
+		builder.append(", operationWeight=");
+		builder.append(operationWeight);
+		builder.append(", operationName=");
+		builder.append(operationName);
+		builder.append(", statusMessage=");
+		builder.append(statusMessage);
+		builder.append("]");
+		return builder.toString();
+	}
 }

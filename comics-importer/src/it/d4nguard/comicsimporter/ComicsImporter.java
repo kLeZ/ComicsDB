@@ -207,7 +207,7 @@ public class ComicsImporter
 		{
 			TimeElapsed elapsed = new TimeElapsed();
 			log.trace(elapsed.startFormatted("Read configuration xml for scraper engine"));
-			final String config = Configuration.getInstance().getConfigContent("main-source-crawler.xml");
+			final String config = ComicsConfiguration.getInstance().getConfigContent("main-source-crawler.xml");
 			log.trace(elapsed.stopFormatted("Read configuration xml for scraper engine"));
 			log.debug(elapsed.getFormatted("Read configuration xml for scraper engine"));
 

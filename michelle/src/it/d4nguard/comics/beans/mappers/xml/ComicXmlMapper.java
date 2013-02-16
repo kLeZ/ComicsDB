@@ -99,7 +99,7 @@ public class ComicXmlMapper implements XmlMapper<Comic>
 		ret.appendChild(tipologia);
 
 		Element generi = ownerDocument.createElement("genere");
-		generi.setTextContent(StringUtils.join(",", obj.getGenres()));
+		generi.setTextContent(StringUtils.join(", ", obj.getGenres()));
 		ret.appendChild(generi);
 
 		Element anno = ownerDocument.createElement("anno");

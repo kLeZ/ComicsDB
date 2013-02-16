@@ -25,3 +25,29 @@ function getBy() {
 		return false;
 	location.href = url;
 }
+
+function startPolling(url, containerDivId, interval) {
+	alert('Set polling...');
+	setInterval(pollJsonService(url, containerDivId), interval);
+}
+
+function pollJsonService(url, containerDivId) {
+	alert('Polling...');
+	$.ajax({
+		type : "GET",
+		url : url,
+		cache : false,
+		timeout : 50000 /* ms */,
+		success : function(data) {
+			alert('Polling OK...');
+			var parent = document.getElementById(containerDivId);
+			parent.appendChild('<p>' + data + '</p>');
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert('Error on polling...');
+			var parent = document.getElementById(containerDivId);
+			parent.appendChild('<p>' + textStatus + '<br />' + errorThrown
+					+ '</p>');
+		}
+	});
+}

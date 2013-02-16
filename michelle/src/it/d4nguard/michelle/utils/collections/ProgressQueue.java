@@ -14,8 +14,10 @@ public class ProgressQueue extends ConcurrentLinkedQueue<Progress>
 {
 	private static final long serialVersionUID = -2104013124389712362L;
 
-	public void send(long timeElapsedForLastOperation, float progressIndex, int operationWeight, String operationName, String statusMessage)
+	public Progress send(long timeElapsedForLastOperation, float progressIndex, int operationWeight, String operationName, String statusMessage)
 	{
-		add(new Progress(timeElapsedForLastOperation, progressIndex, operationWeight, operationName, statusMessage));
+		Progress p = new Progress(timeElapsedForLastOperation, progressIndex, operationWeight, operationName, statusMessage);
+		add(p);
+		return p;
 	}
 }

@@ -38,10 +38,8 @@ import org.apache.log4j.Logger;
 public class SyncDaemon extends ProgressRunnable
 {
 	private static Logger log = Logger.getLogger(SyncDaemon.class);
-
-	private final Properties ovrProps;
-	private final Properties configProperties;
-	private final boolean wipedb;
+	private final ComicsConfiguration conf;
+	private final boolean dryRun;
 
 	/**
 	 * The sync daemon is a Runnable (thread) class that extends
@@ -59,22 +57,12 @@ public class SyncDaemon extends ProgressRunnable
 	 * 
 	 * @param progressQueue
 	 *            the queue used to talk with the rest of the world
-	 * @param wipedb
-	 *            if true the database schema and data will be destroyed and
-	 *            recreated
-	 * @param ovrProps
-	 *            these are the hibernate properties to override, such as
-	 *            username password and schema of the database to use
-	 * @param configProperties
-	 *            this is the comics-importer configuration written in its
-	 *            .properties file
 	 */
-	public SyncDaemon(ProgressQueue progressQueue, Properties ovrProps, Properties configProperties, boolean wipedb)
+	public SyncDaemon(ProgressQueue progressQueue, ComicsConfiguration conf, boolean dryRun)
 	{
 		super(progressQueue);
-		this.ovrProps = ovrProps;
-		this.configProperties = configProperties;
-		this.wipedb = wipedb;
+		this.conf = conf;
+		this.dryRun = dryRun;
 	}
 
 	/* (non-Javadoc)
@@ -83,29 +71,29 @@ public class SyncDaemon extends ProgressRunnable
 	@Override
 	public void run()
 	{
-		send(0, 0.0F, 0, "Thread started", "Sync Daemon started, performing due operations.");
+		sendAndPrint(0, 0.0F, 0, "Thread started", "Sync Daemon started, performing due operations.");
 		TimeElapsed elapsed = new TimeElapsed();
 
-		if (wipedb)
+		if (conf.isWipeDB())
 		{
 			elapsed.start();
 
 			Properties p = new Properties();
 			p.setProperty("hibernate.hbm2ddl.auto", "create");
-			new Persistor<Object>(ovrProps, p);
+			new Persistor<Object>(conf.getDBConnectionInfo(), p);
 
 			elapsed.stop();
-			send(elapsed.get(), 20.0F, 5, "Wipe Database", elapsed.getFormatted("Database wiped successfully!"));
+			sendAndPrint(elapsed.get(), 20.0F, 5, "Wipe Database", elapsed.getFormatted("Database wiped successfully!"));
 		}
 
 		elapsed = new TimeElapsed();
 		elapsed.start();
 
-		Persistor<Comic> db = new Persistor<Comic>(ovrProps);
+		Persistor<Comic> db = new Persistor<Comic>(conf.getDBConnectionInfo());
 		Comics comics = new Comics();
 
 		elapsed.stop();
-		send(elapsed.get(), 30.0F, 1, "Init database object", "Init database object used to retrieve stored data (empty if wipe db was choosen).");
+		sendAndPrint(elapsed.get(), 30.0F, 1, "Init database object", "Init database object used to retrieve stored data (empty if wipe db was choosen).");
 
 		elapsed = new TimeElapsed();
 		elapsed.start();
@@ -113,7 +101,7 @@ public class SyncDaemon extends ProgressRunnable
 		comics.addAll(db.findAll(Comic.class));
 
 		elapsed.stop();
-		send(elapsed.get(), 40.0F, 3, "Retrieve database stored data", elapsed.getFormatted("Retrieve database data that was stored previously (empty if wipe db was choosen)."));
+		sendAndPrint(elapsed.get(), 40.0F, 3, "Retrieve database stored data", elapsed.getFormatted("Retrieve database data that was stored previously (empty if wipe db was choosen)."));
 
 		ComicsImporter importer = ComicsImporter.getInstance();
 
@@ -122,24 +110,27 @@ public class SyncDaemon extends ProgressRunnable
 			elapsed = new TimeElapsed();
 			elapsed.start();
 
-			comics.addAll(importer.importComics());
+			if (!dryRun)
+			{
+				comics.addAll(importer.importComics());
+			}
 
 			elapsed.stop();
-			send(elapsed.get(), 60.0F, 3, "Import comics", elapsed.getFormatted("Importing comics from web source, configured in .properties file AND in the web source crawler .xml passed to WebScraper"));
+			sendAndPrint(elapsed.get(), 60.0F, 3, "Import comics", elapsed.getFormatted("Importing comics from web source, configured in .properties file AND in the web source crawler .xml passed to WebScraper"));
 		}
 		catch (IOException e)
 		{
 			log.error(e, e);
-			send(-1, 60.0F, -3, "Import comics", String.format("Error importing comics from web source, configured in .properties file AND in the web source crawler .xml passed to WebScraper.\nError Detail: %s", e.toString()));
+			sendAndPrint(-1, 60.0F, -3, "Import comics", String.format("Error importing comics from web source, configured in .properties file AND in the web source crawler .xml passed to WebScraper.\nError Detail: %s", e.toString()));
 		}
 		catch (ComicsParseException e)
 		{
 			log.error(e, e);
-			send(-1, 60.0F, -3, "Import comics", String.format("Error importing comics from web source, configured in .properties file AND in the web source crawler .xml passed to WebScraper.\nError Detail: %s", e.toString()));
+			sendAndPrint(-1, 60.0F, -3, "Import comics", String.format("Error importing comics from web source, configured in .properties file AND in the web source crawler .xml passed to WebScraper.\nError Detail: %s", e.toString()));
 		}
 
 		float progress = 60.0F, unity;
-		Collection<ComicsSourceParser> parsers = ParserFactory.getAll(configProperties);
+		Collection<ComicsSourceParser> parsers = ParserFactory.getAll(conf.getProperties());
 
 		unity = 20.0F / parsers.size();
 
@@ -152,17 +143,20 @@ public class SyncDaemon extends ProgressRunnable
 
 			try
 			{
-				comics.addAll(parser.parse(comics));
+				if (!dryRun)
+				{
+					comics.addAll(parser.parse(comics));
+				}
 
 				elapsed.stop();
-				send(elapsed.get(), progress, 2, "Parse comics sources", elapsed.getFormatted("Parse comics sources (feed and news web pages) from the configured feed sources"));
+				sendAndPrint(elapsed.get(), progress, 2, "Parse comics sources", elapsed.getFormatted("Parse comics sources (feed and news web pages) from the configured feed sources"));
 			}
 			catch (IOException e)
 			{
 				log.error(e, e);
 
 				elapsed.stop();
-				send(elapsed.get(), progress, -2, "Parse comics sources", elapsed.getFormatted("Parse comics sources (feed and news web pages) from the configured feed sources\nError Detail: %s", e.toString()));
+				sendAndPrint(elapsed.get(), progress, -2, "Parse comics sources", elapsed.getFormatted("Parse comics sources (feed and news web pages) from the configured feed sources\nError Detail: %s", e.toString()));
 			}
 		}
 
@@ -174,13 +168,23 @@ public class SyncDaemon extends ProgressRunnable
 		db.saveAll(comics);
 
 		elapsed.stop();
-		send(elapsed.get(), progress, 5, "Save", elapsed.getFormatted("Save all comics retrieved until now to database"));
+		sendAndPrint(elapsed.get(), progress, 5, "Save", elapsed.getFormatted("Save all comics retrieved until now to database"));
 	}
 
-	public static Thread getThreadInstance(ProgressQueue progressQueue, Properties ovrProps, Properties configProperties, boolean wipedb)
+	private void sendAndPrint(long timeElapsedForLastOperation, float progressIndex, int operationWeight, String operationName, String statusMessage)
 	{
-		SyncDaemon syncer = new SyncDaemon(progressQueue, ovrProps, configProperties, wipedb);
-		return new Thread(syncer);
+		System.out.println(send(timeElapsedForLastOperation, progressIndex, operationWeight, operationName, statusMessage));
+	}
 
+	private static Thread t;
+
+	public static Thread getThreadInstance(ProgressQueue progressQueue, ComicsConfiguration conf, boolean dryRun)
+	{
+		if ((t == null) && (progressQueue != null) && (conf != null))
+		{
+			SyncDaemon syncer = new SyncDaemon(progressQueue, conf, dryRun);
+			t = new Thread(syncer);
+		}
+		return t;
 	}
 }

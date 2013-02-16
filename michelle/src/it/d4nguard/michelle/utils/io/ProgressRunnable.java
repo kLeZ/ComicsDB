@@ -3,6 +3,7 @@
  */
 package it.d4nguard.michelle.utils.io;
 
+import it.d4nguard.michelle.utils.Progress;
 import it.d4nguard.michelle.utils.collections.ProgressQueue;
 
 /**
@@ -17,8 +18,8 @@ public abstract class ProgressRunnable implements Runnable
 		this.progressQueue = progressQueue;
 	}
 
-	public void send(long timeElapsedForLastOperation, float progressIndex, int operationWeight, String operationName, String statusMessage)
+	public Progress send(long timeElapsedForLastOperation, float progressIndex, int operationWeight, String operationName, String statusMessage)
 	{
-		progressQueue.send(timeElapsedForLastOperation, progressIndex, operationWeight, operationName, statusMessage);
+		return progressQueue.send(timeElapsedForLastOperation, progressIndex, operationWeight, operationName, statusMessage);
 	}
 }

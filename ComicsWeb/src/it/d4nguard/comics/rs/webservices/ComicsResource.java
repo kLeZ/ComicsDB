@@ -6,7 +6,7 @@ import static it.d4nguard.michelle.utils.BlankRemover.lrtrim;
 import it.d4nguard.comics.beans.Comic;
 import it.d4nguard.comics.beans.bo.Comics;
 import it.d4nguard.comics.persistence.Persistor;
-import it.d4nguard.comics.web.servlet.ConfManServlet;
+import it.d4nguard.comicsimporter.ComicsConfiguration;
 import it.d4nguard.michelle.utils.GenericsUtils;
 
 import java.util.HashMap;
@@ -109,7 +109,8 @@ public class ComicsResource
 	 */
 	private Persistor<Comic> getDatabase()
 	{
-		Persistor<Comic> db = new Persistor<Comic>(ConfManServlet.getDBConnectionInfo());
+		ComicsConfiguration conf = ComicsConfiguration.getInstance();
+		Persistor<Comic> db = new Persistor<Comic>(conf.getDBConnectionInfo());
 		return db;
 	}
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<%@page import="it.d4nguard.comics.web.servlet.ConfManServlet"%>
+<%@page import="it.d4nguard.comicsimporter.ComicsConfiguration" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -17,7 +17,7 @@
 	<form action="ConfMan" method="post" enctype="application/x-www-form-urlencoded">
 		<h1>Actual Configuration:</h1>
 		<p>
-			<%=ConfManServlet.dbInfoToString() %>
+			<%=ComicsConfiguration.getInstance().dbInfoToString() %>
 		</p>
 		<p>
 			Type sql database dialect here (in a hibernate format): <input type="text" id="hibernate.dialect" name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" /><br />

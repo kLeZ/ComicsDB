@@ -17,7 +17,11 @@ public class StreamUtils
 
 	public static String getResourceAsString(final String resourceName) throws IOException
 	{
-		final ClassLoader cl = ClassLoader.getSystemClassLoader();
+		return getResourceAsString(resourceName, ClassLoader.getSystemClassLoader());
+	}
+
+	public static String getResourceAsString(final String resourceName, ClassLoader cl) throws IOException
+	{
 		final InputStream is = cl.getResourceAsStream(resourceName);
 		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		final StringBuilder sb = new StringBuilder();

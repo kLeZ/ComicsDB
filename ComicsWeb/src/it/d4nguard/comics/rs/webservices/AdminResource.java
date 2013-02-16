@@ -1,12 +1,17 @@
 package it.d4nguard.comics.rs.webservices;
 
-import it.d4nguard.comics.web.servlet.ConfManServlet;
-import it.d4nguard.comicsimporter.Configuration;
+import it.d4nguard.comicsimporter.ComicsCommands;
+import it.d4nguard.comicsimporter.ComicsConfiguration;
 import it.d4nguard.comicsimporter.SyncDaemon;
 import it.d4nguard.michelle.utils.Progress;
+import it.d4nguard.michelle.utils.collections.Pair;
 import it.d4nguard.michelle.utils.collections.ProgressQueue;
 
-import java.util.Properties;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -31,12 +36,41 @@ public class AdminResource
 
 	@POST()
 	@Path("sync")
-	public void sync(@FormParam("wipedb") boolean wipedb)
+	public void sync(@FormParam("wipedb") boolean wipedb, @FormParam("dryRun") boolean dryRun, @FormParam("openThread") boolean openThread)
 	{
-		Properties configProperties = Configuration.getInstance().load(new String[] {}).getProperties();
-		Properties ovrProps = ConfManServlet.getDBConnectionInfo();
-
-		progressQueue = new ProgressQueue();
-		SyncDaemon.getThreadInstance(progressQueue, ovrProps, configProperties, wipedb).start();
+		Logger.getGlobal().finest("Post sync called");
+		if (progressQueue == null)
+		{
+			try
+			{
+				if (openThread)
+				{
+					progressQueue = new ProgressQueue();
+					Map<String, Entry<String, Boolean>> cmd = new HashMap<String, Entry<String, Boolean>>();
+					cmd.put(ComicsCommands.WIPE_DB_CMD, new Pair<String, Boolean>(String.valueOf(wipedb), false));
+					ComicsConfiguration conf = ComicsConfiguration.getInstance().load(cmd);
+					Thread t = SyncDaemon.getThreadInstance(progressQueue, conf, dryRun);
+					t.setUncaughtExceptionHandler(new UncaughtExceptionHandler()
+					{
+						@Override
+						public void uncaughtException(Thread t, Throwable e)
+						{
+							progressQueue = null;
+							Logger.getGlobal().severe(e.getLocalizedMessage());
+						}
+					});
+					t.start();
+				}
+			}
+			catch (RuntimeException e)
+			{
+				progressQueue = null;
+				throw e;
+			}
+		}
+		else
+		{
+			throw new IllegalStateException("Another thread just running!");
+		}
 	}
 }
