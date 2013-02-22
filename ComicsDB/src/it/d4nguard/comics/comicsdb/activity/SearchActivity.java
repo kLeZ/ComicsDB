@@ -9,7 +9,7 @@ import it.d4nguard.michelle.hurl.build.PathBuilder;
 import it.d4nguard.michelle.hurl.build.UriBuilder;
 import it.d4nguard.michelle.utils.BlankRemover;
 import it.d4nguard.michelle.utils.data.BooleanOperatorType;
-import it.d4nguard.michelle.utils.web.WebUtils;
+import it.d4nguard.michelle.utils.web.NetUtils;
 
 import java.net.URI;
 import java.util.LinkedHashMap;
@@ -139,7 +139,7 @@ public class SearchActivity extends Activity
 
 		URI uri = builder.setPath(path).build().normalize();
 
-		Log.d(TAG, WebUtils.uriToString(uri));
+		Log.d(TAG, NetUtils.uriToString(uri));
 		Toast.makeText(this, uri.toASCIIString(), Toast.LENGTH_LONG).show();
 		if (useWs && (uri.getHost() != null))
 		{

@@ -6,6 +6,7 @@ import it.d4nguard.comics.beans.bo.Comics;
 import it.d4nguard.comics.beans.mappers.xml.ComicsXmlMapper;
 import it.d4nguard.comics.utils.web.WebScraper;
 import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
+import it.d4nguard.comicsimporter.parsers.ComicsSourceParser;
 import it.d4nguard.michelle.utils.*;
 import it.d4nguard.michelle.utils.collections.Pair;
 import it.d4nguard.michelle.utils.io.StreamUtils;
@@ -13,6 +14,7 @@ import it.d4nguard.michelle.utils.xml.XmlUtils;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -129,19 +131,19 @@ public class ComicsImporter
 
 	private final String cacheFileName;
 
-	public ComicsImporter()
+	private ComicsImporter()
 	{
 		src = null;
 		cacheFileName = null;
 	}
 
-	public ComicsImporter(final String cacheFileName) throws FileNotFoundException
+	private ComicsImporter(final String cacheFileName) throws FileNotFoundException
 	{
 		this.cacheFileName = !StringUtils.isNullOrWhitespace(cacheFileName) ? cacheFileName : null;
 		src = !StringUtils.isNullOrWhitespace(cacheFileName) ? new FileInputStream(cacheFileName) : null;
 	}
 
-	public ComicsImporter(final String cacheFileName, final InputStream src) throws FileNotFoundException
+	private ComicsImporter(final String cacheFileName, final InputStream src) throws FileNotFoundException
 	{
 		this.cacheFileName = !StringUtils.isNullOrWhitespace(cacheFileName) ? cacheFileName : null;
 		this.src = !StringUtils.isNullOrWhitespace(cacheFileName) ? src : null;
@@ -223,7 +225,7 @@ public class ComicsImporter
 				mangaContents = WebScraper.scrap(config, "mangaxml");
 			}
 			log.trace("Source scraped! Converting into InputStream");
-			src = StreamUtils.toInputStream(mangaContents);
+			src = StreamUtils.convertStringToInputStream(mangaContents);
 		}
 		try
 		{
@@ -289,5 +291,13 @@ public class ComicsImporter
 	public boolean useCache()
 	{
 		return (cacheFileName != null) && !cacheFileName.isEmpty();
+	}
+
+	public static void sync(Comics comics, final Collection<ComicsSourceParser> collection) throws IOException
+	{
+		for (final ComicsSourceParser parser : collection)
+		{
+			comics.addAll(parser.parse(comics));
+		}
 	}
 }

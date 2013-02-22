@@ -1,6 +1,7 @@
 package it.d4nguard.comicsimporter;
 
 import it.d4nguard.comics.persistence.HibernateFactory;
+import it.d4nguard.michelle.utils.BlankRemover;
 import it.d4nguard.michelle.utils.GenericsUtils;
 import it.d4nguard.michelle.utils.StringComparator;
 import it.d4nguard.michelle.utils.StringUtils;
@@ -53,7 +54,7 @@ public class ComicsConfiguration extends ComicsCommands
 		Properties log4j = new Properties();
 		try
 		{
-			log4j.load(StreamUtils.toInputStream(getConfigContent("log4j.properties")));
+			log4j.load(StreamUtils.convertStringToInputStream(getConfigContent("log4j.properties")));
 		}
 		catch (IOException e)
 		{
@@ -68,7 +69,7 @@ public class ComicsConfiguration extends ComicsCommands
 		ConfiguredProperties.add("hibernate.connection.password");
 
 		DBConnectionInfo = new Properties();
-		HibernateFactory.buildIfNeeded(null, null, null);
+		HibernateFactory.buildIfNeeded(null, null, null, false);
 		HibernateFactory.closeFactory();
 		Configuration configuration = HibernateFactory.getConfiguration();
 		for (String prop : getConfiguredProperties())
@@ -156,7 +157,7 @@ public class ComicsConfiguration extends ComicsCommands
 		try
 		{
 			reset(this);
-			config.load(StreamUtils.toInputStream(getPropertiesContent()));
+			config.load(StreamUtils.convertStringToInputStream(getPropertiesContent()));
 
 			log.debug("Internal representation of the Properties object loaded from configuration file: " + config.toString());
 
@@ -262,6 +263,8 @@ public class ComicsConfiguration extends ComicsCommands
 		{
 			value = cmd.getOptionValue(removePrefix(valueName));
 		}
+
+		value = BlankRemover.trim(value).toString();
 
 		if (returnType.equals(Boolean.class) && StringUtils.isNullOrWhitespace(value))
 		{

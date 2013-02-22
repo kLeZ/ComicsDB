@@ -96,6 +96,11 @@ public class WebScraper
 		return current;
 	}
 
+	public static void setCurrent(WebScraper current)
+	{
+		WebScraper.current = current;
+	}
+
 	public static String scrap(final String config, final String returnVar)
 	{
 		current = new WebScraper(config);

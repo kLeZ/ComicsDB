@@ -23,8 +23,12 @@
 		<h1>Welcome to the Comics Database web site!</h1>
 	</div>
 	<div id="col1">
+		<p>
+			<a href="admin/config-man.jsp">DB Configuration page</a><br />
+			<a href="admin/sync-man.jsp">Syncronization page</a>
+		</p>
 		<ul>
-			<li><a href="./JsonPresenter?q=/ComicsDB/comics">GetAll</a> | Prints an
+			<li><a href="./JsonPresenter?type=array&q=/ComicsDB/comics">GetAll</a> | Prints an
 				xml with all the Comics loaded from database (now 3012)</li>
 			<li><a href="javascript:getBy();">GetBy</a><br /> {<input type="radio"
 					name="getBy" id="getById" value="id" checked="checked" /> Id: <input

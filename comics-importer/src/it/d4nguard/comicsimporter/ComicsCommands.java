@@ -1,8 +1,6 @@
 package it.d4nguard.comicsimporter;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.apache.commons.cli.Option;
@@ -62,11 +60,11 @@ public abstract class ComicsCommands
 		String ret = "";
 		if (shortOpt)
 		{
-			ret = "--".concat(opt.getLongOpt()).concat("=");
+			ret = "-".concat(opt.getOpt()).concat(" ");
 		}
 		else
 		{
-			ret = "-".concat(opt.getOpt()).concat(" ");
+			ret = "--".concat(opt.getLongOpt()).concat(" ");
 		}
 		return ret.concat(value);
 	}
@@ -97,7 +95,6 @@ public abstract class ComicsCommands
 	public static String[] composeCommandLine(Map<String, Entry<String, Boolean>> cmd)
 	{
 		ArrayList<String> ret = new ArrayList<String>();
-
 		@SuppressWarnings("unchecked")
 		Iterator<Option> it = getOptions().getOptions().iterator();
 		while (it.hasNext())
@@ -106,10 +103,10 @@ public abstract class ComicsCommands
 			if (cmd.containsKey(addPrefix(opt.getLongOpt())))
 			{
 				Entry<String, Boolean> val = cmd.get(addPrefix(opt.getLongOpt()));
-				ret.add(optionToPosixString(opt, val.getKey(), val.getValue()));
+				String[] s_opt = optionToPosixString(opt, val.getKey(), val.getValue()).split("\\s");
+				ret.addAll(Arrays.asList(s_opt));
 			}
 		}
-
 		return ret.toArray(new String[] {});
 	}
 }

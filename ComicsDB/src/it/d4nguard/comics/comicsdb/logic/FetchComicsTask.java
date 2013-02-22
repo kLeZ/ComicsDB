@@ -1,10 +1,10 @@
 package it.d4nguard.comics.comicsdb.logic;
 
+import it.d4nguard.comics.ComicsUtils;
 import it.d4nguard.comics.beans.bo.Comics;
 import it.d4nguard.comics.comicsdb.utils.AndrHelper;
 import it.d4nguard.comics.comicsdb.utils.WebClientUtils;
-import it.d4nguard.michelle.utils.web.ComicsUtils;
-import it.d4nguard.michelle.utils.web.WebUtils;
+import it.d4nguard.michelle.utils.web.NetUtils;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -103,7 +103,7 @@ public class FetchComicsTask extends AsyncTask<URI, Integer, Comics>
 			}
 
 			URI uri = params[i];
-			Log.d(TAG, WebUtils.uriToString(uri));
+			Log.d(TAG, NetUtils.uriToString(uri));
 
 			InputStream ws_response = null;
 

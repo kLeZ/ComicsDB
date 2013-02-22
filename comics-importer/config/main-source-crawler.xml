@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config charset="UTF-8">
 	<var-def name="debug" overwrite="false">false</var-def>
-	<var-def name="write">true</var-def>
+	<var-def name="write">false</var-def>
 	<var-def name="cache-file">manga.xml</var-def>
 	<var-def name="startUrl" overwrite="false">
 		<![CDATA[ http://www.animeclick.it ]]>

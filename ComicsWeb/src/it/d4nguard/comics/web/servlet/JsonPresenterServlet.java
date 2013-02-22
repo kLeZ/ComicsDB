@@ -1,10 +1,11 @@
 package it.d4nguard.comics.web.servlet;
 
+import it.d4nguard.comics.ComicsUtils;
+import it.d4nguard.comics.WebUtils;
 import it.d4nguard.comics.beans.bo.Comics;
 import it.d4nguard.michelle.utils.TimeElapsed;
-import it.d4nguard.michelle.utils.web.ComicsUtils;
 import it.d4nguard.michelle.utils.web.HtmlTable;
-import it.d4nguard.michelle.utils.web.WebUtils;
+import it.d4nguard.michelle.utils.web.NetUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -31,13 +32,13 @@ public class JsonPresenterServlet extends HttpServlet
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		Map<String, String> query = WebUtils.getQueryMap(request.getQueryString());
+		Map<String, String> query = NetUtils.getQueryMap(request.getQueryString());
 		if (query.containsKey("q"))
 		{
 			TimeElapsed elapsed = new TimeElapsed();
 
 			elapsed.start();
-			String ws_response = WebUtils.excuteGet(ServletUtils.getBaseUrl(request).concat(query.get("q")));
+			String ws_response = NetUtils.excuteGet(WebUtils.getBaseUrl(request).concat(query.get("q")));
 			boolean isArray = query.get("type").equalsIgnoreCase("array");
 			Comics comics = ComicsUtils.getComicsFromJson(ws_response, isArray);
 			elapsed.stop();

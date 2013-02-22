@@ -9,11 +9,14 @@ import it.d4nguard.comics.persistence.Persistor;
 import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
 import it.d4nguard.comicsimporter.parsers.ComicsSourceParser;
 import it.d4nguard.comicsimporter.parsers.ParserFactory;
+import it.d4nguard.michelle.utils.StringUtils;
 import it.d4nguard.michelle.utils.TimeElapsed;
 import it.d4nguard.michelle.utils.collections.ProgressQueue;
 import it.d4nguard.michelle.utils.io.ProgressRunnable;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 
@@ -40,6 +43,8 @@ public class SyncDaemon extends ProgressRunnable
 	private static Logger log = Logger.getLogger(SyncDaemon.class);
 	private final ComicsConfiguration conf;
 	private final boolean dryRun;
+	private final String fileName;
+	private final InputStream cacheFile;
 
 	/**
 	 * The sync daemon is a Runnable (thread) class that extends
@@ -58,11 +63,13 @@ public class SyncDaemon extends ProgressRunnable
 	 * @param progressQueue
 	 *            the queue used to talk with the rest of the world
 	 */
-	public SyncDaemon(ProgressQueue progressQueue, ComicsConfiguration conf, boolean dryRun)
+	public SyncDaemon(ProgressQueue progressQueue, ComicsConfiguration conf, boolean dryRun, String fileName, InputStream cacheFile)
 	{
 		super(progressQueue);
 		this.conf = conf;
 		this.dryRun = dryRun;
+		this.fileName = fileName;
+		this.cacheFile = cacheFile;
 	}
 
 	/* (non-Javadoc)
@@ -76,6 +83,7 @@ public class SyncDaemon extends ProgressRunnable
 
 		if (conf.isWipeDB())
 		{
+			sendAndPrint(0, 10.0F, 5, "Wipe Database", "Wiping database...");
 			elapsed.start();
 
 			Properties p = new Properties();
@@ -87,36 +95,56 @@ public class SyncDaemon extends ProgressRunnable
 		}
 
 		elapsed = new TimeElapsed();
+		sendAndPrint(0, 25.0F, 1, "Init database object", "Init database object used to retrieve stored data (empty if wipe db was choosen).");
 		elapsed.start();
 
-		Persistor<Comic> db = new Persistor<Comic>(conf.getDBConnectionInfo());
+		Persistor<Comic> db = new Persistor<Comic>(conf.getDBConnectionInfo(), true);
 		Comics comics = new Comics();
 
 		elapsed.stop();
-		sendAndPrint(elapsed.get(), 30.0F, 1, "Init database object", "Init database object used to retrieve stored data (empty if wipe db was choosen).");
+		sendAndPrint(elapsed.get(), 30.0F, 1, "Init database object", elapsed.getFormatted("Init database object used to retrieve stored data completed!"));
 
 		elapsed = new TimeElapsed();
+		sendAndPrint(0, 35.0F, 3, "Retrieve database stored data", "Retrieve database data that was stored previously (empty if wipe db was choosen).");
 		elapsed.start();
 
 		comics.addAll(db.findAll(Comic.class));
 
 		elapsed.stop();
-		sendAndPrint(elapsed.get(), 40.0F, 3, "Retrieve database stored data", elapsed.getFormatted("Retrieve database data that was stored previously (empty if wipe db was choosen)."));
+		sendAndPrint(elapsed.get(), 40.0F, 3, "Retrieve database stored data", elapsed.getFormatted("Retrieve database data that was stored previously completed! Loaded #%d comics from database.", comics.size()));
 
-		ComicsImporter importer = ComicsImporter.getInstance();
+		sendAndPrint(0, 45.0F, 3, "Import comics", "Initializing the importer object");
+		ComicsImporter importer = null;
+		if (!StringUtils.isNullOrWhitespace(fileName) && (cacheFile != null))
+		{
+			try
+			{
+				importer = ComicsImporter.getInstance(fileName, cacheFile);
+			}
+			catch (FileNotFoundException e)
+			{
+				log.error(e, e);
+			}
+		}
+		else
+		{
+			importer = ComicsImporter.getInstance();
+		}
 
 		try
 		{
 			elapsed = new TimeElapsed();
+			sendAndPrint(0, 50.0F, 3, "Import comics", "Importer object initialized! Importing comics from web source, configured in .properties file AND in the web source crawler .xml passed to WebScraper.");
 			elapsed.start();
 
+			Comics toAdd = new Comics();
 			if (!dryRun)
 			{
-				comics.addAll(importer.importComics());
+				toAdd.addAll(importer.importComics());
+				comics.addAll(toAdd);
 			}
-
 			elapsed.stop();
-			sendAndPrint(elapsed.get(), 60.0F, 3, "Import comics", elapsed.getFormatted("Importing comics from web source, configured in .properties file AND in the web source crawler .xml passed to WebScraper"));
+			sendAndPrint(elapsed.get(), 60.0F, 3, "Import comics", elapsed.getFormatted("Importing comics from web source, configured in .properties file AND in the web source crawler .xml passed to WebScraper. Imported #%d comics from main source.", toAdd.size()));
 		}
 		catch (IOException e)
 		{
@@ -178,11 +206,11 @@ public class SyncDaemon extends ProgressRunnable
 
 	private static Thread t;
 
-	public static Thread getThreadInstance(ProgressQueue progressQueue, ComicsConfiguration conf, boolean dryRun)
+	public static Thread getThreadInstance(ProgressQueue progressQueue, ComicsConfiguration conf, boolean dryRun, String fileName, InputStream cacheFile)
 	{
 		if ((t == null) && (progressQueue != null) && (conf != null))
 		{
-			SyncDaemon syncer = new SyncDaemon(progressQueue, conf, dryRun);
+			SyncDaemon syncer = new SyncDaemon(progressQueue, conf, dryRun, fileName, cacheFile);
 			t = new Thread(syncer);
 		}
 		return t;

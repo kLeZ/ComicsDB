@@ -12,13 +12,13 @@ function getBy() {
 	switch (value) {
 	case 'id':
 		url = './JsonPresenter?type=single&q=/ComicsDB/comics/' + value + '/'
-				+ document.getElementById('comic_' + value).value;
+				+ encodeURIComponent(document.getElementById('comic_' + value).value);
 		break;
 	case 'field':
 		url = './JsonPresenter?type=array&q=/ComicsDB/comics/'
-				+ document.getElementById('comic_param').value + '/'
-				+ methods.options[methods.selectedIndex].value + '/'
-				+ document.getElementById('comic_value').value + '/';
+				+ encodeURIComponent(document.getElementById('comic_param').value) + '/'
+				+ encodeURIComponent(methods.options[methods.selectedIndex].value) + '/'
+				+ encodeURIComponent(document.getElementById('comic_value').value) + '/';
 		break;
 	}
 	if (!confirm(url))
@@ -26,28 +26,26 @@ function getBy() {
 	location.href = url;
 }
 
-function startPolling(url, containerDivId, interval) {
-	alert('Set polling...');
-	setInterval(pollJsonService(url, containerDivId), interval);
-}
-
 function pollJsonService(url, containerDivId) {
-	alert('Polling...');
 	$.ajax({
 		type : "GET",
 		url : url,
 		cache : false,
 		timeout : 50000 /* ms */,
 		success : function(data) {
-			alert('Polling OK...');
-			var parent = document.getElementById(containerDivId);
-			parent.appendChild('<p>' + data + '</p>');
+			if (data) {
+				var parent = document.getElementById(containerDivId);
+				parent.innerHTML += '<p>' + stringify(data) + '</p>';
+				if (data.progressIndex >= 100) {
+					stopPolling();
+					parent.innerHTML += '<h1>Operation completed!</h1>';
+				}
+			}
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert('Error on polling...');
 			var parent = document.getElementById(containerDivId);
-			parent.appendChild('<p>' + textStatus + '<br />' + errorThrown
-					+ '</p>');
+			parent.innerHTML += '<p>' + textStatus + '<br />' + errorThrown + '<br />'
+					+ XMLHttpRequest + '</p>';
 		}
 	});
 }

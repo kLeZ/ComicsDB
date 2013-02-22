@@ -183,8 +183,14 @@ public class HibernateFactory
 	/**
 	 * Builds a SessionFactory, if it hasn't been already.
 	 */
-	public static SessionFactory buildIfNeeded(Document config, Properties toOverrideProperties, Properties extraProperties) throws PersistorException
+	public static SessionFactory buildIfNeeded(Document config, Properties toOverrideProperties, Properties extraProperties, boolean force)
 	{
+		if (force)
+		{
+			log.trace("Forcing configure a new one");
+			configuration = null;
+			return configureSessionFactory(config, toOverrideProperties, extraProperties);
+		}
 		if (sessionFactory != null)
 		{
 			log.trace("Cached sessionFactory, returning");

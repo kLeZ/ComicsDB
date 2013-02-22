@@ -4,15 +4,16 @@ import it.d4nguard.comics.beans.Comic;
 import it.d4nguard.comics.beans.bo.Comics;
 import it.d4nguard.comics.persistence.Persistor;
 import it.d4nguard.comicsimporter.exceptions.ComicsParseException;
-import it.d4nguard.comicsimporter.parsers.ComicsSourceParser;
 import it.d4nguard.comicsimporter.parsers.ParserFactory;
 import it.d4nguard.michelle.utils.StringUtils;
 import it.d4nguard.michelle.utils.collections.Pair;
 import it.d4nguard.michelle.utils.io.StreamUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -35,7 +36,7 @@ public class Main
 				new Persistor<Object>(p);
 			}
 
-			Persistor<Comic> db = new Persistor<Comic>();
+			Persistor<Comic> db = new Persistor<Comic>(true);
 			Comics comics = new Comics();
 
 			if (config.isLoadPersistence())
@@ -71,7 +72,7 @@ public class Main
 			{
 				log.trace("Syncing with feeds providers installed on the system. Feed Providers are: [" + StringUtils.join(", ", ParserFactory.getInstalledProviders()) + "]");
 
-				sync(comics, ParserFactory.getAll(config.getProperties()));
+				ComicsImporter.sync(comics, ParserFactory.getAll(config.getProperties()));
 				log.debug("After sync has completed the # Comics gained was: " + comics.size());
 			}
 
@@ -120,14 +121,6 @@ public class Main
 		catch (final ComicsParseException e)
 		{
 			log.fatal(e, e);
-		}
-	}
-
-	public static void sync(Comics comics, final Collection<ComicsSourceParser> collection) throws IOException
-	{
-		for (final ComicsSourceParser parser : collection)
-		{
-			comics.addAll(parser.parse(comics));
 		}
 	}
 }

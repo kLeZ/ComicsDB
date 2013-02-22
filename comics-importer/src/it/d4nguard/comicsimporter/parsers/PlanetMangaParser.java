@@ -127,7 +127,7 @@ public class PlanetMangaParser implements ComicsSourceParser
 			{
 				volumesXml = "<root>".concat(volumesXml).concat("</root>");
 			}
-			final InputStream is = StreamUtils.toInputStream(volumesXml);
+			final InputStream is = StreamUtils.convertStringToInputStream(volumesXml);
 			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			final Document doc = dbf.newDocumentBuilder().parse(is);
 			doc.getDocumentElement().normalize();

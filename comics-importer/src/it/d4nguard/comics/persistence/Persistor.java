@@ -24,30 +24,50 @@ public class Persistor<E>
 
 	public Persistor()
 	{
-		this(null, null, null);
+		this(null, null, null, false);
+	}
+
+	public Persistor(boolean force)
+	{
+		this(null, null, null, force);
 	}
 
 	public Persistor(Properties toOverrideProperties)
 	{
-		this(null, toOverrideProperties, null);
+		this(null, toOverrideProperties, null, false);
+	}
+
+	public Persistor(Properties toOverrideProperties, boolean force)
+	{
+		this(null, toOverrideProperties, null, force);
 	}
 
 	public Persistor(Document config, Properties toOverrideProperties)
 	{
-		this(config, toOverrideProperties, null);
+		this(config, toOverrideProperties, null, false);
+	}
+
+	public Persistor(Document config, Properties toOverrideProperties, boolean force)
+	{
+		this(config, toOverrideProperties, null, force);
 	}
 
 	public Persistor(Properties toOverrideProperties, Properties extraProperties)
 	{
-		this(null, toOverrideProperties, extraProperties);
+		this(null, toOverrideProperties, extraProperties, false);
 	}
 
-	public Persistor(Document config, Properties toOverrideProperties, Properties extraProperties)
+	public Persistor(Properties toOverrideProperties, Properties extraProperties, boolean force)
+	{
+		this(null, toOverrideProperties, extraProperties, force);
+	}
+
+	public Persistor(Document config, Properties toOverrideProperties, Properties extraProperties, boolean force)
 	{
 		this.config = config;
 		this.toOverrideProperties = toOverrideProperties;
 		this.extraProperties = extraProperties;
-		HibernateFactory.buildIfNeeded(config, toOverrideProperties, extraProperties);
+		HibernateFactory.buildIfNeeded(config, toOverrideProperties, extraProperties, force);
 	}
 
 	public Document getConfig()

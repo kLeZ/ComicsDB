@@ -33,9 +33,54 @@ public class StreamUtils
 		return sb.toString();
 	}
 
-	public static InputStream toInputStream(final String s)
+	public static InputStream convertStringToInputStream(final String s)
 	{
 		return new ByteArrayInputStream(s.getBytes());
+	}
+
+	public static String convertInputStreamToString(InputStream is) throws IOException
+	{
+		//
+		// To convert the InputStream to String we use the
+		// Reader.read(char[] buffer) method. We iterate until the
+		// Reader return -1 which means there's no more data to
+		// read. We use the StringWriter class to produce the string.
+		//
+		if (is != null)
+		{
+			Writer writer = new StringWriter();
+
+			char[] buffer = new char[1024];
+			try
+			{
+				Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+				int n;
+				while ((n = reader.read(buffer)) != -1)
+				{
+					writer.write(buffer, 0, n);
+				}
+			}
+			finally
+			{
+				is.close();
+			}
+			return writer.toString();
+		}
+		else
+		{
+			return "";
+		}
+	}
+
+	/**
+	 * @param is
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
+	 */
+	public static InputStream convertToUTF8InputStream(InputStream is) throws UnsupportedEncodingException, IOException
+	{
+		return new ByteArrayInputStream(convertInputStreamToString(is).getBytes("UTF-8"));
 	}
 
 	public static void writeFile(final String filename, final String content, boolean backupExistent) throws IOException
