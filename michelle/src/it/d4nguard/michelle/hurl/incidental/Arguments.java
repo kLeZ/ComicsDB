@@ -37,9 +37,9 @@ public class Arguments
 	 * @throws IllegalArgumentException
 	 *             if argument is null
 	 */
-	public static void assertNotNull(Object o1) throws IllegalArgumentException
+	public static void assertNotNull(final Object o1) throws IllegalArgumentException
 	{
-		if (o1 == null) { throw new IllegalArgumentException("null"); }
+		if (o1 == null) throw new IllegalArgumentException("null");
 	}
 
 	/**
@@ -50,9 +50,9 @@ public class Arguments
 	 * @throws IllegalArgumentException
 	 *             if argument is null
 	 */
-	public static void assertNotNull(Object o1, Object o2) throws IllegalArgumentException
+	public static void assertNotNull(final Object o1, final Object o2) throws IllegalArgumentException
 	{
-		if (o1 == null || o2 == null) { throw new IllegalArgumentException("null"); }
+		if (o1 == null || o2 == null) throw new IllegalArgumentException("null");
 	}
 
 	/**
@@ -65,8 +65,8 @@ public class Arguments
 	 * @throws IllegalArgumentException
 	 *             if argument is null
 	 */
-	public static void assertNotNull(Object o1, Object o2, Object o3) throws IllegalArgumentException
+	public static void assertNotNull(final Object o1, final Object o2, final Object o3) throws IllegalArgumentException
 	{
-		if (o1 == null || o2 == null || o3 == null) { throw new IllegalArgumentException("null"); }
+		if (o1 == null || o2 == null || o3 == null) throw new IllegalArgumentException("null");
 	}
 }

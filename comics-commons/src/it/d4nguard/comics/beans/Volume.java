@@ -21,13 +21,13 @@ public class Volume implements Serializable
 
 	}
 
-	public Volume(Long id, String name)
+	public Volume(final Long id, final String name)
 	{
 		this.id = id;
 		this.name = name;
 	}
 
-	public Volume(Long id, String name, String serie, Editor editor, boolean last, Money price)
+	public Volume(final Long id, final String name, final String serie, final Editor editor, final boolean last, final Money price)
 	{
 		this.id = id;
 		this.name = name;
@@ -42,7 +42,7 @@ public class Volume implements Serializable
 		return id;
 	}
 
-	public void setId(Long id)
+	public void setId(final Long id)
 	{
 		this.id = id;
 	}
@@ -52,7 +52,7 @@ public class Volume implements Serializable
 		return comicId;
 	}
 
-	public void setComicId(Long comicId)
+	public void setComicId(final Long comicId)
 	{
 		this.comicId = comicId;
 	}
@@ -62,7 +62,7 @@ public class Volume implements Serializable
 		return name;
 	}
 
-	public void setName(String name)
+	public void setName(final String name)
 	{
 		this.name = name;
 	}
@@ -72,7 +72,7 @@ public class Volume implements Serializable
 		return serie;
 	}
 
-	public void setSerie(String serie)
+	public void setSerie(final String serie)
 	{
 		this.serie = serie;
 	}
@@ -82,7 +82,7 @@ public class Volume implements Serializable
 		return editor;
 	}
 
-	public void setEditor(Editor editor)
+	public void setEditor(final Editor editor)
 	{
 		this.editor = editor;
 	}
@@ -92,7 +92,7 @@ public class Volume implements Serializable
 		return last;
 	}
 
-	public void setLast(boolean last)
+	public void setLast(final boolean last)
 	{
 		this.last = last;
 	}
@@ -102,7 +102,7 @@ public class Volume implements Serializable
 		return price;
 	}
 
-	public void setPrice(Money price)
+	public void setPrice(final Money price)
 	{
 		this.price = price;
 	}
@@ -112,61 +112,61 @@ public class Volume implements Serializable
 	{
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((comicId == null) ? 0 : comicId.hashCode());
-		result = (prime * result) + ((editor == null) ? 0 : editor.hashCode());
-		result = (prime * result) + ((id == null) ? 0 : id.hashCode());
-		result = (prime * result) + (last ? 1231 : 1237);
-		result = (prime * result) + ((name == null) ? 0 : name.hashCode());
-		result = (prime * result) + ((price == null) ? 0 : price.hashCode());
-		result = (prime * result) + ((serie == null) ? 0 : serie.hashCode());
+		result = prime * result + (comicId == null ? 0 : comicId.hashCode());
+		result = prime * result + (editor == null ? 0 : editor.hashCode());
+		result = prime * result + (id == null ? 0 : id.hashCode());
+		result = prime * result + (last ? 1231 : 1237);
+		result = prime * result + (name == null ? 0 : name.hashCode());
+		result = prime * result + (price == null ? 0 : price.hashCode());
+		result = prime * result + (serie == null ? 0 : serie.hashCode());
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(final Object obj)
 	{
-		if (this == obj) { return true; }
-		if (obj == null) { return false; }
-		if (!(obj instanceof Volume)) { return false; }
-		Volume other = (Volume) obj;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Volume)) return false;
+		final Volume other = (Volume) obj;
 		if (comicId == null)
 		{
-			if (other.comicId != null) { return false; }
+			if (other.comicId != null) return false;
 		}
-		else if (!comicId.equals(other.comicId)) { return false; }
+		else if (!comicId.equals(other.comicId)) return false;
 		if (editor == null)
 		{
-			if (other.editor != null) { return false; }
+			if (other.editor != null) return false;
 		}
-		else if (!editor.equals(other.editor)) { return false; }
+		else if (!editor.equals(other.editor)) return false;
 		if (id == null)
 		{
-			if (other.id != null) { return false; }
+			if (other.id != null) return false;
 		}
-		else if (!id.equals(other.id)) { return false; }
-		if (last != other.last) { return false; }
+		else if (!id.equals(other.id)) return false;
+		if (last != other.last) return false;
 		if (name == null)
 		{
-			if (other.name != null) { return false; }
+			if (other.name != null) return false;
 		}
-		else if (!name.equals(other.name)) { return false; }
+		else if (!name.equals(other.name)) return false;
 		if (price == null)
 		{
-			if (other.price != null) { return false; }
+			if (other.price != null) return false;
 		}
-		else if (!price.equals(other.price)) { return false; }
+		else if (!price.equals(other.price)) return false;
 		if (serie == null)
 		{
-			if (other.serie != null) { return false; }
+			if (other.serie != null) return false;
 		}
-		else if (!serie.equals(other.serie)) { return false; }
+		else if (!serie.equals(other.serie)) return false;
 		return true;
 	}
 
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("Volume [id=");
 		builder.append(id);
 		builder.append(", comicId=");

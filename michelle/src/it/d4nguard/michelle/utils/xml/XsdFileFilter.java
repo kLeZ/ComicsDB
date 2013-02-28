@@ -36,6 +36,7 @@ public class XsdFileFilter implements FileFilter
 	 *         has a name that ends with <em>.xsd</em>. The comparison is
 	 *         case-insensitive.
 	 */
+	@Override
 	public boolean accept(final File file)
 	{
 		final String name = file.getName().toLowerCase();

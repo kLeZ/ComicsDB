@@ -1,5 +1,6 @@
 package it.d4nguard.comics.beans;
 
+import it.d4nguard.comics.beans.bo.Serie;
 import it.d4nguard.michelle.utils.StringUtils;
 
 import java.io.Serializable;
@@ -30,12 +31,12 @@ public class Comic implements Serializable
 
 	}
 
-	public Comic(Long id)
+	public Comic(final Long id)
 	{
 		this.id = id;
 	}
 
-	public Comic(Long id, URL url, String originalTitle, String englishTitle, Author artworker, Author storywriter, Editor originalEditor, Editor italianEditor, Typology typology, Set<Genre> genres, short year, boolean complete, boolean completeInCountry, Set<Volume> serie)
+	public Comic(final Long id, final URL url, final String originalTitle, final String englishTitle, final Author artworker, final Author storywriter, final Editor originalEditor, final Editor italianEditor, final Typology typology, final Set<Genre> genres, final short year, final boolean complete, final boolean completeInCountry, final Set<Volume> serie)
 	{
 		this.id = id;
 		this.url = url;
@@ -53,39 +54,35 @@ public class Comic implements Serializable
 		this.serie = serie;
 	}
 
-	public boolean isMe(String title)
+	public boolean isMe(final String title)
 	{
-		title = title.toUpperCase();
 		boolean ret = false;
 		if (!StringUtils.isNullOrWhitespace(getOriginalTitle()))
 		{
-			final String ori = getOriginalTitle().toUpperCase();
-			ret |= ori.contentEquals(title);
+			ret |= getOriginalTitle().equalsIgnoreCase(title);
 		}
 		if (!StringUtils.isNullOrWhitespace(getEnglishTitle()))
 		{
-			final String eng = getEnglishTitle().toUpperCase();
-			ret |= eng.contentEquals(title);
+			ret |= getEnglishTitle().equalsIgnoreCase(title);
 		}
 		return ret;
+	}
+
+	public boolean hasVolume(final String volName)
+	{
+		return new Serie(getSerie()).contains(volName);
 	}
 
 	public String getTitle()
 	{
 		String ret = "";
-		if (!StringUtils.isNullOrWhitespace(getOriginalTitle()))
+		if (!StringUtils.isNullOrWhitespace(getEnglishTitle()) && StringUtils.isNullOrWhitespace(ret))
 		{
-			if (StringUtils.isNullOrWhitespace(ret))
-			{
-				ret = getOriginalTitle().toUpperCase();
-			}
+			ret = getEnglishTitle();
 		}
-		if (!StringUtils.isNullOrWhitespace(getEnglishTitle()))
+		else if (!StringUtils.isNullOrWhitespace(getOriginalTitle()) && StringUtils.isNullOrWhitespace(ret))
 		{
-			if (StringUtils.isNullOrWhitespace(ret))
-			{
-				ret = getEnglishTitle().toUpperCase();
-			}
+			ret = getOriginalTitle();
 		}
 		return ret;
 	}
@@ -95,7 +92,7 @@ public class Comic implements Serializable
 		return id;
 	}
 
-	public void setId(Long id)
+	public void setId(final Long id)
 	{
 		this.id = id;
 	}
@@ -105,7 +102,7 @@ public class Comic implements Serializable
 		return url;
 	}
 
-	public void setUrl(URL url)
+	public void setUrl(final URL url)
 	{
 		this.url = url;
 	}
@@ -115,7 +112,7 @@ public class Comic implements Serializable
 		return originalTitle;
 	}
 
-	public void setOriginalTitle(String originalTitle)
+	public void setOriginalTitle(final String originalTitle)
 	{
 		this.originalTitle = originalTitle;
 	}
@@ -125,7 +122,7 @@ public class Comic implements Serializable
 		return englishTitle;
 	}
 
-	public void setEnglishTitle(String englishTitle)
+	public void setEnglishTitle(final String englishTitle)
 	{
 		this.englishTitle = englishTitle;
 	}
@@ -135,7 +132,7 @@ public class Comic implements Serializable
 		return artworker;
 	}
 
-	public void setArtworker(Author artworker)
+	public void setArtworker(final Author artworker)
 	{
 		this.artworker = artworker;
 	}
@@ -145,7 +142,7 @@ public class Comic implements Serializable
 		return storywriter;
 	}
 
-	public void setStorywriter(Author storywriter)
+	public void setStorywriter(final Author storywriter)
 	{
 		this.storywriter = storywriter;
 	}
@@ -155,7 +152,7 @@ public class Comic implements Serializable
 		return originalEditor;
 	}
 
-	public void setOriginalEditor(Editor originalEditor)
+	public void setOriginalEditor(final Editor originalEditor)
 	{
 		this.originalEditor = originalEditor;
 	}
@@ -165,7 +162,7 @@ public class Comic implements Serializable
 		return italianEditor;
 	}
 
-	public void setItalianEditor(Editor italianEditor)
+	public void setItalianEditor(final Editor italianEditor)
 	{
 		this.italianEditor = italianEditor;
 	}
@@ -175,7 +172,7 @@ public class Comic implements Serializable
 		return typology;
 	}
 
-	public void setTypology(Typology typology)
+	public void setTypology(final Typology typology)
 	{
 		this.typology = typology;
 	}
@@ -185,7 +182,7 @@ public class Comic implements Serializable
 		return genres;
 	}
 
-	public void setGenres(Set<Genre> genres)
+	public void setGenres(final Set<Genre> genres)
 	{
 		this.genres = genres;
 	}
@@ -195,7 +192,7 @@ public class Comic implements Serializable
 		return year;
 	}
 
-	public void setYear(short year)
+	public void setYear(final short year)
 	{
 		this.year = year;
 	}
@@ -205,7 +202,7 @@ public class Comic implements Serializable
 		return complete;
 	}
 
-	public void setComplete(boolean complete)
+	public void setComplete(final boolean complete)
 	{
 		this.complete = complete;
 	}
@@ -215,7 +212,7 @@ public class Comic implements Serializable
 		return completeInCountry;
 	}
 
-	public void setCompleteInCountry(boolean completeInCountry)
+	public void setCompleteInCountry(final boolean completeInCountry)
 	{
 		this.completeInCountry = completeInCountry;
 	}
@@ -225,7 +222,7 @@ public class Comic implements Serializable
 		return serie;
 	}
 
-	public void setSerie(Set<Volume> serie)
+	public void setSerie(final Set<Volume> serie)
 	{
 		this.serie = serie;
 	}
@@ -235,30 +232,30 @@ public class Comic implements Serializable
 	{
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((artworker == null) ? 0 : artworker.hashCode());
+		result = (prime * result) + (artworker == null ? 0 : artworker.hashCode());
 		result = (prime * result) + (complete ? 1231 : 1237);
 		result = (prime * result) + (completeInCountry ? 1231 : 1237);
-		result = (prime * result) + ((englishTitle == null) ? 0 : englishTitle.hashCode());
-		result = (prime * result) + ((genres == null) ? 0 : genres.hashCode());
-		result = (prime * result) + ((id == null) ? 0 : id.hashCode());
-		result = (prime * result) + ((italianEditor == null) ? 0 : italianEditor.hashCode());
-		result = (prime * result) + ((originalEditor == null) ? 0 : originalEditor.hashCode());
-		result = (prime * result) + ((originalTitle == null) ? 0 : originalTitle.hashCode());
-		result = (prime * result) + ((serie == null) ? 0 : serie.hashCode());
-		result = (prime * result) + ((storywriter == null) ? 0 : storywriter.hashCode());
-		result = (prime * result) + ((typology == null) ? 0 : typology.hashCode());
-		result = (prime * result) + ((url == null) ? 0 : url.hashCode());
+		result = (prime * result) + (englishTitle == null ? 0 : englishTitle.hashCode());
+		result = (prime * result) + (genres == null ? 0 : genres.hashCode());
+		result = (prime * result) + (id == null ? 0 : id.hashCode());
+		result = (prime * result) + (italianEditor == null ? 0 : italianEditor.hashCode());
+		result = (prime * result) + (originalEditor == null ? 0 : originalEditor.hashCode());
+		result = (prime * result) + (originalTitle == null ? 0 : originalTitle.hashCode());
+		result = (prime * result) + (serie == null ? 0 : serie.hashCode());
+		result = (prime * result) + (storywriter == null ? 0 : storywriter.hashCode());
+		result = (prime * result) + (typology == null ? 0 : typology.hashCode());
+		result = (prime * result) + (url == null ? 0 : url.hashCode());
 		result = (prime * result) + year;
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(final Object obj)
 	{
 		if (this == obj) { return true; }
 		if (obj == null) { return false; }
 		if (!(obj instanceof Comic)) { return false; }
-		Comic other = (Comic) obj;
+		final Comic other = (Comic) obj;
 		if (artworker == null)
 		{
 			if (other.artworker != null) { return false; }
@@ -323,7 +320,7 @@ public class Comic implements Serializable
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("Comic [id=");
 		builder.append(id);
 		builder.append(", url=");

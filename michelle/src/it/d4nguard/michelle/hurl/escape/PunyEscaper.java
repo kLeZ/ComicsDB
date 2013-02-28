@@ -50,7 +50,8 @@ public final class PunyEscaper implements Escaper
 	 */
 	public static final Escaper INSTANCE = new PunyEscaper();
 
-	public String escape(String unescaped)
+	@Override
+	public String escape(final String unescaped)
 	{
 		final int length = unescaped.codePointCount(0, unescaped.length());
 		int n = INITIAL_N;
@@ -59,15 +60,15 @@ public final class PunyEscaper implements Escaper
 		final int b = countBasic(unescaped);
 		int h = b;
 
-		StringBuilder out = new StringBuilder();
+		final StringBuilder out = new StringBuilder();
 		// copy them to the output in order, followed by a delimiter if b > 0
 		if (h > 0)
 		{
-			CodepointIterator iterator = new CodepointIterator(unescaped);
-			char[] buffer = new char[1];
+			final CodepointIterator iterator = new CodepointIterator(unescaped);
+			final char[] buffer = new char[1];
 			while (iterator.hasNext())
 			{
-				int codepoint = iterator.next();
+				final int codepoint = iterator.next();
 				if (isBasic(codepoint))
 				{
 					Character.toChars(codepoint, buffer, 0);
@@ -80,18 +81,15 @@ public final class PunyEscaper implements Escaper
 		while (h < length)
 		{
 			// the minimum {non-basic} code point >= n in the input
-			int m = minNonBasicCodepoint(unescaped, n);
+			final int m = minNonBasicCodepoint(unescaped, n);
 			delta = delta + (m - n) * (h + 1); // TODO: fail on overflow
 			n = m;
-			CodepointIterator iterator = new CodepointIterator(unescaped);
+			final CodepointIterator iterator = new CodepointIterator(unescaped);
 			while (iterator.hasNext())
 			{
-				int c = iterator.next();
+				final int c = iterator.next();
 				// if c < n {or c is basic} then increment delta, fail on overflow
-				if (c < n || isBasic(c))
-				{
-					delta++;
-				}
+				if (c < n || isBasic(c)) delta++;
 				if (c == n)
 				{
 					int q = delta;
@@ -101,24 +99,12 @@ public final class PunyEscaper implements Escaper
 						// let t = tmin if k <= bias {+ tmin}, or
 						// tmax if k >= bias + tmax, or k - bias otherwise
 						int t;
-						if (k <= (bias + TMIN))
-						{
-							t = TMIN;
-						}
-						else if (k >= (bias + TMAX))
-						{
-							t = TMAX;
-						}
-						else
-						{
-							t = k - bias;
-						}
-						if (q < t)
-						{
-							break;
-						}
+						if (k <= bias + TMIN) t = TMIN;
+						else if (k >= bias + TMAX) t = TMAX;
+						else t = k - bias;
+						if (q < t) break;
 						// output the code point for digit t + ((q - t) mod (base - t))
-						output(out, toDigit(t + ((q - t) % (BASE - t))));
+						output(out, toDigit(t + (q - t) % (BASE - t)));
 						q = (q - t) / (BASE - t);
 					}
 					// output the code point for digit q
@@ -136,7 +122,8 @@ public final class PunyEscaper implements Escaper
 		return out.toString();
 	}
 
-	public String unescape(String escaped)
+	@Override
+	public String unescape(final String escaped)
 	{
 		validateAllBasic(escaped);
 		final int lastDelim = escaped.lastIndexOf(DELIMITER);
@@ -148,60 +135,42 @@ public final class PunyEscaper implements Escaper
 		int i = 0;
 		int bias = INITIAL_BIAS;
 		// let output = an empty string indexed from 0
-		StringBuilder out = new StringBuilder();
+		final StringBuilder out = new StringBuilder();
 		// consume all code points before the last delimiter (if there is one)
 		// and copy them to output, fail on any non-basic code point
 		// if more than zero code points were consumed then consume one more
 		// (which will be the last delimiter)
-		if (lastDelim > 0)
-		{
-			out.append(escaped, 0, lastDelim);
-		}
+		if (lastDelim > 0) out.append(escaped, 0, lastDelim);
 
-		CodepointIterator input = new CodepointIterator(escaped.substring(lastDelim + 1));
+		final CodepointIterator input = new CodepointIterator(escaped.substring(lastDelim + 1));
 		outer:
 		while (true)
 		{
-			int oldi = i;
+			final int oldi = i;
 			int w = 1;
 			// for k = base to infinity in steps of base do begin
 			for (int k = BASE; true; k += BASE)
 			{
 				// consume a code point, or fail if there was none to consume
-				if (!input.hasNext())
-				{
-					break outer;
-				}
-				int codepoint = input.next();
+				if (!input.hasNext()) break outer;
+				final int codepoint = input.next();
 				// let digit = the code point's digit-value, fail if it has none
-				int digit = fromDigit(codepoint);
+				final int digit = fromDigit(codepoint);
 				i = i + digit * w;
 				// let t = tmin if k <= bias {+ tmin}, or
 				// tmax if k >= bias + tmax, or k - bias otherwise
 				int t;
-				if (k <= (bias + TMIN))
-				{
-					t = TMIN;
-				}
-				else if (k >= bias + TMAX)
-				{
-					t = TMAX;
-				}
-				else
-				{
-					t = k - bias;
-				}
-				if (digit < t)
-				{
-					break;
-				}
+				if (k <= bias + TMIN) t = TMIN;
+				else if (k >= bias + TMAX) t = TMAX;
+				else t = k - bias;
+				if (digit < t) break;
 				w = w * (BASE - t);
 			}
 			bias = adapt(i - oldi, out.length() + 1, oldi == 0);
 			n = n + i / (out.length() + 1);
 			i = i % (out.length() + 1);
 			// {if n is a basic code point then fail}
-			if (isBasic(n)) { throw new IllegalArgumentException(escaped); }
+			if (isBasic(n)) throw new IllegalArgumentException(escaped);
 			// insert n into output at position i
 			out.insert(i, Character.toChars(n));
 			i++;
@@ -210,87 +179,76 @@ public final class PunyEscaper implements Escaper
 		return out.toString();
 	}
 
-	private void validateAllBasic(String input)
+	private void validateAllBasic(final String input)
 	{
-		CodepointIterator iterator = new CodepointIterator(input);
+		final CodepointIterator iterator = new CodepointIterator(input);
 		while (iterator.hasNext())
-		{
-			if (!isBasic(iterator.next())) { throw new IllegalArgumentException(input); }
-		}
+			if (!isBasic(iterator.next())) throw new IllegalArgumentException(input);
 	}
 
-	private static int adapt(int delta, int numpoints, boolean firsttime)
+	private static int adapt(int delta, final int numpoints, final boolean firsttime)
 	{
 		delta /= firsttime ? DAMP : 2;
-		delta = delta + (delta / numpoints);
+		delta = delta + delta / numpoints;
 		int k = 0;
-		while (delta > ((BASE - TMIN) * TMAX) / 2)
+		while (delta > (BASE - TMIN) * TMAX / 2)
 		{
 			delta = delta / (BASE - TMIN);
 			k = k + BASE;
 		}
-		return k + (((BASE - TMIN + 1) * delta) / (delta + SKEW));
+		return k + (BASE - TMIN + 1) * delta / (delta + SKEW);
 	}
 
-	private static void output(StringBuilder builder, int codepoint)
+	private static void output(final StringBuilder builder, final int codepoint)
 	{
 		builder.append(Character.toChars(codepoint));
 	}
 
-	private int countBasic(String input)
+	private int countBasic(final String input)
 	{
 		int count = 0;
-		CodepointIterator iterator = new CodepointIterator(input);
+		final CodepointIterator iterator = new CodepointIterator(input);
 		while (iterator.hasNext())
 		{
-			int codepoint = iterator.next();
-			if (isBasic(codepoint))
-			{
-				count++;
-			}
-			else if (codepoint < INITIAL_N)
-			{
-				// {if the input contains a non-basic code point < n then fail}
-				throw new IllegalArgumentException(Integer.toHexString(codepoint));
-			}
+			final int codepoint = iterator.next();
+			if (isBasic(codepoint)) count++;
+			else if (codepoint < INITIAL_N) // {if the input contains a non-basic code point < n then fail}
+			throw new IllegalArgumentException(Integer.toHexString(codepoint));
 		}
 		return count;
 	}
 
-	private static boolean isBasic(int codepoint)
+	private static boolean isBasic(final int codepoint)
 	{
 		return codepoint >= 0 && codepoint <= 0x7F;
 	}
 
-	private int minNonBasicCodepoint(String input, int n)
+	private int minNonBasicCodepoint(final String input, final int n)
 	{
-		CodepointIterator iterator = new CodepointIterator(input);
+		final CodepointIterator iterator = new CodepointIterator(input);
 		int min = Integer.MAX_VALUE;
 		while (iterator.hasNext())
 		{
-			int codepoint = iterator.next();
-			if (codepoint >= n && !isBasic(codepoint) && codepoint < min)
-			{
-				min = codepoint;
-			}
+			final int codepoint = iterator.next();
+			if (codepoint >= n && !isBasic(codepoint) && codepoint < min) min = codepoint;
 		}
 		return min;
 	}
 
-	private static int fromDigit(int codepoint)
+	private static int fromDigit(final int codepoint)
 	{
-		if (codepoint >= 'A' && codepoint <= 'Z') { return codepoint - 'A'; }
-		if (codepoint >= 'a' && codepoint <= 'z') { return codepoint - 'a'; }
-		if (codepoint >= '0' && codepoint <= '9') { return codepoint - '0' + 26; }
-		String str = new String(Character.toChars(codepoint));
+		if (codepoint >= 'A' && codepoint <= 'Z') return codepoint - 'A';
+		if (codepoint >= 'a' && codepoint <= 'z') return codepoint - 'a';
+		if (codepoint >= '0' && codepoint <= '9') return codepoint - '0' + 26;
+		final String str = new String(Character.toChars(codepoint));
 		throw new IllegalArgumentException(String.format("U+%04x (%s)", codepoint, str));
 	}
 
-	private static int toDigit(int digit)
+	private static int toDigit(final int digit)
 	{
 		// TODO: case handling
-		if (digit >= 0 && digit <= 25) { return 'a' + digit; }
-		if (digit >= 26 && digit <= 35) { return '0' - 26 + digit; }
+		if (digit >= 0 && digit <= 25) return 'a' + digit;
+		if (digit >= 26 && digit <= 35) return '0' - 26 + digit;
 		throw new IllegalArgumentException(String.format("0x%04x (value must be >= 0 <= 35)", digit));
 	}
 }

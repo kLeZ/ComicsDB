@@ -7,12 +7,12 @@ import it.d4nguard.michelle.utils.data.DataTable;
 public class HtmlTable implements HtmlElement
 {
 	private static final String LS = System.getProperty("line.separator");
-	private DataTable data;
+	private final DataTable data;
 
 	/**
 	 * 
 	 */
-	public HtmlTable(DataTable data)
+	public HtmlTable(final DataTable data)
 	{
 		this.data = data;
 	}
@@ -20,26 +20,22 @@ public class HtmlTable implements HtmlElement
 	@Override
 	public String render()
 	{
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		sb.append("<table>").append(LS);
 
 		sb.append("\t<thead>").append(LS);
 		sb.append("\t\t<tr>").append(LS);
-		for (DataColumn<?> col : data.getColumns())
-		{
+		for (final DataColumn<?> col : data.getColumns())
 			sb.append("\t\t\t<th>").append(col.getName()).append("</th>").append(LS);
-		}
 		sb.append("\t\t</tr>").append(LS);
 		sb.append("\t</thead>").append(LS);
 
 		sb.append("\t<tbody>").append(LS);
-		for (DataRow row : data.getRows())
+		for (final DataRow row : data.getRows())
 		{
 			sb.append("\t\t<tr>").append(LS);
-			for (Object cell : row.getCells())
-			{
+			for (final Object cell : row.getCells())
 				sb.append("\t\t\t<td>").append(cell).append("</td>").append(LS);
-			}
 			sb.append("\t\t</tr>").append(LS);
 		}
 		sb.append("\t</tbody>").append(LS);

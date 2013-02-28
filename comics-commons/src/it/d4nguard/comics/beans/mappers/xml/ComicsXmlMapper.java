@@ -17,7 +17,7 @@ public class ComicsXmlMapper implements XmlMapper<Comics>
 	 * @see it.d4nguard.comics.beans.mappers.xml.XmlMapper#create(org.w3c.dom.Element)
 	 */
 	@Override
-	public Comics create(final Element elem, Long id)
+	public Comics create(final Element elem, final Long id)
 	{
 		final Comics ret = new Comics();
 		final NodeList comics = elem.getElementsByTagName("fumetto");
@@ -40,14 +40,14 @@ public class ComicsXmlMapper implements XmlMapper<Comics>
 	 * @see it.d4nguard.comics.beans.mappers.xml.XmlMapper#create(java.lang.Object)
 	 */
 	@Override
-	public Element create(Document ownerDoc, Comics obj)
+	public Element create(final Document ownerDoc, final Comics obj)
 	{
-		Element ret = ownerDoc.createElement("fumetti");
-		ComicXmlMapper m_comic = new ComicXmlMapper();
-		SeriesXmlMapper m_serie = new SeriesXmlMapper();
-		for (Comic c : obj)
+		final Element ret = ownerDoc.createElement("fumetti");
+		final ComicXmlMapper m_comic = new ComicXmlMapper();
+		final SeriesXmlMapper m_serie = new SeriesXmlMapper();
+		for (final Comic c : obj)
 		{
-			Element fumetto = m_comic.create(ownerDoc, c);
+			final Element fumetto = m_comic.create(ownerDoc, c);
 			fumetto.appendChild(m_serie.create(ownerDoc, new Serie(c.getSerie())));
 			ret.appendChild(fumetto);
 		}

@@ -41,30 +41,32 @@ public final class FormEscaper implements Escaper
 	/**
 	 * @param encoding
 	 */
-	public FormEscaper(Charset encoding)
+	public FormEscaper(final Charset encoding)
 	{
 		this.encoding = encoding.name();
 	}
 
-	public String escape(String unescaped)
+	@Override
+	public String escape(final String unescaped)
 	{
 		try
 		{
 			return URLEncoder.encode(unescaped, encoding);
 		}
-		catch (UnsupportedEncodingException e)
+		catch (final UnsupportedEncodingException e)
 		{
 			throw new IllegalStateException(e);
 		}
 	}
 
-	public String unescape(String escaped)
+	@Override
+	public String unescape(final String escaped)
 	{
 		try
 		{
 			return URLDecoder.decode(escaped, encoding);
 		}
-		catch (UnsupportedEncodingException e)
+		catch (final UnsupportedEncodingException e)
 		{
 			throw new IllegalStateException(e);
 		}

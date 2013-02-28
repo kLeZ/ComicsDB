@@ -36,6 +36,7 @@ public class XmlFileFilter implements FileFilter
 	 *         has a name that ends with <em>.xml</em>. The comparison is
 	 *         case-insensitive.
 	 */
+	@Override
 	public boolean accept(final File file)
 	{
 		final String name = file.getName().toLowerCase();

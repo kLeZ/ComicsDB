@@ -16,7 +16,7 @@ public class Progress implements Serializable
 	{
 	}
 
-	public Progress(long timeElapsedForLastOperation, float progressIndex, int operationWeight, String operationName, String statusMessage)
+	public Progress(final long timeElapsedForLastOperation, final float progressIndex, final int operationWeight, final String operationName, final String statusMessage)
 	{
 		this.timeElapsedForLastOperation = timeElapsedForLastOperation;
 		this.progressIndex = progressIndex;
@@ -30,7 +30,7 @@ public class Progress implements Serializable
 		return timeElapsedForLastOperation;
 	}
 
-	public void setTimeElapsedForLastOperation(long timeElapsedForLastOperation)
+	public void setTimeElapsedForLastOperation(final long timeElapsedForLastOperation)
 	{
 		this.timeElapsedForLastOperation = timeElapsedForLastOperation;
 	}
@@ -40,7 +40,7 @@ public class Progress implements Serializable
 		return progressIndex;
 	}
 
-	public void setProgressIndex(float progressIndex)
+	public void setProgressIndex(final float progressIndex)
 	{
 		this.progressIndex = progressIndex;
 	}
@@ -50,7 +50,7 @@ public class Progress implements Serializable
 		return operationWeight;
 	}
 
-	public void setOperationWeight(int operationWeight)
+	public void setOperationWeight(final int operationWeight)
 	{
 		this.operationWeight = operationWeight;
 	}
@@ -60,7 +60,7 @@ public class Progress implements Serializable
 		return operationName;
 	}
 
-	public void setOperationName(String operationName)
+	public void setOperationName(final String operationName)
 	{
 		this.operationName = operationName;
 	}
@@ -70,7 +70,7 @@ public class Progress implements Serializable
 		return statusMessage;
 	}
 
-	public void setStatusMessage(String statusMessage)
+	public void setStatusMessage(final String statusMessage)
 	{
 		this.statusMessage = statusMessage;
 	}
@@ -78,7 +78,7 @@ public class Progress implements Serializable
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("Progress [timeElapsedForLastOperation=");
 		builder.append(timeElapsedForLastOperation);
 		builder.append(", progressIndex=");

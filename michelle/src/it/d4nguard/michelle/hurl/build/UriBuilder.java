@@ -43,33 +43,33 @@ public final class UriBuilder implements Builder<URI>, Parser<UriBuilder>
 	private String query;
 	private String fragment;
 
-	private UriBuilder(String scheme, String userInfo, String host, Integer port, String path, String query, String fragment)
+	private UriBuilder(final String scheme, final String userInfo, final String host, final Integer port, final String path, final String query, final String fragment)
 	{
 		setAll(scheme, userInfo, host, port, path, query, fragment);
 	}
 
-	private void setAll(String scheme, String userInfo, String host, Integer port, String path, String query, String fragment)
+	private void setAll(final String scheme, final String userInfo, final String host, final Integer port, final String path, final String query, final String fragment)
 	{
 		this.scheme = scheme;
 		this.userInfo = userInfo;
 		this.host = host;
-		this.port = (port == null) ? -1 : port.intValue();
+		this.port = port == null ? -1 : port.intValue();
 		this.path = path;
 		this.query = query;
 		this.fragment = fragment;
 	}
 
-	public static UriBuilder create(String scheme, String userInfo, String host, Integer port, String path, String query, String fragment)
+	public static UriBuilder create(final String scheme, final String userInfo, final String host, final Integer port, final String path, final String query, final String fragment)
 	{
 		return new UriBuilder(scheme, userInfo, host, port, path, query, fragment);
 	}
 
-	public static UriBuilder create(URI uri)
+	public static UriBuilder create(final URI uri)
 	{
 		return create(uri.getScheme(), uri.getRawUserInfo(), uri.getHost(), uri.getPort(), uri.getRawPath(), uri.getRawQuery(), uri.getRawFragment());
 	}
 
-	public static UriBuilder create(String uri)
+	public static UriBuilder create(final String uri)
 	{
 		return create(URI.create(uri));
 	}
@@ -95,9 +95,9 @@ public final class UriBuilder implements Builder<URI>, Parser<UriBuilder>
 	 *            null
 	 * @return this
 	 */
-	public UriBuilder setScheme(Object scheme)
+	public UriBuilder setScheme(final Object scheme)
 	{
-		this.scheme = (scheme == null) ? null : scheme.toString();
+		this.scheme = scheme == null ? null : scheme.toString();
 		return this;
 	}
 
@@ -115,9 +115,9 @@ public final class UriBuilder implements Builder<URI>, Parser<UriBuilder>
 	 *            null
 	 * @return this
 	 */
-	public UriBuilder setUserInfo(Object userInfo)
+	public UriBuilder setUserInfo(final Object userInfo)
 	{
-		this.userInfo = (userInfo == null) ? null : userInfo.toString();
+		this.userInfo = userInfo == null ? null : userInfo.toString();
 		return this;
 	}
 
@@ -134,9 +134,9 @@ public final class UriBuilder implements Builder<URI>, Parser<UriBuilder>
 	 *            null
 	 * @return this
 	 */
-	public UriBuilder setHost(Object host)
+	public UriBuilder setHost(final Object host)
 	{
-		this.host = (host == null) ? null : host.toString();
+		this.host = host == null ? null : host.toString();
 		return this;
 	}
 
@@ -155,9 +155,9 @@ public final class UriBuilder implements Builder<URI>, Parser<UriBuilder>
 	 *            the port number or -1 to unset
 	 * @return this
 	 */
-	public UriBuilder setPort(int port)
+	public UriBuilder setPort(final int port)
 	{
-		this.port = (port < 0) ? -1 : port;
+		this.port = port < 0 ? -1 : port;
 		return this;
 	}
 
@@ -174,9 +174,9 @@ public final class UriBuilder implements Builder<URI>, Parser<UriBuilder>
 	 *            null
 	 * @return this
 	 */
-	public UriBuilder setPath(Object path)
+	public UriBuilder setPath(final Object path)
 	{
-		this.path = (path == null) ? null : path.toString();
+		this.path = path == null ? null : path.toString();
 		return this;
 	}
 
@@ -193,9 +193,9 @@ public final class UriBuilder implements Builder<URI>, Parser<UriBuilder>
 	 *            null
 	 * @return this
 	 */
-	public UriBuilder setQuery(Object query)
+	public UriBuilder setQuery(final Object query)
 	{
-		this.query = (query == null) ? null : query.toString();
+		this.query = query == null ? null : query.toString();
 		return this;
 	}
 
@@ -212,20 +212,22 @@ public final class UriBuilder implements Builder<URI>, Parser<UriBuilder>
 	 *            null
 	 * @return this
 	 */
-	public UriBuilder setFragment(Object fragment)
+	public UriBuilder setFragment(final Object fragment)
 	{
-		this.fragment = (fragment == null) ? null : fragment.toString();
+		this.fragment = fragment == null ? null : fragment.toString();
 		return this;
 	}
 
+	@Override
 	public URI build()
 	{
 		return URI.create(toString());
 	}
 
-	public UriBuilder parse(String uriString)
+	@Override
+	public UriBuilder parse(final String uriString)
 	{
-		URI uri = URI.create(uriString);
+		final URI uri = URI.create(uriString);
 		setAll(uri.getScheme(), uri.getRawUserInfo(), uri.getHost(), uri.getPort(), uri.getRawPath(), uri.getRawQuery(), uri.getRawFragment());
 		return this;
 	}
@@ -236,27 +238,18 @@ public final class UriBuilder implements Builder<URI>, Parser<UriBuilder>
 	@Override
 	public String toString()
 	{
-		int len = len(scheme, 1) + len(userInfo, 2) + len(host, 2) + 6 + len(path, 1) + len(query, 1) + len(fragment, 1);
-		StringBuilder sb = new StringBuilder(len);
+		final int len = len(scheme, 1) + len(userInfo, 2) + len(host, 2) + 6 + len(path, 1) + len(query, 1) + len(fragment, 1);
+		final StringBuilder sb = new StringBuilder(len);
 		// see URI javadoc for this process
 		// yes, all this is necessary
-		if (notEmpty(scheme))
-		{
-			sb.append(scheme).append(":");
-		}
-		if (notEmpty(userInfo) || notEmpty(host) || port >= 0)
-		{
-			sb.append("//");
-		}
+		if (notEmpty(scheme)) sb.append(scheme).append(":");
+		if (notEmpty(userInfo) || notEmpty(host) || port >= 0) sb.append("//");
 		if (notEmpty(userInfo))
 		{
 			sb.append(userInfo);
 			sb.append("@");
 		}
-		if (notEmpty(host))
-		{
-			sb.append(host);
-		}
+		if (notEmpty(host)) sb.append(host);
 		if (port >= 0)
 		{
 			sb.append(":");
@@ -264,10 +257,7 @@ public final class UriBuilder implements Builder<URI>, Parser<UriBuilder>
 		}
 		if (notEmpty(path))
 		{
-			if (sb.length() > 0 && !path.startsWith("/"))
-			{
-				sb.append("/");
-			}
+			if (sb.length() > 0 && !path.startsWith("/")) sb.append("/");
 			sb.append(path);
 		}
 		if (notEmpty(query))
@@ -283,13 +273,13 @@ public final class UriBuilder implements Builder<URI>, Parser<UriBuilder>
 		return sb.toString();
 	}
 
-	private boolean notEmpty(String s)
+	private boolean notEmpty(final String s)
 	{
-		return s != null && (s.length() > 0);
+		return s != null && s.length() > 0;
 	}
 
-	private int len(String s, int extra)
+	private int len(final String s, final int extra)
 	{
-		return (s == null) ? 0 : s.length() + extra;
+		return s == null ? 0 : s.length() + extra;
 	}
 }

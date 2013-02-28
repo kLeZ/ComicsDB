@@ -10,19 +10,18 @@ import org.reflections.Reflections;
 
 public class ParserFactory
 {
-	public static Collection<ComicsSourceParser> getAll(Properties config)
+	public static Collection<ComicsSourceParser> getAll(final Properties config)
 	{
 		return getAll(config, null);
 	}
 
-	public static Collection<ComicsSourceParser> getAll(Properties config, Collection<Class<? extends ComicsSourceParser>> excludes)
+	public static Collection<ComicsSourceParser> getAll(final Properties config, final Collection<Class<? extends ComicsSourceParser>> excludes)
 	{
 		final List<ComicsSourceParser> ret = new ArrayList<ComicsSourceParser>();
 		for (final Class<? extends ComicsSourceParser> clazz : getClasses())
-		{
-			if (((clazz != null) && !Modifier.isAbstract(clazz.getModifiers())) && ((excludes == null) || (excludes.size() == 0) || !excludes.contains(clazz)))
+			if (clazz != null && !Modifier.isAbstract(clazz.getModifiers()) && (excludes == null || excludes.size() == 0 || !excludes.contains(clazz)))
 			{
-				ComicsSourceParser instance = getInstance(clazz);
+				final ComicsSourceParser instance = getInstance(clazz);
 
 				if (instance != null)
 				{
@@ -31,7 +30,6 @@ public class ParserFactory
 					ret.add(instance);
 				}
 			}
-		}
 		return ret;
 	}
 
@@ -39,12 +37,7 @@ public class ParserFactory
 	{
 		final List<String> ret = new ArrayList<String>();
 		for (final Class<? extends ComicsSourceParser> clazz : getClasses())
-		{
-			if ((clazz != null) && !Modifier.isAbstract(clazz.getModifiers()))
-			{
-				ret.add(getFqn(clazz));
-			}
-		}
+			if (clazz != null && !Modifier.isAbstract(clazz.getModifiers())) ret.add(getFqn(clazz));
 		return ret;
 	}
 
@@ -55,15 +48,12 @@ public class ParserFactory
 		return classes;
 	}
 
-	private static ComicsSourceParser getInstance(Class<? extends ComicsSourceParser> clazz)
+	private static ComicsSourceParser getInstance(final Class<? extends ComicsSourceParser> clazz)
 	{
 		ComicsSourceParser instance = null;
 		try
 		{
-			if (!Modifier.isAbstract(clazz.getModifiers()))
-			{
-				instance = clazz.getConstructor().newInstance();
-			}
+			if (!Modifier.isAbstract(clazz.getModifiers())) instance = clazz.getConstructor().newInstance();
 		}
 		catch (final SecurityException e)
 		{
@@ -88,7 +78,7 @@ public class ParserFactory
 		return instance;
 	}
 
-	public static String getFqn(Class<?> clazz)
+	public static String getFqn(final Class<?> clazz)
 	{
 		return clazz.getPackage().getName().concat(".").concat(clazz.getSimpleName());
 	}

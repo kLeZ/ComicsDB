@@ -33,8 +33,8 @@ public class ComicsResource
 	@GET()
 	public Comics getAllComics()
 	{
-		Persistor<Comic> db = getDatabase();
-		Comics comics = new Comics();
+		final Persistor<Comic> db = getDatabase();
+		final Comics comics = new Comics();
 		comics.addAll(db.findAll(Comic.class));
 		return comics;
 	}
@@ -52,11 +52,11 @@ public class ComicsResource
 	@Path("{param}/{method}/{value}")
 	public Comics getComicsByParam(@PathParam("param") String param, @PathParam("method") String method, @PathParam("value") String value)
 	{
-		Comics ret = new Comics();
+		final Comics ret = new Comics();
 
-		Persistor<Comic> db = getDatabase();
+		final Persistor<Comic> db = getDatabase();
 		String field = "";
-		HashMap<String, String> aliases = new HashMap<String, String>();
+		final HashMap<String, String> aliases = new HashMap<String, String>();
 
 		param = itrim(lrtrim(param)).toString();
 		method = itrim(lrtrim(method)).toString();
@@ -65,10 +65,10 @@ public class ComicsResource
 
 		if (param.indexOf('.') >= 0)
 		{
-			String[] split = param.split("\\.");
+			final String[] split = param.split("\\.");
 			aliases.put(split[0], "z");
 			field = String.format("z.%s", split[1]);
-			Class<?> paramType = GenericsUtils.getFieldType(Comic.class, split[0]);
+			final Class<?> paramType = GenericsUtils.getFieldType(Comic.class, split[0]);
 			valueType = GenericsUtils.getFieldType(paramType, split[1]);
 		}
 		else
@@ -77,13 +77,13 @@ public class ComicsResource
 			valueType = GenericsUtils.getFieldType(Comic.class, param);
 		}
 
-		Object val = GenericsUtils.valueOf(valueType, value, value);
+		final Object val = GenericsUtils.valueOf(valueType, value, value);
 
 		try
 		{
 			ret.addAll(db.findByCriterion(Comic.class, aliases, getCriterion(method, field, val)));
 		}
-		catch (Throwable e)
+		catch (final Throwable e)
 		{
 			log.error(e, e);
 		}
@@ -98,9 +98,9 @@ public class ComicsResource
 	 */
 	@GET()
 	@Path("id/{id: [0-9]+}")
-	public Comic getComicById(@PathParam("id") Long id)
+	public Comic getComicById(@PathParam("id") final Long id)
 	{
-		Persistor<Comic> db = getDatabase();
+		final Persistor<Comic> db = getDatabase();
 		return db.findById(Comic.class, id);
 	}
 
@@ -109,8 +109,8 @@ public class ComicsResource
 	 */
 	private Persistor<Comic> getDatabase()
 	{
-		ComicsConfiguration conf = ComicsConfiguration.getInstance();
-		Persistor<Comic> db = new Persistor<Comic>(conf.getDBConnectionInfo());
+		final ComicsConfiguration conf = ComicsConfiguration.getInstance();
+		final Persistor<Comic> db = new Persistor<Comic>(conf.getDBConnectionInfo());
 		return db;
 	}
 }

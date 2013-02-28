@@ -33,7 +33,7 @@ public final class CodepointIterator
 	private final CharSequence data;
 	private int index = 0;
 
-	public CodepointIterator(CharSequence data)
+	public CodepointIterator(final CharSequence data)
 	{
 		this.data = data;
 	}
@@ -45,16 +45,13 @@ public final class CodepointIterator
 
 	public int next()
 	{
-		char ch = data.charAt(index++);
+		final char ch = data.charAt(index++);
 		if (Character.isHighSurrogate(ch))
 		{
-			int ret = Character.toCodePoint(ch, data.charAt(index++));
+			final int ret = Character.toCodePoint(ch, data.charAt(index++));
 			index += 2;
 			return ret;
 		}
-		else
-		{
-			return ch;
-		}
+		else return ch;
 	}
 }

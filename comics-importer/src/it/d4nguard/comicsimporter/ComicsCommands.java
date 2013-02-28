@@ -1,5 +1,7 @@
 package it.d4nguard.comicsimporter;
 
+import it.d4nguard.michelle.utils.collections.Pair;
+
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -17,6 +19,7 @@ public abstract class ComicsCommands
 	public static final String PRINT_TITLES_CMD = "it.d4nguard.comicsimporter.ComicsCommands.print-titles";
 	public static final String NUMBER_COMICS_CMD = "it.d4nguard.comicsimporter.ComicsCommands.number-comics";
 	public static final String REFRESH_CACHE_FILE_CMD = "it.d4nguard.comicsimporter.ComicsCommands.refresh-cache-file";
+	public static final String IMPORT_COMICS_CMD = "it.d4nguard.comicsimporter.ComicsCommands.import-comics";
 
 	private static Options opts = new Options();
 
@@ -50,12 +53,16 @@ public abstract class ComicsCommands
 		opt.setOptionalArg(true);
 		opts.addOption(opt);
 
+		opt = new Option("i", removePrefix(IMPORT_COMICS_CMD), true, "Specify wether to fetch the comics, from main source or from a cache file, or not to fetch at all.");
+		opt.setOptionalArg(true);
+		opts.addOption(opt);
+
 		opt = new Option("S", removePrefix(SAVE_CACHE_CMD), true, "Specify wether to save the current comics db in the given cache file.");
 		opt.setOptionalArg(true);
 		opts.addOption(opt);
 	}
 
-	public static String optionToPosixString(Option opt, String value, boolean shortOpt)
+	public static String optionToPosixString(final Option opt, final String value, final boolean shortOpt)
 	{
 		String ret = "";
 		if (shortOpt)
@@ -74,12 +81,12 @@ public abstract class ComicsCommands
 		return opts;
 	}
 
-	public static String removePrefix(String cmd)
+	public static String removePrefix(final String cmd)
 	{
 		return cmd.substring(ComicsCommands.class.getName().length() + 1);
 	}
 
-	public static String addPrefix(String cmd)
+	public static String addPrefix(final String cmd)
 	{
 		return ComicsCommands.class.getName().concat(".").concat(cmd);
 	}
@@ -92,21 +99,30 @@ public abstract class ComicsCommands
 	 *            option has to be short
 	 * @return
 	 */
-	public static String[] composeCommandLine(Map<String, Entry<String, Boolean>> cmd)
+	public static String[] composeCommandLine(final Map<String, Entry<String, Boolean>> cmd)
 	{
-		ArrayList<String> ret = new ArrayList<String>();
+		final ArrayList<String> ret = new ArrayList<String>();
 		@SuppressWarnings("unchecked")
-		Iterator<Option> it = getOptions().getOptions().iterator();
+		final Iterator<Option> it = getOptions().getOptions().iterator();
 		while (it.hasNext())
 		{
-			Option opt = it.next();
+			final Option opt = it.next();
 			if (cmd.containsKey(addPrefix(opt.getLongOpt())))
 			{
-				Entry<String, Boolean> val = cmd.get(addPrefix(opt.getLongOpt()));
-				String[] s_opt = optionToPosixString(opt, val.getKey(), val.getValue()).split("\\s");
+				final Entry<String, Boolean> val = cmd.get(addPrefix(opt.getLongOpt()));
+				final String[] s_opt = optionToPosixString(opt, val.getKey(), val.getValue()).split("\\s");
 				ret.addAll(Arrays.asList(s_opt));
 			}
 		}
 		return ret.toArray(new String[] {});
+	}
+
+	public static Entry<String, Entry<String, Boolean>> createEntry(final String entryName, final String entryValue, final Boolean shortOption)
+	{
+		final Option opt = getOptions().getOption(removePrefix(entryName));
+		if (opt == null) { throw new IllegalArgumentException("Option Name"); }
+		final Pair<String, Entry<String, Boolean>> ret = new Pair<String, Entry<String, Boolean>>(entryName);
+		ret.setValue(new Pair<String, Boolean>(entryValue, shortOption));
+		return ret;
 	}
 }

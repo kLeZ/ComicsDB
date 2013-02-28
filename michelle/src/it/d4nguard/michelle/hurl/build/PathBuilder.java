@@ -43,7 +43,7 @@ public final class PathBuilder implements EscapeHolder, DelimiterHolder, Builder
 	private final Delimiter delimiter;
 	private final ArrayList<String> elements = new ArrayList<String>();
 
-	private PathBuilder(Escaper escaper, Delimiter delimiter)
+	private PathBuilder(final Escaper escaper, final Delimiter delimiter)
 	{
 		this.escaper = escaper;
 		this.delimiter = delimiter;
@@ -73,7 +73,7 @@ public final class PathBuilder implements EscapeHolder, DelimiterHolder, Builder
 	 *            the delimiter to use
 	 * @return a new builder
 	 */
-	public static PathBuilder create(Escaper escaper, Delimiter delimiter)
+	public static PathBuilder create(final Escaper escaper, final Delimiter delimiter)
 	{
 		return new PathBuilder(escaper, delimiter);
 	}
@@ -98,20 +98,14 @@ public final class PathBuilder implements EscapeHolder, DelimiterHolder, Builder
 	 */
 	public boolean hasLeadingSeparator()
 	{
-		return (elements.size() > 0) && (elements.get(0).length() == 0);
+		return elements.size() > 0 && elements.get(0).length() == 0;
 	}
 
-	public PathBuilder setLeadingSeparator(boolean leadingSeparator)
+	public PathBuilder setLeadingSeparator(final boolean leadingSeparator)
 	{
-		boolean hasLeadingSeparator = hasLeadingSeparator();
-		if (!hasLeadingSeparator && leadingSeparator)
-		{
-			elements.add(0, "");
-		}
-		else if (hasLeadingSeparator && !leadingSeparator)
-		{
-			elements.remove(0);
-		}
+		final boolean hasLeadingSeparator = hasLeadingSeparator();
+		if (!hasLeadingSeparator && leadingSeparator) elements.add(0, "");
+		else if (hasLeadingSeparator && !leadingSeparator) elements.remove(0);
 		return this;
 	}
 
@@ -121,59 +115,51 @@ public final class PathBuilder implements EscapeHolder, DelimiterHolder, Builder
 	 */
 	public boolean hasTrailingSeparator()
 	{
-		return (elements.size() > 0) && (elements.get(elements.size() - 1).length() == 0);
+		return elements.size() > 0 && elements.get(elements.size() - 1).length() == 0;
 	}
 
-	public PathBuilder setTrailingSeparator(boolean trailingSeparator)
+	public PathBuilder setTrailingSeparator(final boolean trailingSeparator)
 	{
-		boolean hasLeadingSeparator = hasTrailingSeparator();
-		if (!hasLeadingSeparator && trailingSeparator)
-		{
-			elements.add(elements.size() - 1, "");
-		}
-		else if (hasLeadingSeparator && trailingSeparator)
-		{
-			elements.remove(elements.size() - 1);
-		}
+		final boolean hasLeadingSeparator = hasTrailingSeparator();
+		if (!hasLeadingSeparator && trailingSeparator) elements.add(elements.size() - 1, "");
+		else if (hasLeadingSeparator && trailingSeparator) elements.remove(elements.size() - 1);
 		return this;
 	}
 
-	public PathBuilder setPath(List<Element> newPath)
+	public PathBuilder setPath(final List<Element> newPath)
 	{
 		elements.clear();
 
 		elements.ensureCapacity(newPath.size());
-		for (Element element : newPath)
-		{
+		for (final Element element : newPath)
 			elements.add(element.getValue());
-		}
 
 		return this;
 	}
 
-	public PathBuilder setPath(Path path)
+	public PathBuilder setPath(final Path path)
 	{
 		return setPath(path.getElements());
 	}
 
 	@Override
-	public PathBuilder parse(String path)
+	public PathBuilder parse(final String path)
 	{
 		return setPath(new Path(escaper, delimiter, path));
 	}
 
-	public PathBuilder parse(String... paths)
+	public PathBuilder parse(final String... paths)
 	{
 		return setPath(new Path(escaper, delimiter, paths));
 	}
 
-	public PathBuilder addElement(String unescaped)
+	public PathBuilder addElement(final String unescaped)
 	{
 		elements.add(unescaped);
 		return this;
 	}
 
-	public PathBuilder addElement(Element element)
+	public PathBuilder addElement(final Element element)
 	{
 		return addElement(element.getValue());
 	}
@@ -181,11 +167,9 @@ public final class PathBuilder implements EscapeHolder, DelimiterHolder, Builder
 	@Override
 	public Path build()
 	{
-		List<Element> list = new ArrayList<Element>(elements.size());
-		for (String element : elements)
-		{
+		final List<Element> list = new ArrayList<Element>(elements.size());
+		for (final String element : elements)
 			list.add(new Element(escaper, element, EscapeState.UNESCAPED));
-		}
 		return new Path(escaper, delimiter, list);
 	}
 

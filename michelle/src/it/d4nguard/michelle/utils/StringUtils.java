@@ -15,7 +15,7 @@ public class StringUtils
 
 	public static boolean isNullOrWhitespace(final String s)
 	{
-		return (s == null) || s.isEmpty() || clean(s).isEmpty();
+		return s == null || s.isEmpty() || clean(s).isEmpty();
 	}
 
 	public static String clean(final String s)
@@ -27,13 +27,10 @@ public class StringUtils
 	{
 		if (s != null)
 		{
-			s = (s.contains("/") ? (s.split("/").length > 0 ? s.split("/")[take] : s.substring(0, s.indexOf('/'))) : s);
-			s = (s.contains("-") ? (s.split("-").length > 0 ? s.split("-")[take] : s.substring(0, s.indexOf('-'))) : s);
+			s = s.contains("/") ? s.split("/").length > 0 ? s.split("/")[take] : s.substring(0, s.indexOf('/')) : s;
+			s = s.contains("-") ? s.split("-").length > 0 ? s.split("-")[take] : s.substring(0, s.indexOf('-')) : s;
 		}
-		else
-		{
-			s = "";
-		}
+		else s = "";
 		return s;
 	}
 
@@ -46,64 +43,47 @@ public class StringUtils
 	{
 		String ret = "";
 		for (final char c : s.toCharArray())
-		{
-			if (Character.isDigit(c) || (Arrays.binarySearch(DIGIT_SYMBOLS, c) >= 0))
-			{
-				ret = ret.concat(String.valueOf(c));
-			}
-		}
-		if (defaultToZero && ret.isEmpty())
-		{
-			ret = "0";
-		}
+			if (Character.isDigit(c) || Arrays.binarySearch(DIGIT_SYMBOLS, c) >= 0) ret = ret.concat(String.valueOf(c));
+		if (defaultToZero && ret.isEmpty()) ret = "0";
 		return ret;
 	}
 
-	public static <K, V> String join(String separator, Map<K, V> map)
+	public static <K, V> String join(final String separator, final Map<K, V> map)
 	{
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		int i = 0;
-		for (Map.Entry<K, V> entry : map.entrySet())
+		for (final Map.Entry<K, V> entry : map.entrySet())
 		{
 			sb.append("{ ");
 			sb.append(String.valueOf(entry.getKey()));
 			sb.append(", ");
 			sb.append(String.valueOf(entry.getValue()));
 			sb.append(" }");
-			if (++i < map.size())
-			{
-				sb.append(separator);
-			}
+			if (++i < map.size()) sb.append(separator);
 		}
 		return sb.toString();
 	}
 
-	public static <T> String join(String separator, Collection<T> coll)
+	public static <T> String join(final String separator, final Collection<T> coll)
 	{
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		int i = 0;
-		for (T t : coll)
+		for (final T t : coll)
 		{
 			sb.append(String.valueOf(t));
-			if (++i < coll.size())
-			{
-				sb.append(separator);
-			}
+			if (++i < coll.size()) sb.append(separator);
 		}
 		return sb.toString();
 	}
 
-	public static <T> String join(String separator, T... coll)
+	public static <T> String join(final String separator, final T... coll)
 	{
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		int i = 0;
-		for (T t : coll)
+		for (final T t : coll)
 		{
 			sb.append(String.valueOf(t));
-			if (++i < coll.length)
-			{
-				sb.append(separator);
-			}
+			if (++i < coll.length) sb.append(separator);
 		}
 		return sb.toString();
 	}
@@ -127,9 +107,9 @@ public class StringUtils
 	 * @return <code>true</code> if the CharSequence is not null and has length
 	 * @see #hasText(String)
 	 */
-	public static boolean hasLength(CharSequence str)
+	public static boolean hasLength(final CharSequence str)
 	{
-		return ((str != null) && (str.length() > 0));
+		return str != null && str.length() > 0;
 	}
 
 	/**
@@ -142,7 +122,7 @@ public class StringUtils
 	 * @return <code>true</code> if the String is not null and has length
 	 * @see #hasLength(CharSequence)
 	 */
-	public static boolean hasLength(String str)
+	public static boolean hasLength(final String str)
 	{
 		return hasLength((CharSequence) str);
 	}
@@ -170,14 +150,12 @@ public class StringUtils
 	 *         only
 	 * @see java.lang.Character#isWhitespace
 	 */
-	public static boolean hasText(CharSequence str)
+	public static boolean hasText(final CharSequence str)
 	{
-		if (!hasLength(str)) { return false; }
-		int strLen = str.length();
+		if (!hasLength(str)) return false;
+		final int strLen = str.length();
 		for (int i = 0; i < strLen; i++)
-		{
-			if (!Character.isWhitespace(str.charAt(i))) { return true; }
-		}
+			if (!Character.isWhitespace(str.charAt(i))) return true;
 		return false;
 	}
 
@@ -195,7 +173,7 @@ public class StringUtils
 	 *         greater than 0, and it does not contain whitespace only
 	 * @see #hasText(CharSequence)
 	 */
-	public static boolean hasText(String str)
+	public static boolean hasText(final String str)
 	{
 		return hasText((CharSequence) str);
 	}

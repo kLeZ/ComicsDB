@@ -23,7 +23,7 @@ public class ComicXmlMapper implements XmlMapper<Comic>
 	 * @see it.d4nguard.comics.beans.mappers.xml.XmlMapper#create(org.w3c.dom.Element)
 	 */
 	@Override
-	public Comic create(final Element elem, Long id)
+	public Comic create(final Element elem, final Long id)
 	{
 		Comic comic;
 		try
@@ -39,7 +39,7 @@ public class ComicXmlMapper implements XmlMapper<Comic>
 			comic.setTypology(Typology.get(getTextContent(elem, "tipologia")));
 			comic.setGenres(getGenres(getTextContent(elem, "genere")));
 			comic.setYear(Convert.toShortYear(getTextContent(elem, "anno")));
-			comic.setComplete(Convert.toBool((getTextContent(elem, "completa"))));
+			comic.setComplete(Convert.toBool(getTextContent(elem, "completa")));
 			comic.setCompleteInCountry(Convert.toBool(getAttribute(elem, "completa", "in_patria")));
 		}
 		catch (final MalformedURLException e)
@@ -53,16 +53,14 @@ public class ComicXmlMapper implements XmlMapper<Comic>
 	{
 		final LinkedHashSet<Genre> ret = new LinkedHashSet<Genre>();
 		for (final String genre : genres)
-		{
 			ret.add(Genre.get(genre));
-		}
 		return ret;
 	}
 
 	public static LinkedHashSet<Genre> getGenres(final String genres)
 	{
 		LinkedHashSet<Genre> ret = new LinkedHashSet<Genre>();
-		if ((genres != null) && !genres.isEmpty())
+		if (genres != null && !genres.isEmpty())
 		{
 			final String[] genresStrings = genres.split(", ");
 			ret = getGenres(Arrays.asList(genresStrings));
@@ -74,39 +72,39 @@ public class ComicXmlMapper implements XmlMapper<Comic>
 	 * @see it.d4nguard.comics.beans.mappers.xml.XmlMapper#create(java.lang.Object)
 	 */
 	@Override
-	public Element create(Document ownerDocument, Comic obj)
+	public Element create(final Document ownerDocument, final Comic obj)
 	{
-		Element ret = ownerDocument.createElement("fumetto");
+		final Element ret = ownerDocument.createElement("fumetto");
 		ret.setAttribute("url", obj.getUrl().toString());
 
-		Element titolo = ownerDocument.createElement("titolo");
+		final Element titolo = ownerDocument.createElement("titolo");
 		titolo.setAttribute("originale", obj.getOriginalTitle());
 		titolo.setAttribute("inglese", obj.getEnglishTitle());
 		ret.appendChild(titolo);
 
-		Element autore = ownerDocument.createElement("autore");
+		final Element autore = ownerDocument.createElement("autore");
 		autore.setAttribute("disegni", safeGetter(obj.getArtworker(), Author.class).getName());
 		autore.setAttribute("storia", safeGetter(obj.getStorywriter(), Author.class).getName());
 		ret.appendChild(autore);
 
-		Element editore = ownerDocument.createElement("editore");
+		final Element editore = ownerDocument.createElement("editore");
 		editore.setAttribute("originale", safeGetter(obj.getOriginalEditor(), Editor.class).getName());
 		editore.setAttribute("italiano", safeGetter(obj.getItalianEditor(), Editor.class).getName());
 		ret.appendChild(editore);
 
-		Element tipologia = ownerDocument.createElement("tipologia");
+		final Element tipologia = ownerDocument.createElement("tipologia");
 		tipologia.setTextContent(safeGetter(obj.getTypology(), Typology.class).getName());
 		ret.appendChild(tipologia);
 
-		Element generi = ownerDocument.createElement("genere");
+		final Element generi = ownerDocument.createElement("genere");
 		generi.setTextContent(StringUtils.join(", ", obj.getGenres()));
 		ret.appendChild(generi);
 
-		Element anno = ownerDocument.createElement("anno");
+		final Element anno = ownerDocument.createElement("anno");
 		anno.setTextContent(String.valueOf(obj.getYear()));
 		ret.appendChild(anno);
 
-		Element completa = ownerDocument.createElement("completa");
+		final Element completa = ownerDocument.createElement("completa");
 		completa.setTextContent(String.valueOf(obj.isComplete()));
 		completa.setAttribute("in_patria", String.valueOf(obj.isCompleteInCountry()));
 		ret.appendChild(completa);

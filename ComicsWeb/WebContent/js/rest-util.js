@@ -11,14 +11,19 @@ function getBy() {
 	var methods = document.getElementById('method');
 	switch (value) {
 	case 'id':
-		url = './JsonPresenter?type=single&q=/ComicsDB/comics/' + value + '/'
+		url = './JsonPresenter?type=single&q=/ComicsDB/comics/'
+				+ value
+				+ '/'
 				+ encodeURIComponent(document.getElementById('comic_' + value).value);
 		break;
 	case 'field':
 		url = './JsonPresenter?type=array&q=/ComicsDB/comics/'
-				+ encodeURIComponent(document.getElementById('comic_param').value) + '/'
-				+ encodeURIComponent(methods.options[methods.selectedIndex].value) + '/'
-				+ encodeURIComponent(document.getElementById('comic_value').value) + '/';
+				+ encodeURIComponent(document.getElementById('comic_param').value)
+				+ '/'
+				+ encodeURIComponent(methods.options[methods.selectedIndex].value)
+				+ '/'
+				+ encodeURIComponent(document.getElementById('comic_value').value)
+				+ '/';
 		break;
 	}
 	if (!confirm(url))
@@ -44,8 +49,24 @@ function pollJsonService(url, containerDivId) {
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			var parent = document.getElementById(containerDivId);
-			parent.innerHTML += '<p>' + textStatus + '<br />' + errorThrown + '<br />'
-					+ XMLHttpRequest + '</p>';
+			parent.innerHTML += '<p>' + textStatus + '<br />' + errorThrown
+					+ '<br />' + XMLHttpRequest + '</p>';
+		}
+	});
+}
+
+function delJsonService(url) {
+	alert('Calling \'' + url + '\' with DELETE HTTP method');
+	$.ajax({
+		type : "DELETE",
+		url : url,
+		cache : false,
+		timeout : 50000 /* ms */,
+		success : function(data) {
+			alert('Synchronization deleted successfully!');
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert(+textStatus + '\n' + errorThrown + '\n' + XMLHttpRequest);
 		}
 	});
 }

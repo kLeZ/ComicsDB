@@ -35,9 +35,9 @@ public class ComicsConfiguration extends ComicsCommands
 	public static final String CONFIG_FILE_NAME_PROP = ".configFileName";
 	public static final String URL_PROP = ".url";
 
-	private List<String> ConfiguredProperties = new ArrayList<String>();
-	private Properties DBConnectionInfo;
-	private Properties config = new Properties();
+	private final List<String> ConfiguredProperties = new ArrayList<String>();
+	private final Properties DBConnectionInfo;
+	private final Properties config = new Properties();
 	private int ncomics = -1;
 	private boolean printTitles = true;
 	private boolean refresh_cache_file = false;
@@ -46,17 +46,20 @@ public class ComicsConfiguration extends ComicsCommands
 	private boolean sync = true;
 	private boolean persist = true;
 	private boolean load_persistence = true;
+	private boolean import_comics = false;
 	private boolean save_cache = false;
+	private boolean saveConfigToDisk = false;
 
-	private ComicsConfiguration()
+	private ComicsConfiguration(boolean saveConfigToDisk)
 	{
+		this.saveConfigToDisk = saveConfigToDisk;
 		BasicConfigurator.configure();
-		Properties log4j = new Properties();
+		final Properties log4j = new Properties();
 		try
 		{
 			log4j.load(StreamUtils.convertStringToInputStream(getConfigContent("log4j.properties")));
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			log.error(e, e);
 		}
@@ -71,8 +74,8 @@ public class ComicsConfiguration extends ComicsCommands
 		DBConnectionInfo = new Properties();
 		HibernateFactory.buildIfNeeded(null, null, null, false);
 		HibernateFactory.closeFactory();
-		Configuration configuration = HibernateFactory.getConfiguration();
-		for (String prop : getConfiguredProperties())
+		final Configuration configuration = HibernateFactory.getConfiguration();
+		for (final String prop : getConfiguredProperties())
 		{
 			DBConnectionInfo.setProperty(prop, configuration.getProperty(prop));
 		}
@@ -108,6 +111,11 @@ public class ComicsConfiguration extends ComicsCommands
 		return refresh_cache_file;
 	}
 
+	public boolean isImportComics()
+	{
+		return import_comics;
+	}
+
 	public boolean isWipeDB()
 	{
 		return wipeDB;
@@ -133,21 +141,39 @@ public class ComicsConfiguration extends ComicsCommands
 		return save_cache;
 	}
 
+	public boolean isSaveConfigToDisk()
+	{
+		return saveConfigToDisk;
+	}
+
+	public void setSaveConfigToDisk(boolean saveConfigToDisk)
+	{
+		this.saveConfigToDisk = saveConfigToDisk;
+	}
+
 	public String getCacheFile()
 	{
 		return cacheFile;
 	}
 
-	public void setDBConnectionInfo(Map<String, String[]> map)
+	public void setDBConnectionInfo(final Map<String, String[]> map)
 	{
-		for (String prop : getConfiguredProperties())
+		for (final String prop : getConfiguredProperties())
 		{
 			DBConnectionInfo.setProperty(prop, StringUtils.join(" ", map.get(prop)));
 		}
 		HibernateFactory.closeFactory();
 	}
 
-	public ComicsConfiguration load(Map<String, Entry<String, Boolean>> cmd)
+	/**
+	 * @param cmd
+	 *            where the key is expected to be a constant defined in the
+	 *            ComicsCommands abstract class, and the value is expected to be
+	 *            a map entry of the value chosen for the option and a switch
+	 *            meaning if the option has to be short
+	 * @return the ComicsConfiguration instance
+	 */
+	public ComicsConfiguration load(final Map<String, Entry<String, Boolean>> cmd)
 	{
 		return load(composeCommandLine(cmd));
 	}
@@ -156,7 +182,7 @@ public class ComicsConfiguration extends ComicsCommands
 	{
 		try
 		{
-			reset(this);
+			reset(this, isSaveConfigToDisk());
 			config.load(StreamUtils.convertStringToInputStream(getPropertiesContent()));
 
 			log.debug("Internal representation of the Properties object loaded from configuration file: " + config.toString());
@@ -166,6 +192,7 @@ public class ComicsConfiguration extends ComicsCommands
 			ncomics = getConfigValue(NUMBER_COMICS_CMD, Integer.class, config, cmd);
 			printTitles = getConfigValue(PRINT_TITLES_CMD, Boolean.class, config, cmd);
 			refresh_cache_file = getConfigValue(REFRESH_CACHE_FILE_CMD, Boolean.class, config, cmd);
+			import_comics = getConfigValue(IMPORT_COMICS_CMD, Boolean.class, config, cmd);
 			cacheFile = getConfigValue(CACHE_FILE_CMD, String.class, config, cmd);
 			wipeDB = getConfigValue(WIPE_DB_CMD, Boolean.class, config, cmd);
 			sync = getConfigValue(SYNC_CMD, Boolean.class, config, cmd);
@@ -173,7 +200,7 @@ public class ComicsConfiguration extends ComicsCommands
 			load_persistence = getConfigValue(LOAD_PERSISTENCE_CMD, Boolean.class, config, cmd);
 			save_cache = getConfigValue(SAVE_CACHE_CMD, Boolean.class, config, cmd);
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			log.error(e, e);
 		}
@@ -181,7 +208,7 @@ public class ComicsConfiguration extends ComicsCommands
 		return this;
 	}
 
-	public void printCliHelp(int exitStatus)
+	public void printCliHelp(final int exitStatus)
 	{
 		final HelpFormatter formatter = new HelpFormatter();
 		File moduleFile;
@@ -195,11 +222,11 @@ public class ComicsConfiguration extends ComicsCommands
 				jar = moduleFile.getName();
 			}
 		}
-		catch (IllegalStateException e)
+		catch (final IllegalStateException e)
 		{
 			log.error(e, e);
 		}
-		catch (ClassNotFoundException e)
+		catch (final ClassNotFoundException e)
 		{
 			log.error(e, e);
 		}
@@ -207,17 +234,20 @@ public class ComicsConfiguration extends ComicsCommands
 		System.exit(exitStatus);
 	}
 
-	public String getConfigContent(String configName) throws IOException
+	public String getConfigContent(final String configName) throws IOException
 	{
 		String ret = "";
-		File configdir = new File(CONFIG_DIR);
-		log.trace("Directory in which to search configuration file: " + CONFIG_DIR + " | Exists: " + String.valueOf(configdir.exists()));
+		final File configdir = new File(CONFIG_DIR);
+		log.trace(String.format("Directory in which to search configuration file: %s | Exists: %s", CONFIG_DIR, String.valueOf(configdir.exists())));
 		if (!configdir.exists())
 		{
-			configdir.mkdir();
+			if (isSaveConfigToDisk())
+			{
+				configdir.mkdir();
+			}
 		}
-		File f = new File(configdir, configName);
-		log.trace("Reading the file: " + f.toString());
+		final File f = new File(configdir, configName);
+		log.trace(String.format("Reading the file: %s", f.toString()));
 		if (f.exists())
 		{
 			ret = StreamUtils.readFile(f);
@@ -226,16 +256,19 @@ public class ComicsConfiguration extends ComicsCommands
 		{
 			log.trace("ComicsConfiguration file on disk is empty or doesn't exists, reading the file in package as resource");
 			ret = StreamUtils.getResourceAsString(configName, getClass().getClassLoader());
-			log.trace("Writing read resource to disk in '" + f.toString() + "'");
-			StreamUtils.writeFile(f.toString(), ret, false);
+			if (isSaveConfigToDisk())
+			{
+				log.trace(String.format("Writing read resource to disk in '%s'", f.toString()));
+				StreamUtils.writeFile(f.toString(), ret, false);
+			}
 		}
 		return ret;
 	}
 
-	protected char getShortOpt(String longOpt, CommandLine cmd)
+	protected char getShortOpt(final String longOpt, final CommandLine cmd)
 	{
 		char ret = '\0';
-		for (Option opt : cmd.getOptions())
+		for (final Option opt : cmd.getOptions())
 		{
 			if (opt.getLongOpt().compareTo(longOpt) == 0)
 			{
@@ -249,7 +282,7 @@ public class ComicsConfiguration extends ComicsCommands
 		return ret;
 	}
 
-	protected <T> T getConfigValue(String valueName, Class<T> returnType, Properties config, CommandLine cmd)
+	protected <T> T getConfigValue(final String valueName, final Class<T> returnType, final Properties config, final CommandLine cmd)
 	{
 		String value = "";
 		// I check commandline after properties because of priority of commandline modifiers
@@ -306,8 +339,8 @@ public class ComicsConfiguration extends ComicsCommands
 
 	public String dbInfoToString()
 	{
-		StringWriter out = new StringWriter();
-		PrintWriter pw = new PrintWriter(out);
+		final StringWriter out = new StringWriter();
+		final PrintWriter pw = new PrintWriter(out);
 		getDBConnectionInfo().list(pw);
 		return out.toString().replaceAll("\\n", "<br />");
 	}
@@ -315,12 +348,13 @@ public class ComicsConfiguration extends ComicsCommands
 	@Override
 	public String toString()
 	{
-		String sep = ", ";
-		StringBuilder builder = new StringBuilder();
+		final String sep = ", ";
+		final StringBuilder builder = new StringBuilder();
 		builder.append("ComicsConfiguration [config=").append(config).append(sep);
 		builder.append("ncomics=").append(ncomics).append(sep);
 		builder.append("printTitles=").append(printTitles).append(sep);
 		builder.append("refresh_cache_file=").append(refresh_cache_file).append(sep);
+		builder.append("import_comics=").append(import_comics).append(sep);
 		builder.append("cacheFile=").append(cacheFile).append(sep);
 		builder.append("wipeDB=").append(wipeDB).append(sep);
 		builder.append("sync=").append(sync).append(sep);
@@ -332,17 +366,22 @@ public class ComicsConfiguration extends ComicsCommands
 
 	private static ComicsConfiguration instance;
 
-	private static void reset(ComicsConfiguration instance)
+	private static void reset(ComicsConfiguration conf, boolean saveConfigToDisk)
 	{
-		instance = null;
-		instance = getInstance();
+		conf = null;
+		conf = getInstance(saveConfigToDisk);
 	}
 
 	public static ComicsConfiguration getInstance()
 	{
+		return getInstance(false);
+	}
+
+	public static ComicsConfiguration getInstance(boolean saveConfigToDisk)
+	{
 		if (instance == null)
 		{
-			instance = new ComicsConfiguration();
+			instance = new ComicsConfiguration(saveConfigToDisk);
 		}
 		return instance;
 	}

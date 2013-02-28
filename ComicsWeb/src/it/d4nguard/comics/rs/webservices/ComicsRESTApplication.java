@@ -10,8 +10,8 @@ import javax.ws.rs.core.Application;
 public class ComicsRESTApplication extends Application
 {
 
-	private Set<Object> singletons = new HashSet<Object>();
-	private Set<Class<?>> empty = new HashSet<Class<?>>();
+	private final Set<Object> singletons = new HashSet<Object>();
+	private final Set<Class<?>> empty = new HashSet<Class<?>>();
 
 	public ComicsRESTApplication()
 	{

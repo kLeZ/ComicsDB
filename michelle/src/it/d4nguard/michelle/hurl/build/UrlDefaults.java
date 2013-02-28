@@ -105,15 +105,15 @@ public final class UrlDefaults
 	private static Pattern unsafePath()
 	{
 		// RFC3986 allowed in query part (excluding escaped and alphanumeric)
-		String unreserved = "-" + "." + "_" + "~";
-		String subDelims = "!" + "$" + "&" + "'" + "(" + ")" + "*" + "+" + "," + ";" + "=";
-		String pchar = unreserved + subDelims + ":" + "@";
+		final String unreserved = "-" + "." + "_" + "~";
+		final String subDelims = "!" + "$" + "&" + "'" + "(" + ")" + "*" + "+" + "," + ";" + "=";
+		final String pchar = unreserved + subDelims + ":" + "@";
 
 		// reserve '%' and '/'
-		String safe = BuilderUtil.remove(pchar, '%', '/');
+		final String safe = BuilderUtil.remove(pchar, '%', '/');
 
 		// regex
-		String unsafe = "[^\\p{Alnum}" + BuilderUtil.regexQuoted(safe) + "]++";
+		final String unsafe = "[^\\p{Alnum}" + BuilderUtil.regexQuoted(safe) + "]++";
 		return Pattern.compile(unsafe);
 	}
 
@@ -143,13 +143,13 @@ public final class UrlDefaults
 	private static Pattern unsafeFragment()
 	{
 		// RFC3986 allowed in query part (excluding escaped and alphanumeric)
-		String unreserved = "-" + "." + "_" + "~";
-		String subDelims = "!" + "$" + "&" + "'" + "(" + ")" + "*" + "+" + "," + ";" + "=";
-		String pchar = unreserved + subDelims + ":" + "@";
-		String fragment = pchar + "/" + "?";
+		final String unreserved = "-" + "." + "_" + "~";
+		final String subDelims = "!" + "$" + "&" + "'" + "(" + ")" + "*" + "+" + "," + ";" + "=";
+		final String pchar = unreserved + subDelims + ":" + "@";
+		final String fragment = pchar + "/" + "?";
 
 		// regex
-		String unsafe = "[^\\p{Alnum}" + BuilderUtil.regexQuoted(fragment) + "]++";
+		final String unsafe = "[^\\p{Alnum}" + BuilderUtil.regexQuoted(fragment) + "]++";
 		return Pattern.compile(unsafe);
 	}
 

@@ -13,9 +13,9 @@ public class CollectionUtils
 	 *            the Collection to check
 	 * @return whether the given Collection is empty
 	 */
-	public static boolean isEmpty(Collection<?> collection)
+	public static boolean isEmpty(final Collection<?> collection)
 	{
-		return ((collection == null) || collection.isEmpty());
+		return collection == null || collection.isEmpty();
 	}
 
 	/**
@@ -26,8 +26,8 @@ public class CollectionUtils
 	 *            the Map to check
 	 * @return whether the given Map is empty
 	 */
-	public static boolean isEmpty(Map<?, ?> map)
+	public static boolean isEmpty(final Map<?, ?> map)
 	{
-		return ((map == null) || map.isEmpty());
+		return map == null || map.isEmpty();
 	}
 }

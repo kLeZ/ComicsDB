@@ -18,16 +18,19 @@ public class Pair<K, V> implements Entry<K, V>
 		this.value = value;
 	}
 
+	@Override
 	public K getKey()
 	{
 		return this.key;
 	}
 
+	@Override
 	public V getValue()
 	{
 		return this.value;
 	}
 
+	@Override
 	public V setValue(final V value)
 	{
 		this.value = value;

@@ -6,7 +6,7 @@ import java.io.StringWriter;
 
 public class ExceptionsUtils
 {
-	public static String stackTraceToString(Throwable e)
+	public static String stackTraceToString(final Throwable e)
 	{
 		String retValue = null;
 		StringWriter sw = null;
@@ -22,16 +22,10 @@ public class ExceptionsUtils
 		{
 			try
 			{
-				if (pw != null)
-				{
-					pw.close();
-				}
-				if (sw != null)
-				{
-					sw.close();
-				}
+				if (pw != null) pw.close();
+				if (sw != null) sw.close();
 			}
-			catch (IOException ignore)
+			catch (final IOException ignore)
 			{
 			}
 		}

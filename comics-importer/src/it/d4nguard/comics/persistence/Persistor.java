@@ -27,42 +27,42 @@ public class Persistor<E>
 		this(null, null, null, false);
 	}
 
-	public Persistor(boolean force)
+	public Persistor(final boolean force)
 	{
 		this(null, null, null, force);
 	}
 
-	public Persistor(Properties toOverrideProperties)
+	public Persistor(final Properties toOverrideProperties)
 	{
 		this(null, toOverrideProperties, null, false);
 	}
 
-	public Persistor(Properties toOverrideProperties, boolean force)
+	public Persistor(final Properties toOverrideProperties, final boolean force)
 	{
 		this(null, toOverrideProperties, null, force);
 	}
 
-	public Persistor(Document config, Properties toOverrideProperties)
+	public Persistor(final Document config, final Properties toOverrideProperties)
 	{
 		this(config, toOverrideProperties, null, false);
 	}
 
-	public Persistor(Document config, Properties toOverrideProperties, boolean force)
+	public Persistor(final Document config, final Properties toOverrideProperties, final boolean force)
 	{
 		this(config, toOverrideProperties, null, force);
 	}
 
-	public Persistor(Properties toOverrideProperties, Properties extraProperties)
+	public Persistor(final Properties toOverrideProperties, final Properties extraProperties)
 	{
 		this(null, toOverrideProperties, extraProperties, false);
 	}
 
-	public Persistor(Properties toOverrideProperties, Properties extraProperties, boolean force)
+	public Persistor(final Properties toOverrideProperties, final Properties extraProperties, final boolean force)
 	{
 		this(null, toOverrideProperties, extraProperties, force);
 	}
 
-	public Persistor(Document config, Properties toOverrideProperties, Properties extraProperties, boolean force)
+	public Persistor(final Document config, final Properties toOverrideProperties, final Properties extraProperties, final boolean force)
 	{
 		this.config = config;
 		this.toOverrideProperties = toOverrideProperties;
@@ -85,7 +85,7 @@ public class Persistor<E>
 		return extraProperties;
 	}
 
-	public void save(E obj)
+	public void save(final E obj)
 	{
 		try
 		{
@@ -93,7 +93,7 @@ public class Persistor<E>
 			session.save(obj);
 			tx.commit();
 		}
-		catch (Throwable e)
+		catch (final Throwable e)
 		{
 			handleException(e);
 		}
@@ -103,7 +103,7 @@ public class Persistor<E>
 		}
 	}
 
-	public void update(E obj)
+	public void update(final E obj)
 	{
 		try
 		{
@@ -111,7 +111,7 @@ public class Persistor<E>
 			session.update(obj);
 			tx.commit();
 		}
-		catch (Throwable e)
+		catch (final Throwable e)
 		{
 			handleException(e);
 		}
@@ -121,7 +121,7 @@ public class Persistor<E>
 		}
 	}
 
-	public void saveOrUpdate(E obj)
+	public void saveOrUpdate(final E obj)
 	{
 		try
 		{
@@ -129,7 +129,7 @@ public class Persistor<E>
 			session.saveOrUpdate(obj);
 			tx.commit();
 		}
-		catch (Throwable e)
+		catch (final Throwable e)
 		{
 			handleException(e);
 		}
@@ -139,16 +139,16 @@ public class Persistor<E>
 		}
 	}
 
-	public void saveAll(Collection<E> list)
+	public void saveAll(final Collection<E> list)
 	{
 		try
 		{
 			startOperation();
 			int i = 0;
-			for (E e : list)
+			for (final E e : list)
 			{
 				session.save(e);
-				if ((i++ % 20) == 0)
+				if (i++ % 20 == 0)
 				{
 					session.flush();
 					session.clear();
@@ -156,7 +156,7 @@ public class Persistor<E>
 			}
 			tx.commit();
 		}
-		catch (Throwable e)
+		catch (final Throwable e)
 		{
 			handleException(e);
 		}
@@ -166,16 +166,16 @@ public class Persistor<E>
 		}
 	}
 
-	public void updateAll(Collection<E> list)
+	public void updateAll(final Collection<E> list)
 	{
 		try
 		{
 			startOperation();
 			int i = 0;
-			for (E e : list)
+			for (final E e : list)
 			{
 				session.update(e);
-				if ((i++ % 20) == 0)
+				if (i++ % 20 == 0)
 				{
 					session.flush();
 					session.clear();
@@ -183,7 +183,7 @@ public class Persistor<E>
 			}
 			tx.commit();
 		}
-		catch (Throwable e)
+		catch (final Throwable e)
 		{
 			handleException(e);
 		}
@@ -193,16 +193,16 @@ public class Persistor<E>
 		}
 	}
 
-	public void saveOrUpdateAll(Collection<E> list)
+	public void saveOrUpdateAll(final Collection<E> list)
 	{
 		try
 		{
 			startOperation();
 			int i = 0;
-			for (E e : list)
+			for (final E e : list)
 			{
 				session.saveOrUpdate(e);
-				if ((i++ % 20) == 0)
+				if (i++ % 20 == 0)
 				{
 					session.flush();
 					session.clear();
@@ -210,7 +210,7 @@ public class Persistor<E>
 			}
 			tx.commit();
 		}
-		catch (Throwable e)
+		catch (final Throwable e)
 		{
 			handleException(e);
 		}
@@ -220,7 +220,7 @@ public class Persistor<E>
 		}
 	}
 
-	public void delete(E obj)
+	public void delete(final E obj)
 	{
 		try
 		{
@@ -228,7 +228,7 @@ public class Persistor<E>
 			session.delete(obj);
 			tx.commit();
 		}
-		catch (Throwable e)
+		catch (final Throwable e)
 		{
 			handleException(e);
 		}
@@ -239,7 +239,7 @@ public class Persistor<E>
 	}
 
 	@SuppressWarnings("unchecked")
-	public E findById(Class<E> clazz, Long id)
+	public E findById(final Class<E> clazz, final Long id)
 	{
 		E obj = null;
 		try
@@ -248,7 +248,7 @@ public class Persistor<E>
 			obj = (E) session.load(clazz, id);
 			tx.commit();
 		}
-		catch (Throwable e)
+		catch (final Throwable e)
 		{
 			handleException(e);
 		}
@@ -259,37 +259,33 @@ public class Persistor<E>
 		return obj;
 	}
 
-	public List<E> findByEqField(Class<E> clazz, String fieldName, Object fieldValue)
+	public List<E> findByEqField(final Class<E> clazz, final String fieldName, final Object fieldValue)
 	{
 		return findByCriterion(clazz, Restrictions.eq(fieldName, fieldValue));
 	}
 
-	public List<E> findByCriterion(Class<E> clazz, Criterion... criterions)
+	public List<E> findByCriterion(final Class<E> clazz, final Criterion... criterions)
 	{
 		return findByCriterion(clazz, new HashMap<String, String>(), criterions);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<E> findByCriterion(Class<E> clazz, HashMap<String, String> aliases, Criterion... criterions)
+	public List<E> findByCriterion(final Class<E> clazz, final HashMap<String, String> aliases, final Criterion... criterions)
 	{
 		List<E> objs = null;
 		try
 		{
 			startOperation();
-			Criteria c = session.createCriteria(clazz);
-			for (Entry<String, String> entry : aliases.entrySet())
-			{
+			final Criteria c = session.createCriteria(clazz);
+			for (final Entry<String, String> entry : aliases.entrySet())
 				c.createAlias(entry.getKey(), entry.getValue());
-			}
 
-			for (Criterion crit : criterions)
-			{
+			for (final Criterion crit : criterions)
 				c.add(crit);
-			}
 			objs = c.list();
 			tx.commit();
 		}
-		catch (Throwable e)
+		catch (final Throwable e)
 		{
 			handleException(e);
 		}
@@ -301,17 +297,17 @@ public class Persistor<E>
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<E> findAll(Class<E> clazz)
+	public List<E> findAll(final Class<E> clazz)
 	{
 		List<E> objects = null;
 		try
 		{
 			startOperation();
-			Query query = session.createQuery("from " + clazz.getName());
+			final Query query = session.createQuery("from " + clazz.getName());
 			objects = query.list();
 			tx.commit();
 		}
-		catch (Throwable e)
+		catch (final Throwable e)
 		{
 			handleException(e);
 		}
@@ -328,12 +324,12 @@ public class Persistor<E>
 		try
 		{
 			startOperation();
-			StatefulWork work = new StatefulWork(sql);
+			final StatefulWork work = new StatefulWork(sql);
 			session.doWork(work);
 			ret = work.isWorkDone();
 			tx.commit();
 		}
-		catch (Throwable e)
+		catch (final Throwable e)
 		{
 			handleException(e);
 		}
@@ -344,7 +340,7 @@ public class Persistor<E>
 		return ret;
 	}
 
-	protected void handleException(Throwable e) throws PersistorException
+	protected void handleException(final Throwable e) throws PersistorException
 	{
 		log.error(e, e);
 		HibernateFactory.rollback(tx);

@@ -54,39 +54,38 @@ public class UriEscaper implements Escaper
 	 * @param unsafeChars
 	 *            matches the set of unsafe characters
 	 */
-	public UriEscaper(Charset encoding, Pattern unsafeChars)
+	public UriEscaper(final Charset encoding, final Pattern unsafeChars)
 	{
-		if (encoding == null || unsafeChars == null) { throw new IllegalArgumentException("null"); }
+		if (encoding == null || unsafeChars == null) throw new IllegalArgumentException("null");
 		this.encoding = encoding;
 		this.unsafeChars = unsafeChars;
 	}
 
-	public String escape(String unescaped)
+	@Override
+	public String escape(final String unescaped)
 	{
 		return process(unsafeChars, Escape.INSTANCE, unescaped);
 	}
 
-	public String unescape(String escaped)
+	@Override
+	public String unescape(final String escaped)
 	{
 		return process(Unescape.ESCAPED, Unescape.INSTANCE, escaped);
 	}
 
-	private String process(Pattern pattern, Processor proc, String data)
+	private String process(final Pattern pattern, final Processor proc, final String data)
 	{
-		Matcher matcher = pattern.matcher(data);
+		final Matcher matcher = pattern.matcher(data);
 		StringBuilder sb = null;
 		int offset = 0;
 		while (matcher.find())
 		{
-			if (sb == null)
-			{
-				sb = new StringBuilder();
-			}
+			if (sb == null) sb = new StringBuilder();
 			sb.append(data.substring(offset, matcher.start()));
 			proc.append(sb, encoding, data.substring(matcher.start(), matcher.end()));
 			offset = matcher.end();
 		}
-		if (offset == 0) { return data; }
+		if (offset == 0) return data;
 		sb.append(data.substring(offset, data.length()));
 		return sb.toString();
 	}
@@ -103,34 +102,27 @@ public class UriEscaper implements Escaper
 	{
 		public static Processor INSTANCE = new Escape();
 
-		public void append(StringBuilder sb, Charset encoding, String sub)
+		@Override
+		public void append(final StringBuilder sb, final Charset encoding, final String sub)
 		{
 			try
 			{
-				byte[] arr = sub.getBytes(encoding.name());
-				for (int i = 0; i < arr.length; i++)
-				{
-					sb.append('%').append(high(arr[i])).append(low(arr[i]));
-				}
+				final byte[] arr = sub.getBytes(encoding.name());
+				for (final byte element : arr)
+					sb.append('%').append(high(element)).append(low(element));
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				throw new IllegalStateException(e);
 			}
 		}
 
-		private char low(byte b)
+		private char low(final byte b)
 		{
-			int n = b & 0xF;
-			if (n < 10)
-			{
-				return (char) (0xFFFF & ('0' + n));
-			}
-			else
-			{
-				// upper case ALPHA as per RFC 3986 6.2.2.1. Case Normalization
-				return (char) (0xFFFF & ('A' + n - 10));
-			}
+			final int n = b & 0xF;
+			if (n < 10) return (char) (0xFFFF & '0' + n);
+			else // upper case ALPHA as per RFC 3986 6.2.2.1. Case Normalization
+			return (char) (0xFFFF & 'A' + n - 10);
 		}
 
 		private char high(byte b)
@@ -150,38 +142,37 @@ public class UriEscaper implements Escaper
 
 		public static Processor INSTANCE = new Unescape();
 
-		public void append(StringBuilder sb, Charset encoding, String data)
+		@Override
+		public void append(final StringBuilder sb, final Charset encoding, final String data)
 		{
-			if (data.length() % 3 != 0) { throw new IllegalArgumentException(data); }
+			if (data.length() % 3 != 0) throw new IllegalArgumentException(data);
 			final int count = data.length() / 3;
-			byte[] encoded = new byte[count];
+			final byte[] encoded = new byte[count];
 			for (int i = 0; i < count; i++)
-			{
-				encoded[i] = escapeToByte(data, (i * 3));
-			}
+				encoded[i] = escapeToByte(data, i * 3);
 			try
 			{
-				String unencoded = new String(encoded, encoding.name());
+				final String unencoded = new String(encoded, encoding.name());
 				sb.append(unencoded);
 			}
-			catch (IOException e)
+			catch (final IOException e)
 			{
 				throw new IllegalStateException(e);
 			}
 		}
 
-		private byte escapeToByte(String data, int offset)
+		private byte escapeToByte(final String data, int offset)
 		{
-			int high = hexToByte(data.charAt(++offset));
-			int low = hexToByte(data.charAt(++offset));
-			return (byte) ((high << 4) | low);
+			final int high = hexToByte(data.charAt(++offset));
+			final int low = hexToByte(data.charAt(++offset));
+			return (byte) (high << 4 | low);
 		}
 
-		private byte hexToByte(char ch)
+		private byte hexToByte(final char ch)
 		{
-			if (ch >= '0' && ch <= '9') { return (byte) (ch - '0'); }
-			if (ch >= 'a' && ch <= 'z') { return (byte) (ch - 'a' + 10); }
-			if (ch >= 'A' && ch <= 'Z') { return (byte) (ch - 'A' + 10); }
+			if (ch >= '0' && ch <= '9') return (byte) (ch - '0');
+			if (ch >= 'a' && ch <= 'z') return (byte) (ch - 'a' + 10);
+			if (ch >= 'A' && ch <= 'Z') return (byte) (ch - 'A' + 10);
 			throw new IllegalArgumentException(Character.toString(ch));
 		}
 	}

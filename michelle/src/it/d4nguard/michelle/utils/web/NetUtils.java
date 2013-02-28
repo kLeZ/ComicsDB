@@ -19,9 +19,9 @@ import java.util.Map;
  */
 public class NetUtils
 {
-	public static String uriToString(URI uri)
+	public static String uriToString(final URI uri)
 	{
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		sb.append("Uri params [");
 		sb.append("Scheme: ").append(uri.getScheme()).append(", ");
 		sb.append("SchemeSpecificPart: ").append(uri.getSchemeSpecificPart()).append(", ");
@@ -34,21 +34,21 @@ public class NetUtils
 		return sb.toString();
 	}
 
-	public static Map<String, String> getQueryMap(String query)
+	public static Map<String, String> getQueryMap(final String query)
 	{
-		String[] params = query.split("&");
-		Map<String, String> map = new HashMap<String, String>();
-		for (String param : params)
+		final String[] params = query.split("&");
+		final Map<String, String> map = new HashMap<String, String>();
+		for (final String param : params)
 		{
-			String[] split = param.split("=");
-			String name = split[0];
-			String value = split[1];
+			final String[] split = param.split("=");
+			final String name = split[0];
+			final String value = split[1];
 			map.put(name, value);
 		}
 		return map;
 	}
 
-	public static String excuteGet(String targetURL)
+	public static String excuteGet(final String targetURL)
 	{
 		URL url;
 		HttpURLConnection connection = null;
@@ -63,32 +63,27 @@ public class NetUtils
 			connection.connect();
 
 			//Get Response
-			InputStream is = connection.getInputStream();
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+			final InputStream is = connection.getInputStream();
+			final BufferedReader rd = new BufferedReader(new InputStreamReader(is));
 			String line;
-			StringBuilder response = new StringBuilder();
+			final StringBuilder response = new StringBuilder();
 			while ((line = rd.readLine()) != null)
-			{
 				response.append(line).append(System.getProperty("line.separator"));
-			}
 			rd.close();
 			return response.toString();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 			return null;
 		}
 		finally
 		{
-			if (connection != null)
-			{
-				connection.disconnect();
-			}
+			if (connection != null) connection.disconnect();
 		}
 	}
 
-	public static String excutePost(String targetURL, String urlParameters)
+	public static String excutePost(final String targetURL, final String urlParameters)
 	{
 		URL url;
 		HttpURLConnection connection = null;
@@ -108,34 +103,29 @@ public class NetUtils
 			connection.setDoOutput(true);
 
 			//Send request
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+			final DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 			wr.writeBytes(urlParameters);
 			wr.flush();
 			wr.close();
 
 			//Get Response	
-			InputStream is = connection.getInputStream();
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+			final InputStream is = connection.getInputStream();
+			final BufferedReader rd = new BufferedReader(new InputStreamReader(is));
 			String line;
-			StringBuilder response = new StringBuilder();
+			final StringBuilder response = new StringBuilder();
 			while ((line = rd.readLine()) != null)
-			{
 				response.append(line).append(System.getProperty("line.separator"));
-			}
 			rd.close();
 			return response.toString();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 			return null;
 		}
 		finally
 		{
-			if (connection != null)
-			{
-				connection.disconnect();
-			}
+			if (connection != null) connection.disconnect();
 		}
 	}
 }

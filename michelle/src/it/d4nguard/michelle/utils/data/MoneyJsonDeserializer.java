@@ -15,7 +15,7 @@ public class MoneyJsonDeserializer implements JsonDeserializer<Money>
 	 * @see com.google.gson.JsonDeserializer#deserialize(com.google.gson.JsonElement, java.lang.reflect.Type, com.google.gson.JsonDeserializationContext)
 	 */
 	@Override
-	public Money deserialize(JsonElement arg0, Type arg1, JsonDeserializationContext arg2) throws JsonParseException
+	public Money deserialize(final JsonElement arg0, final Type arg1, final JsonDeserializationContext arg2) throws JsonParseException
 	{
 		return new Money(arg0.getAsJsonObject().get("value").getAsString());
 	}

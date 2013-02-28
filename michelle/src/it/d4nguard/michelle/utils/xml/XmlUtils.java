@@ -65,7 +65,7 @@ public class XmlUtils
 
 		public boolean hasNext()
 		{
-			return (current != null);
+			return current != null;
 		}
 
 		public Node next()
@@ -446,7 +446,7 @@ public class XmlUtils
 				//
 				// we will use this to avoid duplicate attributes below
 				//
-				if ((prefix != null) && (prefix.length() > 0)) namespaceAttr = XMLNS_PREFIX + ':' + prefix;
+				if (prefix != null && prefix.length() > 0) namespaceAttr = XMLNS_PREFIX + ':' + prefix;
 
 				final int length = attributes.getLength();
 
@@ -520,7 +520,7 @@ public class XmlUtils
 	 */
 	public static Element createElement(final Document doc, final QName qname, final Object value)
 	{
-		final boolean embed = (value instanceof Node) || (value instanceof XmlSerializable);
+		final boolean embed = value instanceof Node || value instanceof XmlSerializable;
 		final Node valueNode = convertToNode(doc, value);
 		final Element element = createElement(doc, qname, valueNode, embed);
 
@@ -571,7 +571,7 @@ public class XmlUtils
 		//       parsing to work correctly, the second argument to the 
 		//       createElementNS method MUST be a qualified name.
 		//
-		if ((prefix != null) && (prefix.length() > 0)) name = prefix + ':' + name;
+		if (prefix != null && prefix.length() > 0) name = prefix + ':' + name;
 
 		final String uri = qname.getNamespaceURI();
 
@@ -604,7 +604,7 @@ public class XmlUtils
 		// they're not the same reference, so if either equals null, 
 		// we can quit
 		//
-		if ((e1 == null) || (e2 == null)) return false;
+		if (e1 == null || e2 == null) return false;
 
 		//
 		// make sure root elements are the same, including tag name
@@ -892,7 +892,7 @@ public class XmlUtils
 		final String name = qname.getLocalPart();
 		final String value = xml.getAttributeNS(uri, name);
 
-		if ((value != null) && (value.length() == 0)) return null;
+		if (value != null && value.length() == 0) return null;
 
 		return value;
 	}
@@ -1017,7 +1017,7 @@ public class XmlUtils
 		//
 		// prefix is not required, but it CANNOT be null
 		//
-		if ((prefix != null) && (prefix.length() > 0)) return new QName(uri, name, prefix);
+		if (prefix != null && prefix.length() > 0) return new QName(uri, name, prefix);
 
 		return new QName(uri, name);
 	}
@@ -1216,7 +1216,7 @@ public class XmlUtils
 
 		int type;
 
-		while ((null != parent) && (((type = parent.getNodeType()) == Node.ELEMENT_NODE) || (type == Node.ENTITY_REFERENCE_NODE)))
+		while (null != parent && ((type = parent.getNodeType()) == Node.ELEMENT_NODE || type == Node.ENTITY_REFERENCE_NODE))
 		{
 			if (type == Node.ELEMENT_NODE)
 			{
@@ -1333,7 +1333,7 @@ public class XmlUtils
 
 				final String matchValue = match.getValue();
 
-				if ((matchValue == null) || !matchValue.equals(value)) return false;
+				if (matchValue == null || !matchValue.equals(value)) return false;
 			}
 		}
 
@@ -1385,7 +1385,7 @@ public class XmlUtils
 			//
 			// recurse down the tree to do more comparisons
 			//
-			else if ((type1 == Node.ELEMENT_NODE) && !equals((Element) next1, (Element) next2)) return false;
+			else if (type1 == Node.ELEMENT_NODE && !equals((Element) next1, (Element) next2)) return false;
 		}
 
 		// extra test incase more children (was previously covered by a children.getLength)
@@ -1484,7 +1484,7 @@ public class XmlUtils
 		//
 		// prefix is not required, but it CANNOT be null
 		//
-		if ((prefix != null) && (prefix.length() > 0)) return new QName(uri, localName, prefix);
+		if (prefix != null && prefix.length() > 0) return new QName(uri, localName, prefix);
 
 		return new QName(uri, localName);
 	}
@@ -1565,7 +1565,7 @@ public class XmlUtils
 		//
 		// go up the tree until we find a matching prefix/URI (or hit the top)
 		//
-		while ((next != null) && ((uri == null) || (uri.length() == 0)))
+		while (next != null && (uri == null || uri.length() == 0))
 		{
 			if (next.getNodeType() == Node.ELEMENT_NODE) uri = ((Element) next).getAttribute(attribute);
 
@@ -1575,7 +1575,7 @@ public class XmlUtils
 		//
 		// DOM returns empty strings for non-existent attributes - we want null
 		//
-		if ((uri != null) && (uri.length() == 0)) uri = null;
+		if (uri != null && uri.length() == 0) uri = null;
 
 		return uri;
 	}
@@ -1613,7 +1613,7 @@ public class XmlUtils
 	public static void setElement(final Element context, final QName qname, final Object value)
 	{
 		final Document doc = context.getOwnerDocument();
-		final boolean embedChildren = (value instanceof Node) || (value instanceof XmlSerializable);
+		final boolean embedChildren = value instanceof Node || value instanceof XmlSerializable;
 		final Node valueNode = convertToNode(doc, value);
 
 		setElement(context, qname, valueNode, embedChildren);
@@ -1640,7 +1640,7 @@ public class XmlUtils
 		// first check to see if we already have text in the element
 		//
 		final NodeChildrenIterator itr = new NodeChildrenIterator(element);
-		while (itr.hasNext() && (currentTextNode == null))
+		while (itr.hasNext() && currentTextNode == null)
 		{
 			final Node next = itr.next();
 			if (next.getNodeType() == Node.TEXT_NODE) currentTextNode = next;
@@ -1677,7 +1677,7 @@ public class XmlUtils
 		//
 		// handle null or blank prefix
 		//
-		final boolean hasPrefix = (prefix != null) && (prefix.length() > 0);
+		final boolean hasPrefix = prefix != null && prefix.length() > 0;
 
 		if (hasPrefix) attributeName += ':' + prefix;
 
@@ -1686,7 +1686,7 @@ public class XmlUtils
 		// element has matching bound namespace, or attempting to redefine
 		// element's bound default namespace
 		//
-		if (element.hasAttribute(attributeName) || ((element.getNamespaceURI() != null) && ((!hasPrefix && (element.getPrefix() == null)) || ((element.getPrefix() != null) && element.getPrefix().equals(prefix))))) return;
+		if (element.hasAttribute(attributeName) || element.getNamespaceURI() != null && (!hasPrefix && element.getPrefix() == null || element.getPrefix() != null && element.getPrefix().equals(prefix))) return;
 
 		// 
 		// do not add namespace attribute if any attributes have the same bound 
@@ -1698,7 +1698,7 @@ public class XmlUtils
 		{
 			final Attr attr = (Attr) attrs.item(index);
 
-			if ((attr.getNamespaceURI() != null) && ((!hasPrefix && (attr.getPrefix() == null)) || ((attr.getPrefix() != null) && attr.getPrefix().equals(prefix)))) return;
+			if (attr.getNamespaceURI() != null && (!hasPrefix && attr.getPrefix() == null || attr.getPrefix() != null && attr.getPrefix().equals(prefix))) return;
 		}
 
 		// 
@@ -1725,7 +1725,7 @@ public class XmlUtils
 		// 1. the value has a namespace URI
 		// 2. that the value's prefix isn't already bound on this element
 		//        
-		if (((valueURI != null) && (valueURI.length() > 0)) && ((elementPrefix != null) && !valuePrefix.equals(elementPrefix))) setNamespaceAttribute(xml, valuePrefix, valueURI);
+		if (valueURI != null && valueURI.length() > 0 && elementPrefix != null && !valuePrefix.equals(elementPrefix)) setNamespaceAttribute(xml, valuePrefix, valueURI);
 	}
 
 	/**
@@ -1875,7 +1875,7 @@ public class XmlUtils
 		final String prefix = qname.getPrefix();
 		final String name = qname.getLocalPart();
 
-		if ((prefix == null) || (prefix.length() == 0)) return name;
+		if (prefix == null || prefix.length() == 0) return name;
 
 		return prefix + ':' + name;
 	}

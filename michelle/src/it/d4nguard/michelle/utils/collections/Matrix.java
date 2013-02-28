@@ -19,7 +19,7 @@ public abstract class Matrix<T>
 	{
 		this.M = M;
 		this.N = N;
-		data = ((T[][]) Array.newInstance(getGenericTypeClass(), M, N));
+		data = (T[][]) Array.newInstance(getGenericTypeClass(), M, N);
 	}
 
 	// create matrix based on 2d array
@@ -28,7 +28,7 @@ public abstract class Matrix<T>
 	{
 		M = data.length;
 		N = data[0].length;
-		this.data = ((T[][]) Array.newInstance(getGenericTypeClass(), M, N));
+		this.data = (T[][]) Array.newInstance(getGenericTypeClass(), M, N);
 		for (int i = 0; i < M; i++)
 			for (int j = 0; j < N; j++)
 				this.data[i][j] = data[i][j];

@@ -7,8 +7,8 @@ import java.util.Set;
 
 public class DataTable
 {
-	private Set<DataRow> rows;
-	private Set<DataColumn<?>> columns;
+	private final Set<DataRow> rows;
+	private final Set<DataColumn<?>> columns;
 
 	public DataTable()
 	{
@@ -26,40 +26,34 @@ public class DataTable
 		return columns;
 	}
 
-	public DataRow get(int index)
+	public DataRow get(final int index)
 	{
 		return CollectionsUtils.get(rows, index);
 	}
 
-	public <T> void insertColumn(String name, Class<T> type)
+	public <T> void insertColumn(final String name, final Class<T> type)
 	{
 		columns.add(new DataColumn<T>(name, type));
 	}
 
-	public DataRow add(String column, Object element)
+	public DataRow add(final String column, final Object element)
 	{
-		DataRow row = add(new Object[getColumns().size()]);
+		final DataRow row = add(new Object[getColumns().size()]);
 		row.set(column, element);
 		return row;
 	}
 
-	public DataRow add(Object... values)
+	public DataRow add(final Object... values)
 	{
 		DataRow row = null;
-		if (columns.isEmpty())
-		{
-			throw new RuntimeException("Columns not set, impossible to insert values in cells.");
-		}
-		else
-		{
-			row = new DataRow(this, values);
-		}
+		if (columns.isEmpty()) throw new RuntimeException("Columns not set, impossible to insert values in cells.");
+		else row = new DataRow(this, values);
 		row.ensureCells();
 		rows.add(row);
 		return row;
 	}
 
-	public void remove(int index)
+	public void remove(final int index)
 	{
 		rows.remove(get(index));
 	}
@@ -67,7 +61,7 @@ public class DataTable
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("DataTable [rows=");
 		builder.append(rows);
 		builder.append(", columns=");

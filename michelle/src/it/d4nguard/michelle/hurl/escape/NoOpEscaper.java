@@ -36,7 +36,8 @@ public final class NoOpEscaper implements Escaper
 	/**
 	 * @return the value passed as an argument.
 	 */
-	public String escape(String unescaped)
+	@Override
+	public String escape(final String unescaped)
 	{
 		return unescaped;
 	}
@@ -44,7 +45,8 @@ public final class NoOpEscaper implements Escaper
 	/**
 	 * @return the value passed as an argument.
 	 */
-	public String unescape(String escaped)
+	@Override
+	public String unescape(final String escaped)
 	{
 		return escaped;
 	}

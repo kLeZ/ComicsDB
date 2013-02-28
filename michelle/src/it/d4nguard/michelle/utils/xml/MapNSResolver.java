@@ -33,21 +33,25 @@ public class MapNSResolver implements PrefixResolver
 		map.put(prefix, namespace);
 	}
 
+	@Override
 	public String getBaseIdentifier()
 	{
 		return null;
 	}
 
+	@Override
 	public String getNamespaceForPrefix(final String prefix)
 	{
 		return map.get(prefix);
 	}
 
+	@Override
 	public String getNamespaceForPrefix(final String prefix, final Node context)
 	{
 		return null;
 	}
 
+	@Override
 	public boolean handlesNullPrefixes()
 	{
 		return false;

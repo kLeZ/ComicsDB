@@ -35,17 +35,19 @@ public class PrepEscaperAdapter implements Escaper
 
 	private final Prep prep;
 
-	public PrepEscaperAdapter(Prep prep)
+	public PrepEscaperAdapter(final Prep prep)
 	{
 		this.prep = prep;
 	}
 
-	public String escape(String unpreparedValue)
+	@Override
+	public String escape(final String unpreparedValue)
 	{
 		return prep.prepare(unpreparedValue);
 	}
 
-	public String unescape(String escaped)
+	@Override
+	public String unescape(final String escaped)
 	{
 		return escaped;
 	}

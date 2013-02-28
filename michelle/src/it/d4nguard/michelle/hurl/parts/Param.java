@@ -54,13 +54,13 @@ public final class Param implements EscapeHolder, Normalizing<Param>, ReEscaping
 	 *            the unescaped form of the value; may be null; returned by
 	 *            {@link #getValue()}
 	 */
-	public Param(Escaper escaper, String unescapedKey, String unescapedValue)
+	public Param(final Escaper escaper, final String unescapedKey, final String unescapedValue)
 	{
 		Arguments.assertNotNull(escaper, unescapedKey);
 		this.escaper = escaper;
 		this.unescapedKey = unescapedKey;
 		this.unescapedValue = unescapedValue;
-		escapedParam = (unescapedValue == null) ? escaper.escape(unescapedKey) : escaper.escape(unescapedKey) + '=' + escaper.escape(unescapedValue);
+		escapedParam = unescapedValue == null ? escaper.escape(unescapedKey) : escaper.escape(unescapedKey) + '=' + escaper.escape(unescapedValue);
 	}
 
 	/**
@@ -77,12 +77,12 @@ public final class Param implements EscapeHolder, Normalizing<Param>, ReEscaping
 	 * @param encodedParam
 	 *            the parameter to be parsed; returned by {@link #toString()}
 	 */
-	public Param(Escaper escaper, String encodedParam)
+	public Param(final Escaper escaper, final String encodedParam)
 	{
 		Arguments.assertNotNull(escaper, encodedParam);
 		this.escaper = escaper;
 		escapedParam = encodedParam;
-		int n = encodedParam.indexOf('=');
+		final int n = encodedParam.indexOf('=');
 		if (n < 0)
 		{
 			unescapedKey = escaper.unescape(encodedParam);
@@ -124,19 +124,22 @@ public final class Param implements EscapeHolder, Normalizing<Param>, ReEscaping
 		return escapedParam;
 	}
 
+	@Override
 	public Escaper getEscaper()
 	{
 		return escaper;
 	}
 
+	@Override
 	public Param normalize()
 	{
-		Param normalized = new Param(escaper, unescapedKey, unescapedValue);
-		if (escapedParam.equals(normalized.escapedParam)) { return this; }
+		final Param normalized = new Param(escaper, unescapedKey, unescapedValue);
+		if (escapedParam.equals(normalized.escapedParam)) return this;
 		return normalized;
 	}
 
-	public Param reEscape(Escaper escaper)
+	@Override
+	public Param reEscape(final Escaper escaper)
 	{
 		return this.escaper.equals(escaper) ? this : new Param(escaper, unescapedKey, unescapedValue);
 	}

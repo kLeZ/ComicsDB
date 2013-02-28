@@ -1,7 +1,8 @@
 package it.d4nguard.comics.beans.bo;
 
+import it.d4nguard.comics.ValueComparator;
 import it.d4nguard.comics.beans.Comic;
-import it.d4nguard.michelle.utils.ValueComparator;
+import it.d4nguard.comics.beans.Volume;
 import it.d4nguard.michelle.utils.collections.Pair;
 
 import java.io.Serializable;
@@ -24,19 +25,34 @@ public class Comics extends HashSet<Comic> implements Serializable
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends Comic> c)
+	public boolean addAll(final Collection<? extends Comic> c)
 	{
 		boolean ret = true;
 		if (c != null)
 		{
-			for (Comic comic : c)
+			for (final Comic comicToAdd : c)
 			{
-				if (!contains(comic.getTitle()))
+				if (!contains(comicToAdd.getTitle()))
 				{
-					ret &= add(comic);
+					ret &= add(comicToAdd);
 				}
 				else
+				/*
+				 * FIX: if the comic still exists but I want to merge data
+				 * (volume information f.e.) I have to check this and create a
+				 * new case in which it can be done
+				 */
 				{
+					// Update case
+					Serie serie = new Serie(get(comicToAdd.getTitle()).getSerie());
+					for (Volume v : comicToAdd.getSerie())
+					{
+						if (serie.search(v).isEmpty())
+						{
+							serie.add(v);
+						}
+					}
+					get(comicToAdd.getTitle()).setSerie(serie);
 					ret &= true;
 				}
 			}
@@ -44,16 +60,16 @@ public class Comics extends HashSet<Comic> implements Serializable
 		return ret;
 	}
 
-	public boolean contains(String comicTitle)
+	public boolean contains(final String comicTitle)
 	{
 		boolean ret = false;
-		for (final Iterator<Comic> it = iterator(); it.hasNext() && !it.next().isMe(comicTitle);)
+		for (final Iterator<Comic> it = iterator(); it.hasNext() && !(ret = it.next().isMe(comicTitle));)
 		{
 		}
 		return ret;
 	}
 
-	public Comic get(String comicTitle)
+	public Comic get(final String comicTitle)
 	{
 		Comic ret = null;
 		for (final Iterator<Comic> it = iterator(); it.hasNext() && (ret == null);)

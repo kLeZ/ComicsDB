@@ -15,7 +15,7 @@ public class MoneyJsonSerializer implements JsonSerializer<Money>
 	 * @see com.google.gson.JsonSerializer#serialize(java.lang.Object, java.lang.reflect.Type, com.google.gson.JsonSerializationContext)
 	 */
 	@Override
-	public JsonElement serialize(Money arg0, Type arg1, JsonSerializationContext arg2)
+	public JsonElement serialize(final Money arg0, final Type arg1, final JsonSerializationContext arg2)
 	{
 		return new JsonPrimitive(arg0.toString());
 	}

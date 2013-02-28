@@ -30,19 +30,19 @@ public class JsonPresenterServlet extends HttpServlet
 	 *      response)
 	 */
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-		Map<String, String> query = NetUtils.getQueryMap(request.getQueryString());
+		final Map<String, String> query = NetUtils.getQueryMap(request.getQueryString());
 		if (query.containsKey("q"))
 		{
-			TimeElapsed elapsed = new TimeElapsed();
+			final TimeElapsed elapsed = new TimeElapsed();
 
 			elapsed.start();
-			String ws_response = NetUtils.excuteGet(WebUtils.getBaseUrl(request).concat(query.get("q")));
-			boolean isArray = query.get("type").equalsIgnoreCase("array");
-			Comics comics = ComicsUtils.getComicsFromJson(ws_response, isArray);
+			final String ws_response = NetUtils.excuteGet(WebUtils.getBaseUrl(request).concat(query.get("q")));
+			final boolean isArray = query.get("type").equalsIgnoreCase("array");
+			final Comics comics = ComicsUtils.getComicsFromJson(ws_response, isArray);
 			elapsed.stop();
-			long elapsedTime = elapsed.get();
+			final long elapsedTime = elapsed.get();
 
 			request.setAttribute("NanoTiming", elapsedTime);
 			request.setAttribute("NanoTimingFormatted", TimeElapsed.formatted("", elapsedTime, true));

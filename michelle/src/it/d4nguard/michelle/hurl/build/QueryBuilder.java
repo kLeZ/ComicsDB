@@ -49,18 +49,20 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	private final ArrayList<Param> params = new ArrayList<Param>();
 	private final Delimiter delimiter;
 
-	private QueryBuilder(Escaper escaper, Delimiter delimiter)
+	private QueryBuilder(final Escaper escaper, final Delimiter delimiter)
 	{
 		Arguments.assertNotNull(escaper, delimiter);
 		this.escaper = escaper;
 		this.delimiter = delimiter;
 	}
 
+	@Override
 	public Escaper getEscaper()
 	{
 		return escaper;
 	}
 
+	@Override
 	public Delimiter getDelimiter()
 	{
 		return delimiter;
@@ -71,6 +73,7 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	 * 
 	 * @return a new {@link Query}
 	 */
+	@Override
 	public Query build()
 	{
 		// Query constructor will fix any escaper mismatches
@@ -85,7 +88,7 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	 *            a parameter
 	 * @return this
 	 */
-	public QueryBuilder addParam(Param param)
+	public QueryBuilder addParam(final Param param)
 	{
 		params.add(param);
 		return this;
@@ -100,7 +103,7 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	 *            unescaped parameter value
 	 * @return this
 	 */
-	public QueryBuilder addParam(String unescapedKey, String unescapedValue)
+	public QueryBuilder addParam(final String unescapedKey, final String unescapedValue)
 	{
 		return addParam(new Param(escaper, unescapedKey, unescapedValue));
 	}
@@ -112,13 +115,14 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	 *            the unescaped key
 	 * @return this
 	 */
-	public QueryBuilder addParam(String unescapedKey)
+	public QueryBuilder addParam(final String unescapedKey)
 	{
 		return addParam(unescapedKey, null);
 	}
 
 	/**
-	 * Adds all the given parameters. The {@link it.d4nguard.michelle.hurl.escape.Escaper} used by
+	 * Adds all the given parameters. The
+	 * {@link it.d4nguard.michelle.hurl.escape.Escaper} used by
 	 * the
 	 * arguments does NOT have to match that of this builder.
 	 * 
@@ -126,9 +130,9 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	 *            a list of parameters
 	 * @return this
 	 */
-	public QueryBuilder addParams(Collection<? extends Param> params)
+	public QueryBuilder addParams(final Collection<? extends Param> params)
 	{
-		ArrayList<Param> list = this.params;
+		final ArrayList<Param> list = this.params;
 		list.ensureCapacity(list.size() + params.size());
 		list.addAll(params);
 		return this;
@@ -137,7 +141,7 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	/**
 	 * @see #addParams(Collection)
 	 */
-	public QueryBuilder addParams(Query query)
+	public QueryBuilder addParams(final Query query)
 	{
 		return addParams(query.getParams());
 	}
@@ -149,16 +153,13 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	 *            the unescaped form of the key
 	 * @return this
 	 */
-	public QueryBuilder removeParams(String unescapedKey)
+	public QueryBuilder removeParams(final String unescapedKey)
 	{
-		Iterator<Param> iterator = params.iterator();
+		final Iterator<Param> iterator = params.iterator();
 		while (iterator.hasNext())
 		{
-			Param param = iterator.next();
-			if (param.getKey().equals(unescapedKey))
-			{
-				iterator.remove();
-			}
+			final Param param = iterator.next();
+			if (param.getKey().equals(unescapedKey)) iterator.remove();
 		}
 		return this;
 	}
@@ -173,37 +174,28 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	 *            the parameter to set
 	 * @return this
 	 */
-	public QueryBuilder setParam(Param paramToSet)
+	public QueryBuilder setParam(final Param paramToSet)
 	{
 		boolean set = false;
-		ListIterator<Param> iterator = params.listIterator();
+		final ListIterator<Param> iterator = params.listIterator();
 		while (iterator.hasNext())
 		{
-			Param param = iterator.next();
-			if (paramToSet.getKey().equals(param.getKey()))
+			final Param param = iterator.next();
+			if (paramToSet.getKey().equals(param.getKey())) if (set) iterator.remove();
+			else
 			{
-				if (set)
-				{
-					iterator.remove();
-				}
-				else
-				{
-					iterator.set(paramToSet);
-					set = true;
-				}
+				iterator.set(paramToSet);
+				set = true;
 			}
 		}
-		if (!set)
-		{
-			iterator.add(paramToSet);
-		}
+		if (!set) iterator.add(paramToSet);
 		return this;
 	}
 
 	/**
 	 * @see #setParam(Param)
 	 */
-	public QueryBuilder setParam(String unescapedKey, String unescapedValue)
+	public QueryBuilder setParam(final String unescapedKey, final String unescapedValue)
 	{
 		return setParam(new Param(escaper, unescapedKey, unescapedValue));
 	}
@@ -217,7 +209,8 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	 *            the query part to be parsed
 	 * @return this
 	 */
-	public QueryBuilder parse(String escapedQuery)
+	@Override
+	public QueryBuilder parse(final String escapedQuery)
 	{
 		return setQuery(new Query(escaper, delimiter, escapedQuery));
 	}
@@ -225,14 +218,15 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	/**
 	 * @see #setQuery(Collection)
 	 */
-	public QueryBuilder setQuery(Query query)
+	public QueryBuilder setQuery(final Query query)
 	{
 		return setQuery(query.getParams());
 	}
 
 	/**
 	 * Sets the state to the parameters in the given query. Existing parameters
-	 * are discarded. The {@link it.d4nguard.michelle.hurl.escape.Escaper} of the given query does
+	 * are discarded. The {@link it.d4nguard.michelle.hurl.escape.Escaper} of
+	 * the given query does
 	 * not
 	 * have to match the one used by this builder.
 	 * 
@@ -240,7 +234,7 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	 *            the parameters
 	 * @return this
 	 */
-	public QueryBuilder setQuery(Collection<? extends Param> paramsToSet)
+	public QueryBuilder setQuery(final Collection<? extends Param> paramsToSet)
 	{
 		params.clear();
 		params.ensureCapacity(paramsToSet.size());
@@ -280,7 +274,7 @@ public class QueryBuilder implements EscapeHolder, DelimiterHolder, Builder<Quer
 	 *            an alternative delmiter
 	 * @return a new builder
 	 */
-	public static QueryBuilder create(Escaper escaper, Delimiter delimiter)
+	public static QueryBuilder create(final Escaper escaper, final Delimiter delimiter)
 	{
 		return new QueryBuilder(escaper, delimiter);
 	}

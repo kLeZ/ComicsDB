@@ -39,20 +39,83 @@ public class JPOPFeedParser extends AbstractFeedParser
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Comic> parse(Comics comics) throws IOException
+	public List<Comic> parse(final Comics comics) throws IOException
 	{
-		List<Comic> ret = new ArrayList<Comic>();
+		final List<Comic> ret = new ArrayList<Comic>();
 		try
 		{
 			final FeedReader reader = new FeedReader(getUrl());
-			SyndFeed feed = reader.read();
+			final SyndFeed feed = reader.read();
 			for (final Iterator<SyndEntry> it = feed.getEntries().iterator(); it.hasNext();)
 			{
 				final SyndEntry entry = it.next();
 				log.trace("Feed JPOP, Title: \"" + entry.getTitle() + "\"");
 				if (entry.getTitle().startsWith("USCITE J-POP "))
 				{
-					final Scanner scn = new Scanner(getFeedContent(entry.getLink()));
+					final String feedEntry = getFeedContent(entry.getLink());
+					/*
+					 * Devo cambiare completamente la logica del parser.
+					 * Lo Scanner non va per niente bene, devo fare qualcosa di
+					 * più strutturato. Ho visto che alla fine la pagina di news
+					 * sul sito della jpop la parso col content parser (webharvest)
+					 * e e questa mi torna qualcosa di simile a quello che c'è qui sotto.
+					 * Ora, per avere tutte le info del mondo, per ogni volume
+					 * devo seguire il link dell'immagine sotto al nome, e il
+					 * pattern è sempre [NOME VOLUME↑|IMMAGINE↓]
+					 * BaseUrl: http://www.j-pop.it/
+
+
+					VENERDI' 15/02/2013
+
+
+
+					- GOLDEN BOY #9
+
+					<a href="volumi.php?id=1519"><img src="images/news/GB9_CROPPED.jpg" border="0" width="200"></a> 
+
+					&nbsp;
+
+
+					- IL MONDO DI RAN #3
+					<a href="volumi.php?id=1521"><img src="images/news/Ran3_CROPPED.jpg" border="0" width="200"></a> 
+
+					- INSTINCT #1
+					<a href="volumi.php?id=1522"><img src="images/news/INSTINCT1_CROPPED.jpg" border="0" width="200"></a> 
+
+					- MOONLIGHT ACT #14
+					<a href="volumi.php?id=1523"><img src="images/news/moonlight_14_cropped.jpg" border="0" width="200"></a> 
+					&nbsp;
+
+					- RE:BIRTH - THE LUNATIC TAKER #4
+					<a href="volumi.php?id=1525"><img src="images/news/ReBirth4_cropped.jpg" border="0" width="200"></a> 
+
+					- SEKIREI #7
+					<a href="volumi.php?id=1526"><img src="images/news/Sekirei7_cropped.jpg" border="0" width="200"></a> 
+
+					USCITE 01/03/2013
+
+					- HAGANAI - LIGHT NOVEL #1
+					<a href="volumi.php?id=1529"><img src="images/news/Haganai_Novel.jpg" border="0" width="200"></a> 
+
+					- ARAGO #
+					5
+					<a href="volumi.php?id=1527"><img src="images/news/ARAGO5_cropped.jpg" border="0" width="200"></a> 
+
+					- BINBOGAMI! #7
+					<a href="volumi.php?id=1528"><img src="images/news/BBGM7_cropped.jpg" border="0" width="200"></a> 
+					&nbsp;
+
+					- MANYU HIKENCHO #2
+					<a href="volumi.php?id=1531"><img src="images/news/MANYUCLAN2_CROPPED.jpg" border="0" width="200"></a> 
+					&nbsp;
+
+					- STORIA DI UN VIAGGIO A PARIGI #1
+					<a href="volumi.php?id=1533"><img src="images/news/STORIA_PARIGI_1.jpg" border="0" width="200"></a> 
+
+					- SUN KEN ROCK #15
+					<a href="volumi.php?id=1534"><img src="images/news/SKR15_CROPPED.jpg" border="0" width="200"></a> 
+					 */
+					final Scanner scn = new Scanner(feedEntry);
 					int i = 0;
 					while (scn.hasNext())
 					{
@@ -63,7 +126,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 						{
 							current = current.substring(2);
 							final String[] split = current.split("#");
-							if ((split.length == 2))
+							if (split.length == 2)
 							{
 								if (comics.contains(split[0].trim()))
 								{
@@ -74,7 +137,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 									Volume v;
 									if (!c.getSerie().isEmpty())
 									{
-										Serie serie = new Serie(c.getSerie());
+										final Serie serie = new Serie(c.getSerie());
 										title = serie.adaptNextTitle(searcher, nvol);
 										searcher.setName(title);
 										v = new Volume(new Long(i), title);
@@ -86,8 +149,8 @@ public class JPOPFeedParser extends AbstractFeedParser
 										else
 										{
 											log.fatal("TODO: Can I guess volume price from Jpop web site??");
-											//TODO: Can I guess volume price from Jpop web site??
 										}
+										//TODO: Can I guess volume price from Jpop web site??
 										v.setEditor(JPOP_EDITOR);
 										v.setLast(false);
 									}
@@ -105,6 +168,9 @@ public class JPOPFeedParser extends AbstractFeedParser
 								else
 								{
 									log.fatal("TODO: C'avrei da creare un nuovo Comic, ma devo capire dove/come reperire le info.");
+									/*
+									 * FIX: Print the debug data of the unknown comic from jpop in order to understand what will return from parser and what can be catched in order to create a new comic
+									 */
 									/* TODO: C'avrei da creare un nuovo Comic,
 									 * ma devo capire dove/come reperire le info. */
 								}
@@ -115,11 +181,11 @@ public class JPOPFeedParser extends AbstractFeedParser
 				}
 			}
 		}
-		catch (IllegalArgumentException e)
+		catch (final IllegalArgumentException e)
 		{
 			log.error(e, e);
 		}
-		catch (FeedException e)
+		catch (final FeedException e)
 		{
 			log.error(e, e);
 		}
@@ -139,7 +205,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#setUrl(java.lang.String)
 	 */
 	@Override
-	public void setUrl(String url)
+	public void setUrl(final String url)
 	{
 		this.url = url;
 	}
@@ -157,7 +223,7 @@ public class JPOPFeedParser extends AbstractFeedParser
 	 * @see it.d4nguard.comicsimporter.parsers.ComicsSourceParser#setConfigFileName(java.lang.String)
 	 */
 	@Override
-	public void setConfigFileName(String configFileName)
+	public void setConfigFileName(final String configFileName)
 	{
 		this.configFileName = configFileName;
 	}

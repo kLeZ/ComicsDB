@@ -8,38 +8,45 @@ import org.hibernate.usertype.UserType;
 
 public abstract class GenericHibernateBaseUserType<T> implements UserType
 {
-	public boolean equals(Object x, Object y) throws HibernateException
+	@Override
+	public boolean equals(final Object x, final Object y) throws HibernateException
 	{
 		return ObjectUtils.equals(x, y);
 	}
 
-	public int hashCode(Object x) throws HibernateException
+	@Override
+	public int hashCode(final Object x) throws HibernateException
 	{
-		assert (x != null);
+		assert x != null;
 		return x.hashCode();
 	}
 
-	public Object deepCopy(Object value) throws HibernateException
+	@Override
+	public Object deepCopy(final Object value) throws HibernateException
 	{
 		return value;
 	}
 
+	@Override
 	public boolean isMutable()
 	{
 		return false;
 	}
 
-	public Serializable disassemble(Object value) throws HibernateException
+	@Override
+	public Serializable disassemble(final Object value) throws HibernateException
 	{
 		return (Serializable) value;
 	}
 
-	public Object assemble(Serializable cached, Object owner) throws HibernateException
+	@Override
+	public Object assemble(final Serializable cached, final Object owner) throws HibernateException
 	{
 		return cached;
 	}
 
-	public Object replace(Object original, Object target, Object owner) throws HibernateException
+	@Override
+	public Object replace(final Object original, final Object target, final Object owner) throws HibernateException
 	{
 		return original;
 	}

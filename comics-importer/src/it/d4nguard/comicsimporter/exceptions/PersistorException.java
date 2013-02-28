@@ -11,17 +11,17 @@ public class PersistorException extends RuntimeException
 	{
 	}
 
-	public PersistorException(String message)
+	public PersistorException(final String message)
 	{
 		super(message);
 	}
 
-	public PersistorException(Throwable cause)
+	public PersistorException(final Throwable cause)
 	{
 		super(cause);
 	}
 
-	public PersistorException(String message, Throwable cause)
+	public PersistorException(final String message, final Throwable cause)
 	{
 		super(message, cause);
 	}

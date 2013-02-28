@@ -20,7 +20,7 @@ public class Genre implements Serializable
 
 	}
 
-	public Genre(String name)
+	public Genre(final String name)
 	{
 		this.name = name;
 	}
@@ -30,7 +30,7 @@ public class Genre implements Serializable
 		return id;
 	}
 
-	public void setId(Long id)
+	public void setId(final Long id)
 	{
 		this.id = id;
 	}
@@ -40,7 +40,7 @@ public class Genre implements Serializable
 		return comicId;
 	}
 
-	public void setComicId(Long comicId)
+	public void setComicId(final Long comicId)
 	{
 		this.comicId = comicId;
 	}
@@ -50,7 +50,7 @@ public class Genre implements Serializable
 		return name;
 	}
 
-	public void setName(String name)
+	public void setName(final String name)
 	{
 		this.name = name;
 	}
@@ -60,34 +60,34 @@ public class Genre implements Serializable
 	{
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((comicId == null) ? 0 : comicId.hashCode());
-		result = (prime * result) + ((id == null) ? 0 : id.hashCode());
-		result = (prime * result) + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + (comicId == null ? 0 : comicId.hashCode());
+		result = prime * result + (id == null ? 0 : id.hashCode());
+		result = prime * result + (name == null ? 0 : name.hashCode());
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(final Object obj)
 	{
-		if (this == obj) { return true; }
-		if (obj == null) { return false; }
-		if (!(obj instanceof Genre)) { return false; }
-		Genre other = (Genre) obj;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Genre)) return false;
+		final Genre other = (Genre) obj;
 		if (comicId == null)
 		{
-			if (other.comicId != null) { return false; }
+			if (other.comicId != null) return false;
 		}
-		else if (!comicId.equals(other.comicId)) { return false; }
+		else if (!comicId.equals(other.comicId)) return false;
 		if (id == null)
 		{
-			if (other.id != null) { return false; }
+			if (other.id != null) return false;
 		}
-		else if (!id.equals(other.id)) { return false; }
+		else if (!id.equals(other.id)) return false;
 		if (name == null)
 		{
-			if (other.name != null) { return false; }
+			if (other.name != null) return false;
 		}
-		else if (!name.equals(other.name)) { return false; }
+		else if (!name.equals(other.name)) return false;
 		return true;
 	}
 
@@ -97,18 +97,16 @@ public class Genre implements Serializable
 		return name;
 	}
 
-	public static Genre get(String name)
+	public static Genre get(final String name)
 	{
 		Genre ret = null;
-		for (Genre g : genres)
-		{
+		for (final Genre g : genres)
 			if (g.getName().equalsIgnoreCase(name))
 			{
 				ret = g;
 				break;
 			}
-		}
-		if ((ret == null) && !StringUtils.isNullOrWhitespace(name))
+		if (ret == null && !StringUtils.isNullOrWhitespace(name))
 		{
 			ret = new Genre(name);
 			genres.add(ret);

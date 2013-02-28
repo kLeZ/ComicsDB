@@ -52,7 +52,7 @@ public final class Element implements EscapeHolder, Normalizing<Element>, ReEsca
 	 * @param escapeState
 	 *            whether the pathElement is escaped or not
 	 */
-	public Element(Escaper escaper, String pathElement, EscapeState escapeState)
+	public Element(final Escaper escaper, final String pathElement, final EscapeState escapeState)
 	{
 		Arguments.assertNotNull(escaper, pathElement, escapeState);
 		this.escaper = escaper;
@@ -71,6 +71,7 @@ public final class Element implements EscapeHolder, Normalizing<Element>, ReEsca
 	/**
 	 * @return the {@link Escaper} object
 	 */
+	@Override
 	public Escaper getEscaper()
 	{
 		return escaper;
@@ -84,14 +85,16 @@ public final class Element implements EscapeHolder, Normalizing<Element>, ReEsca
 		return unescaped;
 	}
 
+	@Override
 	public Element normalize()
 	{
-		Element newElement = new Element(escaper, unescaped, EscapeState.UNESCAPED);
-		if (newElement.getValue().equals(escaped)) { return this; }
+		final Element newElement = new Element(escaper, unescaped, EscapeState.UNESCAPED);
+		if (newElement.getValue().equals(escaped)) return this;
 		return newElement;
 	}
 
-	public Element reEscape(Escaper escaper)
+	@Override
+	public Element reEscape(final Escaper escaper)
 	{
 		return this.escaper.equals(escaper) ? this : new Element(escaper, unescaped, EscapeState.UNESCAPED);
 	}

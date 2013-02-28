@@ -138,9 +138,7 @@ public class DateUtils
 	{
 		final Vector<Integer> ret = new Vector<Integer>();
 		for (int i = 1; i < 32; i++)
-		{
 			ret.addElement(new Integer(i));
-		}
 		return ret;
 	}
 
@@ -164,9 +162,7 @@ public class DateUtils
 	{
 		final Vector<String> ret = new Vector<String>();
 		for (int i = 0; i < 12; i++)
-		{
 			ret.addElement(getMonthString(i));
-		}
 		return ret;
 	}
 
@@ -187,9 +183,7 @@ public class DateUtils
 	{
 		final Vector<Integer> anni = new Vector<Integer>();
 		for (int i = start_year; i <= end_year; i++)
-		{
 			anni.add(new Integer(i));
-		}
 		return anni;
 	}
 

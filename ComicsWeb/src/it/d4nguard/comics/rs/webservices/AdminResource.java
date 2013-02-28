@@ -1,11 +1,15 @@
 package it.d4nguard.comics.rs.webservices;
 
+import static it.d4nguard.comicsimporter.ComicsCommands.REFRESH_CACHE_FILE_CMD;
+import static it.d4nguard.comicsimporter.ComicsCommands.SYNC_CMD;
+import static it.d4nguard.comicsimporter.ComicsCommands.WIPE_DB_CMD;
+import static it.d4nguard.comicsimporter.ComicsCommands.createEntry;
 import it.d4nguard.comics.WebUtils;
-import it.d4nguard.comicsimporter.ComicsCommands;
 import it.d4nguard.comicsimporter.ComicsConfiguration;
 import it.d4nguard.comicsimporter.SyncDaemon;
 import it.d4nguard.michelle.utils.ExceptionsUtils;
 import it.d4nguard.michelle.utils.Progress;
+import it.d4nguard.michelle.utils.StringUtils;
 import it.d4nguard.michelle.utils.collections.Pair;
 import it.d4nguard.michelle.utils.collections.ProgressQueue;
 import it.d4nguard.michelle.utils.io.StreamUtils;
@@ -32,8 +36,19 @@ public class AdminResource
 	private static final Logger log = Logger.getLogger(AdminResource.class);
 
 	private static ProgressQueue progressQueue = new ProgressQueue();
+	private static Pair<Thread, SyncDaemon> syncThread = null;
 
-	private static Thread syncThread = null;
+	@DELETE()
+	@Path("sync")
+	public void deleteThread() throws InterruptedException
+	{
+		if (syncThread != null)
+		{
+			syncThread.getValue().setMustStop(true);
+			System.gc();
+			Thread.sleep(500);
+		}
+	}
 
 	@GET()
 	@Path("sync")
@@ -46,42 +61,48 @@ public class AdminResource
 	@POST()
 	@Path("sync")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public void sync(MultipartFormDataInput input)
+	public void sync(final MultipartFormDataInput input)
 	{
 		log.trace("Post sync called");
 
 		String fileName = "";
 		InputStream cacheFile = null;
-		boolean wipedb = false, dryRun = false, openThread = false, syncFeed = false;
-		Map<String, List<InputPart>> form = input.getFormDataMap();
+		boolean wipedb = false, dryRun = false, openThread = false, syncFeed = false, refreshCacheFile = false;
+		final Map<String, List<InputPart>> form = input.getFormDataMap();
 
 		try
 		{
+
+			final InputStream is = WebUtils.getValue(form, "cache-file", InputStream.class, null);
+			cacheFile = StreamUtils.convertToUTF8InputStream(is);
+
 			wipedb = WebUtils.getValue(form, "wipedb", Boolean.class, false);
 			dryRun = WebUtils.getValue(form, "dryRun", Boolean.class, false);
 			openThread = WebUtils.getValue(form, "openThread", Boolean.class, false);
 			syncFeed = WebUtils.getValue(form, "syncFeed", Boolean.class, false);
 			fileName = WebUtils.getFileName(form, "cache-file");
+			refreshCacheFile = StringUtils.isNullOrWhitespace(fileName) && cacheFile != null;
 
-			InputStream is = WebUtils.getValue(form, "cache-file", InputStream.class, null);
-			cacheFile = StreamUtils.convertToUTF8InputStream(is);
-
-			if (((syncThread == null) || !syncThread.isAlive()) && openThread)
+			if ((syncThread == null || !syncThread.getKey().isAlive()) && openThread)
 			{
 				Map<String, Entry<String, Boolean>> cmd;
-				Pair<String, Boolean> wdb_p, snc_p;
-
 				cmd = new HashMap<String, Entry<String, Boolean>>();
-				wdb_p = new Pair<String, Boolean>(String.valueOf(wipedb), false);
-				snc_p = new Pair<String, Boolean>(String.valueOf(syncFeed), false);
-				cmd.put(ComicsCommands.WIPE_DB_CMD, wdb_p);
-				cmd.put(ComicsCommands.SYNC_CMD, snc_p);
-				ComicsConfiguration conf = ComicsConfiguration.getInstance().load(cmd);
+
+				final String wdb_s = String.valueOf(wipedb);
+				final String sf_s = String.valueOf(syncFeed);
+				final String rcf_s = String.valueOf(refreshCacheFile);
+
+				cmd.put(WIPE_DB_CMD, createEntry(WIPE_DB_CMD, wdb_s, false).getValue());
+				cmd.put(SYNC_CMD, createEntry(SYNC_CMD, sf_s, false).getValue());
+				cmd.put(REFRESH_CACHE_FILE_CMD, createEntry(REFRESH_CACHE_FILE_CMD, rcf_s, false).getValue());
+
+				final ComicsConfiguration conf = ComicsConfiguration.getInstance().load(cmd);
+				syncThread = null;
 				syncThread = SyncDaemon.getThreadInstance(progressQueue, conf, dryRun, fileName, cacheFile);
-				syncThread.setUncaughtExceptionHandler(new UncaughtExceptionHandler()
+				syncThread.getKey().setUncaughtExceptionHandler(new UncaughtExceptionHandler()
 				{
 					@Override
-					public void uncaughtException(Thread t, Throwable e)
+					public void uncaughtException(Thread t, final Throwable e)
 					{
 						if (t != null)
 						{
@@ -92,19 +113,16 @@ public class AdminResource
 						progressQueue.add(new Progress(0, 0, -5, e.getLocalizedMessage(), ExceptionsUtils.stackTraceToString(e)));
 					}
 				});
-				syncThread.start();
+				syncThread.getKey().start();
 			}
-			else
-			{
-				progressQueue.add(new Progress(0, 0, -5, "Illegal State Exception", "Another thread just running!"));
-			}
+			else progressQueue.add(new Progress(0, 0, -5, "Illegal State Exception", "Another thread just running!"));
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			log.error(e, e);
 			progressQueue.add(new Progress(0, 0, -5, e.getLocalizedMessage(), ExceptionsUtils.stackTraceToString(e)));
 		}
-		catch (RuntimeException e)
+		catch (final RuntimeException e)
 		{
 			log.fatal(e, e);
 			progressQueue.add(new Progress(0, 0, -5, e.getLocalizedMessage(), ExceptionsUtils.stackTraceToString(e)));

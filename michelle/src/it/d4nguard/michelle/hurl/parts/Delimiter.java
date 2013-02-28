@@ -48,7 +48,7 @@ public final class Delimiter
 	 * @param delimiterPattern
 	 *            the pattern for matching delimiters
 	 */
-	public Delimiter(String delimiter, Pattern delimiterPattern)
+	public Delimiter(final String delimiter, final Pattern delimiterPattern)
 	{
 		Arguments.assertNotNull(delimiter, delimiterPattern);
 		this.delimiter = delimiter;
@@ -75,10 +75,10 @@ public final class Delimiter
 	 *            the string to be split
 	 * @return the segments after the split
 	 */
-	public List<String> split(String sequence)
+	public List<String> split(final String sequence)
 	{
-		List<String> list = new ArrayList<String>();
-		Matcher matcher = pattern.matcher(sequence);
+		final List<String> list = new ArrayList<String>();
+		final Matcher matcher = pattern.matcher(sequence);
 		int last = 0;
 		while (matcher.find())
 		{
@@ -97,24 +97,15 @@ public final class Delimiter
 	 *            the objects to concatenate
 	 * @return the resultant string
 	 */
-	public String concatenate(Iterable<? extends Object> list)
+	public String concatenate(final Iterable<? extends Object> list)
 	{
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		boolean first = true;
-		for (Object o : list)
+		for (final Object o : list)
 		{
-			if (first)
-			{
-				first = false;
-			}
-			else if (!sb.toString().endsWith(delimiter))
-			{
-				sb.append(delimiter);
-			}
-			if (String.valueOf(o).startsWith(delimiter) && (sb.lastIndexOf(delimiter) > -1))
-			{
-				sb.deleteCharAt(sb.lastIndexOf(delimiter));
-			}
+			if (first) first = false;
+			else if (!sb.toString().endsWith(delimiter)) sb.append(delimiter);
+			if (String.valueOf(o).startsWith(delimiter) && sb.lastIndexOf(delimiter) > -1) sb.deleteCharAt(sb.lastIndexOf(delimiter));
 			sb.append(o);
 		}
 		return sb.toString();

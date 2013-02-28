@@ -17,17 +17,15 @@ public class SeriesXmlMapper implements XmlMapper<Serie>
 	 * @see it.d4nguard.comics.beans.mappers.xml.XmlMapper#create(org.w3c.dom.Element)
 	 */
 	@Override
-	public Serie create(final Element elem, Long id)
+	public Serie create(final Element elem, final Long id)
 	{
 		final Serie serie = new Serie();
 		final List<Element> volumes = getElements(elem, "volume");
 		if (volumes.size() > 0)
 		{
-			VolumeXmlMapper mapper = new VolumeXmlMapper();
+			final VolumeXmlMapper mapper = new VolumeXmlMapper();
 			for (final Element volume : volumes)
-			{
 				serie.add(mapper.create(volume, null));
-			}
 		}
 		return serie;
 	}
@@ -36,15 +34,13 @@ public class SeriesXmlMapper implements XmlMapper<Serie>
 	 * @see it.d4nguard.comics.beans.mappers.xml.XmlMapper#create(java.lang.Object)
 	 */
 	@Override
-	public Element create(Document ownerDocument, Serie obj)
+	public Element create(final Document ownerDocument, final Serie obj)
 	{
-		Element ret = ownerDocument.createElement("serie");
-		Iterator<Volume> it = obj.iterator();
-		VolumeXmlMapper mapper = new VolumeXmlMapper();
+		final Element ret = ownerDocument.createElement("serie");
+		final Iterator<Volume> it = obj.iterator();
+		final VolumeXmlMapper mapper = new VolumeXmlMapper();
 		while (it.hasNext())
-		{
 			ret.appendChild(mapper.create(ownerDocument, it.next()));
-		}
 		return ret;
 	}
 }

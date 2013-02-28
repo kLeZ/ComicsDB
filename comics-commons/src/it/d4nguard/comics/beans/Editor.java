@@ -19,7 +19,7 @@ public class Editor implements Serializable
 
 	}
 
-	public Editor(String name)
+	public Editor(final String name)
 	{
 		this.name = name;
 	}
@@ -29,7 +29,7 @@ public class Editor implements Serializable
 		return id;
 	}
 
-	public void setId(Long id)
+	public void setId(final Long id)
 	{
 		this.id = id;
 	}
@@ -39,7 +39,7 @@ public class Editor implements Serializable
 		return name;
 	}
 
-	public void setName(String name)
+	public void setName(final String name)
 	{
 		this.name = name;
 	}
@@ -49,22 +49,22 @@ public class Editor implements Serializable
 	{
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + (name == null ? 0 : name.hashCode());
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(final Object obj)
 	{
-		if (this == obj) { return true; }
-		if (obj == null) { return false; }
-		if (!(obj instanceof Editor)) { return false; }
-		Editor other = (Editor) obj;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Editor)) return false;
+		final Editor other = (Editor) obj;
 		if (name == null)
 		{
-			if (other.name != null) { return false; }
+			if (other.name != null) return false;
 		}
-		else if (!name.equals(other.name)) { return false; }
+		else if (!name.equals(other.name)) return false;
 		return true;
 	}
 
@@ -74,18 +74,16 @@ public class Editor implements Serializable
 		return name;
 	}
 
-	public static Editor get(String name)
+	public static Editor get(final String name)
 	{
 		Editor ret = null;
-		for (Editor e : editors)
-		{
+		for (final Editor e : editors)
 			if (e.getName().equalsIgnoreCase(name))
 			{
 				ret = e;
 				break;
 			}
-		}
-		if ((ret == null) && !StringUtils.isNullOrWhitespace(name))
+		if (ret == null && !StringUtils.isNullOrWhitespace(name))
 		{
 			ret = new Editor(name);
 			editors.add(ret);

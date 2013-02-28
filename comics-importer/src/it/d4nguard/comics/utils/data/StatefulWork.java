@@ -19,7 +19,7 @@ public class StatefulWork implements Work
 	private boolean workDone = false;
 	private boolean stopOnError = true;
 
-	public StatefulWork(String sql)
+	public StatefulWork(final String sql)
 	{
 		this.sql = sql;
 	}
@@ -34,7 +34,7 @@ public class StatefulWork implements Work
 		return workDone;
 	}
 
-	private void setWorkDone(boolean workDone)
+	private void setWorkDone(final boolean workDone)
 	{
 		this.workDone = workDone;
 	}
@@ -44,7 +44,7 @@ public class StatefulWork implements Work
 		return stopOnError;
 	}
 
-	public void setStopOnError(boolean stopOnError)
+	public void setStopOnError(final boolean stopOnError)
 	{
 		this.stopOnError = stopOnError;
 	}
@@ -52,15 +52,16 @@ public class StatefulWork implements Work
 	/* (non-Javadoc)
 	 * @see org.hibernate.jdbc.Work#execute(java.sql.Connection)
 	 */
-	public void execute(Connection arg0) throws SQLException
+	@Override
+	public void execute(final Connection arg0) throws SQLException
 	{
 		boolean ret = false;
-		ScriptRunner runner = new ScriptRunner(arg0, false, isStopOnError());
+		final ScriptRunner runner = new ScriptRunner(arg0, false, isStopOnError());
 		try
 		{
 			ret = runner.runScript(new StringReader(sql));
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			ret = false;
 			throw new SQLException(e);

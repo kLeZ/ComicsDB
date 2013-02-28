@@ -40,7 +40,7 @@ public class PlanetMangaParser implements ComicsSourceParser
 	}
 
 	@Override
-	public List<Comic> parse(Comics comics) throws IOException
+	public List<Comic> parse(final Comics comics) throws IOException
 	{
 		final List<Comic> ret = new ArrayList<Comic>();
 		final Calendar next = DateUtils.setCalendar(1);
@@ -54,7 +54,6 @@ public class PlanetMangaParser implements ComicsSourceParser
 			sb.appendln(src);
 			final List<Volume> volumes = readVolumes(src);
 			for (final Volume v : volumes)
-			{
 				if (comics.contains(v.getSerie()))
 				{
 					final Comic c = comics.get(v.getSerie());
@@ -72,7 +71,6 @@ public class PlanetMangaParser implements ComicsSourceParser
 					c.setSerie(s.toVolumes());
 					ret.add(c);
 				}
-			}
 		}
 		return ret;
 	}
@@ -84,7 +82,7 @@ public class PlanetMangaParser implements ComicsSourceParser
 	}
 
 	@Override
-	public void setUrl(String url)
+	public void setUrl(final String url)
 	{
 		this.url = url;
 	}
@@ -96,7 +94,7 @@ public class PlanetMangaParser implements ComicsSourceParser
 	}
 
 	@Override
-	public void setConfigFileName(String configFileName)
+	public void setConfigFileName(final String configFileName)
 	{
 		this.configFileName = configFileName;
 	}
@@ -123,10 +121,7 @@ public class PlanetMangaParser implements ComicsSourceParser
 		final List<Volume> ret = new ArrayList<Volume>();
 		try
 		{
-			if (!hasRootElement)
-			{
-				volumesXml = "<root>".concat(volumesXml).concat("</root>");
-			}
+			if (!hasRootElement) volumesXml = "<root>".concat(volumesXml).concat("</root>");
 			final InputStream is = StreamUtils.convertStringToInputStream(volumesXml);
 			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			final Document doc = dbf.newDocumentBuilder().parse(is);

@@ -16,12 +16,15 @@ function startPolling(url, containerDivId, interval) {
 }
 
 function stopPolling() {
+	alert('Stop polling');
 	poll = self.clearInterval(poll);
 	counter = 0;
 }
 
-function stopPolling(containerDivId) {
+function stopPolling(formId, containerDivId) {
 	stopPolling();
+	var frm = document.getElementById(formId);
+	delJsonService(frm.getAttribute('action'));
 	document.getElementById(containerDivId).innerHTML = '';
 }
 

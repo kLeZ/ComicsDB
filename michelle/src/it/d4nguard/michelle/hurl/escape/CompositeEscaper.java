@@ -33,26 +33,23 @@ public final class CompositeEscaper implements Escaper
 {
 	private final Escaper[] escapers;
 
-	public CompositeEscaper(Escaper... escapers)
+	public CompositeEscaper(final Escaper... escapers)
 	{
 		this.escapers = escapers.clone();
-		for (Escaper escaper : escapers)
-		{
+		for (final Escaper escaper : escapers)
 			Arguments.assertNotNull(escaper);
-		}
 	}
 
 	/**
 	 * Runs the argument through all the escapers in the order they are provided
 	 * to the constructor.
 	 */
-	public String escape(String unescaped)
+	@Override
+	public String escape(final String unescaped)
 	{
 		String ret = unescaped;
-		for (int i = 0; i < escapers.length; i++)
-		{
-			ret = escapers[i].escape(ret);
-		}
+		for (final Escaper escaper : escapers)
+			ret = escaper.escape(ret);
 		return ret;
 	}
 
@@ -61,13 +58,12 @@ public final class CompositeEscaper implements Escaper
 	 * are
 	 * provided to the constructor.
 	 */
-	public String unescape(String escaped)
+	@Override
+	public String unescape(final String escaped)
 	{
 		String ret = escaped;
 		for (int i = escapers.length - 1; i >= 0; i--)
-		{
 			ret = escapers[i].unescape(ret);
-		}
 		return ret;
 	}
 }

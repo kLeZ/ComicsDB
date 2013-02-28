@@ -16,6 +16,6 @@ public abstract class TypeAwareArrayList<T> extends ArrayList<T>
 	{
 		final Class<TypeAwareArrayList> taal = TypeAwareArrayList.class;
 		final Class<?> clazz = GenericsUtils.getTypeArguments(taal, getClass()).get(0);
-		return toArray(((T[]) Array.newInstance(clazz, size())));
+		return toArray((T[]) Array.newInstance(clazz, size()));
 	}
 }

@@ -42,7 +42,7 @@ public final class ValidationPrep implements Prep
 	 * @see Pattern#matcher(CharSequence)
 	 * @see Matcher#matches()
 	 */
-	public ValidationPrep(Pattern pattern)
+	public ValidationPrep(final Pattern pattern)
 	{
 		this.pattern = pattern;
 	}
@@ -54,9 +54,10 @@ public final class ValidationPrep implements Prep
 	 * @throws ProhibitedException
 	 *             if the input does not match the pattern
 	 */
-	public String prepare(String unpreparedValue) throws ProhibitedException
+	@Override
+	public String prepare(final String unpreparedValue) throws ProhibitedException
 	{
-		if (!pattern.matcher(unpreparedValue).matches()) { throw new ProhibitedException(unpreparedValue); }
+		if (!pattern.matcher(unpreparedValue).matches()) throw new ProhibitedException(unpreparedValue);
 		return unpreparedValue;
 	}
 }

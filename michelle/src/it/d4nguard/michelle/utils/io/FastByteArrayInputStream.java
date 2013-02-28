@@ -37,7 +37,7 @@ public class FastByteArrayInputStream extends InputStream
 	@Override
 	public final int read()
 	{
-		return (pos < count) ? (buf[pos++] & 0xff) : -1;
+		return pos < count ? buf[pos++] & 0xff : -1;
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class FastByteArrayInputStream extends InputStream
 	{
 		if (pos >= count) return -1;
 
-		if ((pos + len) > count) len = (count - pos);
+		if (pos + len > count) len = count - pos;
 
 		System.arraycopy(buf, pos, b, off, len);
 		pos += len;
@@ -55,7 +55,7 @@ public class FastByteArrayInputStream extends InputStream
 	@Override
 	public final long skip(long n)
 	{
-		if ((pos + n) > count) n = count - pos;
+		if (pos + n > count) n = count - pos;
 		if (n < 0) return 0;
 		pos += n;
 		return n;

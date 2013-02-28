@@ -1,4 +1,4 @@
-package it.d4nguard.michelle.utils;
+package it.d4nguard.comics;
 
 import it.d4nguard.comics.beans.Comic;
 import it.d4nguard.michelle.utils.collections.Pair;
@@ -16,15 +16,10 @@ public class ValueComparator implements Comparator<String>
 		this.base = base;
 	}
 
+	@Override
 	public int compare(final String a, final String b)
 	{
-		if (base.get(a).getKey() >= base.get(b).getKey())
-		{
-			return -1;
-		}
-		else
-		{
-			return 1;
-		}
+		if (base.get(a).getKey() >= base.get(b).getKey()) return -1;
+		else return 1;
 	}
 }

@@ -31,7 +31,7 @@ public class ProhibitedException extends RuntimeException
 {
 	private static final long serialVersionUID = 1L;
 
-	public ProhibitedException(String illegalData)
+	public ProhibitedException(final String illegalData)
 	{
 		super(illegalData);
 	}

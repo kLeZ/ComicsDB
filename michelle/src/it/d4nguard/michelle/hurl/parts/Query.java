@@ -27,14 +27,7 @@ import it.d4nguard.michelle.hurl.escape.EscapeHolder;
 import it.d4nguard.michelle.hurl.escape.Escaper;
 import it.d4nguard.michelle.hurl.incidental.Arguments;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Type for representing a HTTP URL query in HTML applications.
@@ -67,36 +60,29 @@ public final class Query implements EscapeHolder, DelimiterHolder, Normalizing<Q
 	 *            empty
 	 *            string; this value will be returned by {@link #toString()}
 	 */
-	public Query(Escaper escaper, Delimiter delimiter, String encodedQuery)
+	public Query(final Escaper escaper, final Delimiter delimiter, final String encodedQuery)
 	{
 		Arguments.assertNotNull(escaper, delimiter, encodedQuery);
 		this.escaper = escaper;
 		this.delimiter = delimiter;
 		this.encodedQuery = encodedQuery;
 		List<Param> list;
-		if (encodedQuery.length() == 0)
-		{
-			list = Collections.emptyList();
-		}
+		if (encodedQuery.length() == 0) list = Collections.emptyList();
 		else
 		{
-			List<String> params = delimiter.split(encodedQuery);
+			final List<String> params = delimiter.split(encodedQuery);
 			list = new ArrayList<Param>(params.size());
-			for (String param : params)
-			{
+			for (final String param : params)
 				list.add(new Param(escaper, param));
-			}
 		}
 		params = Collections.unmodifiableList(list);
 	}
 
-	private List<Param> copyToListSafely(Collection<? extends Param> input)
+	private List<Param> copyToListSafely(final Collection<? extends Param> input)
 	{
-		ArrayList<Param> output = new ArrayList<Param>(input.size());
-		for (Param param : input)
-		{
+		final ArrayList<Param> output = new ArrayList<Param>(input.size());
+		for (final Param param : input)
 			output.add(param.reEscape(escaper));
-		}
 		return output;
 	}
 
@@ -111,7 +97,7 @@ public final class Query implements EscapeHolder, DelimiterHolder, Normalizing<Q
 	 * @param queryParams
 	 *            the list of parameters
 	 */
-	public Query(Escaper escaper, Delimiter delimiter, Collection<? extends Param> queryParams)
+	public Query(final Escaper escaper, final Delimiter delimiter, final Collection<? extends Param> queryParams)
 	{
 		Arguments.assertNotNull(escaper, delimiter, queryParams);
 		this.escaper = escaper;
@@ -130,6 +116,7 @@ public final class Query implements EscapeHolder, DelimiterHolder, Normalizing<Q
 		return params;
 	}
 
+	@Override
 	public Delimiter getDelimiter()
 	{
 		return delimiter;
@@ -143,12 +130,10 @@ public final class Query implements EscapeHolder, DelimiterHolder, Normalizing<Q
 	 * @return the value or null
 	 * @see Param#getKey()
 	 */
-	public Param findParam(String unescapedKey)
+	public Param findParam(final String unescapedKey)
 	{
-		for (Param param : params)
-		{
-			if (unescapedKey.equals(param.getKey())) { return param; }
-		}
+		for (final Param param : params)
+			if (unescapedKey.equals(param.getKey())) return param;
 		return null;
 	}
 
@@ -161,12 +146,10 @@ public final class Query implements EscapeHolder, DelimiterHolder, Normalizing<Q
 	 * @return the value or null
 	 * @see Param#getKey()
 	 */
-	public String findValue(String unescapedKey)
+	public String findValue(final String unescapedKey)
 	{
-		for (Param param : params)
-		{
-			if (param.getValue() != null && unescapedKey.equals(param.getKey())) { return param.getValue(); }
-		}
+		for (final Param param : params)
+			if (param.getValue() != null && unescapedKey.equals(param.getKey())) return param.getValue();
 		return null;
 	}
 
@@ -178,16 +161,11 @@ public final class Query implements EscapeHolder, DelimiterHolder, Normalizing<Q
 	 * @return an immutable list of parameters; never null
 	 * @see Param#getKey()
 	 */
-	public List<Param> findParams(String unescapedKey)
+	public List<Param> findParams(final String unescapedKey)
 	{
-		List<Param> values = new ArrayList<Param>();
-		for (Param param : params)
-		{
-			if (unescapedKey.equals(param.getKey()))
-			{
-				values.add(param);
-			}
-		}
+		final List<Param> values = new ArrayList<Param>();
+		for (final Param param : params)
+			if (unescapedKey.equals(param.getKey())) values.add(param);
 		return Collections.unmodifiableList(values);
 	}
 
@@ -199,16 +177,11 @@ public final class Query implements EscapeHolder, DelimiterHolder, Normalizing<Q
 	 * @return an immutable list of parameters; never null
 	 * @see Param#getKey()
 	 */
-	public List<String> findValues(String unescapedKey)
+	public List<String> findValues(final String unescapedKey)
 	{
-		List<String> values = new ArrayList<String>(params.size());
-		for (Param param : params)
-		{
-			if (unescapedKey.equals(param.getKey()) && param.getValue() != null)
-			{
-				values.add(param.getValue());
-			}
-		}
+		final List<String> values = new ArrayList<String>(params.size());
+		for (final Param param : params)
+			if (unescapedKey.equals(param.getKey()) && param.getValue() != null) values.add(param.getValue());
 		return Collections.unmodifiableList(values);
 	}
 
@@ -219,11 +192,9 @@ public final class Query implements EscapeHolder, DelimiterHolder, Normalizing<Q
 	 */
 	public Set<String> getParamKeys()
 	{
-		Set<String> keys = new HashSet<String>();
-		for (Param param : params)
-		{
+		final Set<String> keys = new HashSet<String>();
+		for (final Param param : params)
 			keys.add(param.getKey());
-		}
 		return Collections.unmodifiableSet(keys);
 	}
 
@@ -234,11 +205,12 @@ public final class Query implements EscapeHolder, DelimiterHolder, Normalizing<Q
 	 *            the key to match
 	 * @return true if there is a {@link Param} with a matching key
 	 */
-	public boolean hasParam(String unescapedKey)
+	public boolean hasParam(final String unescapedKey)
 	{
 		return findParam(unescapedKey) != null;
 	}
 
+	@Override
 	public Escaper getEscaper()
 	{
 		return escaper;
@@ -252,15 +224,13 @@ public final class Query implements EscapeHolder, DelimiterHolder, Normalizing<Q
 	 *            order
 	 * @return a new instance
 	 */
-	public Query normalize(boolean sort)
+	public Query normalize(final boolean sort)
 	{
-		Collection<Param> normalizedParams = sort ? new TreeSet<Param>(ParamSorter.INSTANCE) : new ArrayList<Param>(params.size());
-		for (Param param : params)
-		{
+		final Collection<Param> normalizedParams = sort ? new TreeSet<Param>(ParamSorter.INSTANCE) : new ArrayList<Param>(params.size());
+		for (final Param param : params)
 			normalizedParams.add(param.normalize());
-		}
-		Query normalized = new Query(escaper, delimiter, normalizedParams);
-		if (normalized.encodedQuery.equals(encodedQuery)) { return this; }
+		final Query normalized = new Query(escaper, delimiter, normalizedParams);
+		if (normalized.encodedQuery.equals(encodedQuery)) return this;
 		return normalized;
 	}
 
@@ -269,12 +239,14 @@ public final class Query implements EscapeHolder, DelimiterHolder, Normalizing<Q
 	 * 
 	 * @see #normalize(boolean)
 	 */
+	@Override
 	public Query normalize()
 	{
 		return normalize(true);
 	}
 
-	public Query reEscape(Escaper escaper)
+	@Override
+	public Query reEscape(final Escaper escaper)
 	{
 		return this.escaper.equals(escaper) ? this : new Query(escaper, delimiter, params);
 	}
@@ -283,10 +255,11 @@ public final class Query implements EscapeHolder, DelimiterHolder, Normalizing<Q
 	{
 		public static final Comparator<Param> INSTANCE = new ParamSorter();
 
-		public int compare(Param param1, Param param2)
+		@Override
+		public int compare(final Param param1, final Param param2)
 		{
-			int comp = param1.getKey().compareTo(param2.getKey());
-			if (comp == 0) { return param1.getValue().compareTo(param2.getValue()); }
+			final int comp = param1.getKey().compareTo(param2.getKey());
+			if (comp == 0) return param1.getValue().compareTo(param2.getValue());
 			return comp;
 		}
 	}

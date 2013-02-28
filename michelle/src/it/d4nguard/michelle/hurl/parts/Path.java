@@ -55,17 +55,17 @@ public final class Path implements EscapeHolder, DelimiterHolder, Normalizing<Pa
 	 *            the path to be parsed; this value will be returned by
 	 *            {@link #toString()}
 	 */
-	public Path(Escaper escaper, Delimiter delimiter, String escapedPath)
+	public Path(final Escaper escaper, final Delimiter delimiter, final String escapedPath)
 	{
 		this.escaper = escaper;
 		this.delimiter = delimiter;
 		this.escapedPath = escapedPath;
 		// parse path
-		List<String> pes = delimiter.split(escapedPath);
-		List<Element> list = new ArrayList<Element>(pes.size());
-		for (String pe : pes)
+		final List<String> pes = delimiter.split(escapedPath);
+		final List<Element> list = new ArrayList<Element>(pes.size());
+		for (final String pe : pes)
 		{
-			Element element = new Element(escaper, pe, EscapeState.ESCAPED);
+			final Element element = new Element(escaper, pe, EscapeState.ESCAPED);
 			list.add(element);
 		}
 		elements = Collections.unmodifiableList(list);
@@ -80,17 +80,17 @@ public final class Path implements EscapeHolder, DelimiterHolder, Normalizing<Pa
 	 *            the paths to be parsed; these values will be returned by
 	 *            {@link #toString()}
 	 */
-	public Path(Escaper escaper, Delimiter delimiter, String... escapedPaths)
+	public Path(final Escaper escaper, final Delimiter delimiter, final String... escapedPaths)
 	{
 		this.escaper = escaper;
 		this.delimiter = delimiter;
 		escapedPath = delimiter.concatenate(Arrays.asList(escapedPaths));
 		// parse path
-		List<String> pes = delimiter.split(escapedPath);
-		List<Element> list = new ArrayList<Element>(pes.size());
-		for (String pe : pes)
+		final List<String> pes = delimiter.split(escapedPath);
+		final List<Element> list = new ArrayList<Element>(pes.size());
+		for (final String pe : pes)
 		{
-			Element element = new Element(escaper, pe, EscapeState.ESCAPED);
+			final Element element = new Element(escaper, pe, EscapeState.ESCAPED);
 			list.add(element);
 		}
 		elements = Collections.unmodifiableList(list);
@@ -109,17 +109,15 @@ public final class Path implements EscapeHolder, DelimiterHolder, Normalizing<Pa
 	 * @param pathElements
 	 *            the elements that make up the path
 	 */
-	public Path(Escaper escaper, Delimiter delimiter, List<Element> pathElements)
+	public Path(final Escaper escaper, final Delimiter delimiter, final List<Element> pathElements)
 	{
 		this.escaper = escaper;
 		this.delimiter = delimiter;
 		// check path elements
 		{
-			List<Element> list = new ArrayList<Element>(pathElements.size());
-			for (Element element : pathElements)
-			{
+			final List<Element> list = new ArrayList<Element>(pathElements.size());
+			for (final Element element : pathElements)
 				list.add(element.reEscape(escaper));
-			}
 			elements = Collections.unmodifiableList(list);
 		}
 		{
@@ -163,18 +161,16 @@ public final class Path implements EscapeHolder, DelimiterHolder, Normalizing<Pa
 	@Override
 	public Path normalize()
 	{
-		List<Element> normalizedElements = new ArrayList<Element>(elements.size());
-		for (Element element : elements)
-		{
+		final List<Element> normalizedElements = new ArrayList<Element>(elements.size());
+		for (final Element element : elements)
 			normalizedElements.add(element.normalize());
-		}
-		Path normalized = new Path(escaper, delimiter, normalizedElements);
-		if (normalized.escapedPath.equals(escapedPath)) { return this; }
+		final Path normalized = new Path(escaper, delimiter, normalizedElements);
+		if (normalized.escapedPath.equals(escapedPath)) return this;
 		return normalized;
 	}
 
 	@Override
-	public Path reEscape(Escaper escaper)
+	public Path reEscape(final Escaper escaper)
 	{
 		return this.escaper.equals(escaper) ? this : new Path(escaper, delimiter, elements);
 	}

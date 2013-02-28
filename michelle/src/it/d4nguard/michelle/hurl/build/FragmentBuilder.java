@@ -39,18 +39,19 @@ public final class FragmentBuilder implements EscapeHolder, Builder<Element>, Pa
 	private final Escaper escaper;
 	private String unescaped;
 
-	private FragmentBuilder(Escaper escaper)
+	private FragmentBuilder(final Escaper escaper)
 	{
 		Arguments.assertNotNull(escaper);
 		this.escaper = escaper;
 	}
 
+	@Override
 	public Escaper getEscaper()
 	{
 		return escaper;
 	}
 
-	public static FragmentBuilder create(Escaper escaper)
+	public static FragmentBuilder create(final Escaper escaper)
 	{
 		return new FragmentBuilder(escaper);
 	}
@@ -76,6 +77,7 @@ public final class FragmentBuilder implements EscapeHolder, Builder<Element>, Pa
 	 * 
 	 * @return a new {@link Element}
 	 */
+	@Override
 	public Element build()
 	{
 		return new Element(escaper, unescaped, EscapeState.UNESCAPED);
@@ -89,7 +91,8 @@ public final class FragmentBuilder implements EscapeHolder, Builder<Element>, Pa
 	 *            the fragment part of a URL
 	 * @return this
 	 */
-	public FragmentBuilder parse(String escapedValue)
+	@Override
+	public FragmentBuilder parse(final String escapedValue)
 	{
 		unescaped = escaper.unescape(escapedValue);
 		return this;
@@ -102,7 +105,7 @@ public final class FragmentBuilder implements EscapeHolder, Builder<Element>, Pa
 	 *            the unescaped value
 	 * @return this
 	 */
-	public FragmentBuilder setValue(String unescaped)
+	public FragmentBuilder setValue(final String unescaped)
 	{
 		this.unescaped = unescaped;
 		return this;
@@ -126,7 +129,7 @@ public final class FragmentBuilder implements EscapeHolder, Builder<Element>, Pa
 	 *            the value
 	 * @return this
 	 */
-	public FragmentBuilder setValue(Element value)
+	public FragmentBuilder setValue(final Element value)
 	{
 		return setValue(value.getValue());
 	}

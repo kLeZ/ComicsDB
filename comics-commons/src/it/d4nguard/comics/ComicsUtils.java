@@ -33,29 +33,26 @@ public class ComicsUtils
 	{
 	}.getType();
 
-	public static Comics getComicsFromJson(String json, boolean isArray)
+	public static Comics getComicsFromJson(final String json, final boolean isArray)
 	{
-		Comics comics = new Comics();
-		if (!StringUtils.isNullOrWhitespace(json))
-		{
-			comics.addAll(getComicsFromJson(new StringReader(json), isArray));
-		}
+		final Comics comics = new Comics();
+		if (!StringUtils.isNullOrWhitespace(json)) comics.addAll(getComicsFromJson(new StringReader(json), isArray));
 		return comics;
 	}
 
-	public static Comics getComicsFromJson(Reader json, boolean isArray)
+	public static Comics getComicsFromJson(final Reader json, final boolean isArray)
 	{
-		Comics comics = new Comics();
+		final Comics comics = new Comics();
 		try
 		{
-			if ((json != null) && json.ready())
+			if (json != null && json.ready())
 			{
-				Gson gson = createJsonParser();
-				Collection<Comic> retrieved = fromJson(json, isArray, gson);
+				final Gson gson = createJsonParser();
+				final Collection<Comic> retrieved = fromJson(json, isArray, gson);
 				comics.addAll(retrieved);
 			}
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -64,35 +61,29 @@ public class ComicsUtils
 
 	public static Gson createJsonParser()
 	{
-		GsonBuilder gsonBuilder = new GsonBuilder();
+		final GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Money.class, new MoneyJsonSerializer());
 		gsonBuilder.registerTypeAdapter(Money.class, new MoneyJsonDeserializer());
-		Gson gson = gsonBuilder.create();
+		final Gson gson = gsonBuilder.create();
 		return gson;
 	}
 
-	public static Collection<Comic> fromJson(String json, boolean isArray, Gson gson)
+	public static Collection<Comic> fromJson(final String json, final boolean isArray, final Gson gson)
 	{
 		return fromJson(new StringReader(json), isArray, gson);
 	}
 
-	public static Collection<Comic> fromJson(Reader json, boolean isArray, Gson gson)
+	public static Collection<Comic> fromJson(final Reader json, final boolean isArray, final Gson gson)
 	{
-		Collection<Comic> retrieved = new ArrayList<Comic>();
-		if (isArray)
-		{
-			retrieved.addAll(gson.<Collection<Comic>> fromJson(json, ComicListType));
-		}
-		else
-		{
-			retrieved.add(gson.<Comic> fromJson(json, ComicType));
-		}
+		final Collection<Comic> retrieved = new ArrayList<Comic>();
+		if (isArray) retrieved.addAll(gson.<Collection<Comic>> fromJson(json, ComicListType));
+		else retrieved.add(gson.<Comic> fromJson(json, ComicType));
 		return retrieved;
 	}
 
-	public static DataTable comicsToDataTable(Comics comics)
+	public static DataTable comicsToDataTable(final Comics comics)
 	{
-		DataTable table = new DataTable();
+		final DataTable table = new DataTable();
 		table.insertColumn("Original Title", String.class);
 		table.insertColumn("English Title", String.class);
 		table.insertColumn("Artworker", String.class);
@@ -106,9 +97,9 @@ public class ComicsUtils
 		table.insertColumn("Complete In Country", Boolean.class);
 		table.insertColumn("Volumes", Integer.class);
 
-		for (Comic comic : comics)
+		for (final Comic comic : comics)
 		{
-			DataRow row = table.add("Original Title", comic.getOriginalTitle());
+			final DataRow row = table.add("Original Title", comic.getOriginalTitle());
 			row.set("English Title", comic.getEnglishTitle());
 			row.set("Artworker", safeGetter(comic.getArtworker(), Author.class).toString());
 			row.set("Storywriter", safeGetter(comic.getStorywriter(), Author.class).toString());

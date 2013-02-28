@@ -7,9 +7,9 @@ import java.lang.reflect.ParameterizedType;
 
 public class Tablizer<T> implements HtmlElement
 {
-	private Class<T> clazz;
+	private final Class<T> clazz;
 
-	public Tablizer(Class<T> clazz)
+	public Tablizer(final Class<T> clazz)
 	{
 		this.clazz = clazz;
 	}
@@ -23,33 +23,28 @@ public class Tablizer<T> implements HtmlElement
 		return new HtmlTable(getDataFromClass(clazz)).render();
 	}
 
-	public static DataTable getDataFromClass(Class<?> clazz)
+	public static DataTable getDataFromClass(final Class<?> clazz)
 	{
-		DataTable table = new DataTable();
+		final DataTable table = new DataTable();
 		table.insertColumn("Type", String.class);
 		table.insertColumn("Field", String.class);
 		table.insertColumn("Structure", String.class);
 
-		Field[] fields = clazz.getDeclaredFields();
-		for (Field field : fields)
-		{
+		final Field[] fields = clazz.getDeclaredFields();
+		for (final Field field : fields)
 			if (!field.getName().equalsIgnoreCase("id") && !field.getName().equalsIgnoreCase("serialVersionUID"))
 			{
 				String type = "";
 				if (field.getGenericType() instanceof ParameterizedType)
 				{
-					ParameterizedType pt = (ParameterizedType) field.getGenericType();
-					Class<?> typec = (Class<?>) pt.getRawType();
-					Class<?> typegen = (Class<?>) pt.getActualTypeArguments()[0];
+					final ParameterizedType pt = (ParameterizedType) field.getGenericType();
+					final Class<?> typec = (Class<?>) pt.getRawType();
+					final Class<?> typegen = (Class<?>) pt.getActualTypeArguments()[0];
 					type = String.format("%s Of %s", typec.getSimpleName(), typegen.getSimpleName());
 				}
-				else
-				{
-					type = field.getType().getSimpleName();
-				}
+				else type = field.getType().getSimpleName();
 				table.add(type, field.getName(), clazz.getSimpleName());
 			}
-		}
 		return table;
 	}
 }

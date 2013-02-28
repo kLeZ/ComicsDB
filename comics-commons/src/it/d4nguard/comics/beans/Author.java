@@ -20,7 +20,7 @@ public class Author implements Serializable
 
 	}
 
-	public Author(String name, AuthorMansion mansion)
+	public Author(final String name, final AuthorMansion mansion)
 	{
 		this.name = name;
 		this.mansion = mansion;
@@ -31,7 +31,7 @@ public class Author implements Serializable
 		return id;
 	}
 
-	public void setId(Long id)
+	public void setId(final Long id)
 	{
 		this.id = id;
 	}
@@ -41,7 +41,7 @@ public class Author implements Serializable
 		return name;
 	}
 
-	public void setName(String name)
+	public void setName(final String name)
 	{
 		this.name = name;
 	}
@@ -51,7 +51,7 @@ public class Author implements Serializable
 		return mansion;
 	}
 
-	public void setMansion(AuthorMansion mansion)
+	public void setMansion(final AuthorMansion mansion)
 	{
 		this.mansion = mansion;
 	}
@@ -61,24 +61,24 @@ public class Author implements Serializable
 	{
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((mansion == null) ? 0 : mansion.hashCode());
-		result = (prime * result) + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + (mansion == null ? 0 : mansion.hashCode());
+		result = prime * result + (name == null ? 0 : name.hashCode());
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(final Object obj)
 	{
-		if (this == obj) { return true; }
-		if (obj == null) { return false; }
-		if (!(obj instanceof Author)) { return false; }
-		Author other = (Author) obj;
-		if (mansion != other.mansion) { return false; }
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Author)) return false;
+		final Author other = (Author) obj;
+		if (mansion != other.mansion) return false;
 		if (name == null)
 		{
-			if (other.name != null) { return false; }
+			if (other.name != null) return false;
 		}
-		else if (!name.equals(other.name)) { return false; }
+		else if (!name.equals(other.name)) return false;
 		return true;
 	}
 
@@ -88,18 +88,16 @@ public class Author implements Serializable
 		return name;
 	}
 
-	public static Author get(String name, AuthorMansion mansion)
+	public static Author get(final String name, final AuthorMansion mansion)
 	{
 		Author ret = null;
-		for (Author a : authors)
-		{
+		for (final Author a : authors)
 			if (a.getName().equalsIgnoreCase(name) && a.getMansion().equals(mansion))
 			{
 				ret = a;
 				break;
 			}
-		}
-		if ((ret == null) && !StringUtils.isNullOrWhitespace(name))
+		if (ret == null && !StringUtils.isNullOrWhitespace(name))
 		{
 			ret = new Author(name, mansion);
 			authors.add(ret);

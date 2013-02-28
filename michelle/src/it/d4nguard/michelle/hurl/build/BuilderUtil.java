@@ -32,24 +32,22 @@ class BuilderUtil
 	/**
 	 * Quotes a bunch of individual characters for regex.
 	 */
-	public static String regexQuoted(String characters)
+	public static String regexQuoted(final String characters)
 	{
-		StringBuilder sb = new StringBuilder();
-		CodepointIterator iterator = new CodepointIterator(characters);
+		final StringBuilder sb = new StringBuilder();
+		final CodepointIterator iterator = new CodepointIterator(characters);
 		while (iterator.hasNext())
 		{
-			String quoteMe = new String(Character.toChars(iterator.next()));
+			final String quoteMe = new String(Character.toChars(iterator.next()));
 			sb.append(Pattern.quote(quoteMe));
 		}
 		return sb.toString();
 	}
 
-	public static String remove(String sequence, char... c)
+	public static String remove(String sequence, final char... c)
 	{
-		for (char ch : c)
-		{
+		for (final char ch : c)
 			sequence = sequence.replace(Character.toString(ch), "");
-		}
 		return sequence;
 	}
 }

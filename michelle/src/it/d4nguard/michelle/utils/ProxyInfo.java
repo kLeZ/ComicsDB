@@ -78,27 +78,27 @@ public class ProxyInfo
 		return useCredentials;
 	}
 
-	public void setUsername(String username)
+	public void setUsername(final String username)
 	{
 		this.username = username;
 	}
 
-	public void setPassword(String password)
+	public void setPassword(final String password)
 	{
 		this.password = password;
 	}
 
-	public void setCredentialHost(String credentialHost)
+	public void setCredentialHost(final String credentialHost)
 	{
 		this.credentialHost = credentialHost;
 	}
 
-	public void setDomain(String domain)
+	public void setDomain(final String domain)
 	{
 		this.domain = domain;
 	}
 
-	public void setUseCredentials(boolean useCredentials)
+	public void setUseCredentials(final boolean useCredentials)
 	{
 		this.useCredentials = useCredentials;
 	}
@@ -127,7 +127,7 @@ public class ProxyInfo
 
 	public static ProxyInfo getFromEnv()
 	{
-		Map<String, String> env = System.getenv();
+		final Map<String, String> env = System.getenv();
 		ProxyInfo ret = null;
 		if (env.containsKey("http_proxy") || env.containsKey("HTTP_PROXY"))
 		{
@@ -135,13 +135,10 @@ public class ProxyInfo
 			try
 			{
 				String httpProxy = env.get("http_proxy");
-				if (StringUtils.isNullOrWhitespace(httpProxy))
-				{
-					httpProxy = env.get("HTTP_PROXY");
-				}
+				if (StringUtils.isNullOrWhitespace(httpProxy)) httpProxy = env.get("HTTP_PROXY");
 				http_proxy = new URI(httpProxy);
 			}
-			catch (URISyntaxException e)
+			catch (final URISyntaxException e)
 			{
 				e.printStackTrace();
 			}
@@ -155,30 +152,18 @@ public class ProxyInfo
 					String authority, pass = null;
 					Pair<String, String> userDomain = null;
 					authority = http_proxy.getAuthority();
-					String[] split = authority.split(":");
+					final String[] split = authority.split(":");
 					if (split.length == 2)
 					{
 						pass = split[1];
 						userDomain = getUserDomain(split[0]);
 					}
-					else if (split.length == 1)
-					{
-						userDomain = getUserDomain(split[0]);
-					}
+					else if (split.length == 1) userDomain = getUserDomain(split[0]);
 					ret.setUsername(userDomain.getKey());
-					if (!StringUtils.isNullOrWhitespace(userDomain.getValue()))
-					{
-						ret.setDomain(userDomain.getValue());
-					}
-					if (!StringUtils.isNullOrWhitespace(pass))
-					{
-						ret.setPassword(pass);
-					}
+					if (!StringUtils.isNullOrWhitespace(userDomain.getValue())) ret.setDomain(userDomain.getValue());
+					if (!StringUtils.isNullOrWhitespace(pass)) ret.setPassword(pass);
 				}
-				else
-				{
-					ret.setUseCredentials(false);
-				}
+				else ret.setUseCredentials(false);
 			}
 		}
 		return ret;
@@ -187,20 +172,17 @@ public class ProxyInfo
 	/**
 	 * @param authority
 	 */
-	private static Pair<String, String> getUserDomain(String authority)
+	private static Pair<String, String> getUserDomain(final String authority)
 	{
 		String user = null;
 		String domain = null;
-		String[] domusr = authority.split("\\");
+		final String[] domusr = authority.split("\\");
 		if (domusr.length == 2)
 		{
 			domain = domusr[0];
 			user = domusr[1];
 		}
-		else if (domusr.length == 1)
-		{
-			user = domusr[0];
-		}
+		else if (domusr.length == 1) user = domusr[0];
 		return new Pair<String, String>(user, domain);
 	}
 }

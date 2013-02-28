@@ -1,6 +1,5 @@
 package it.d4nguard.michelle.utils;
 
-
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,13 +33,10 @@ public class Version
 		return translators.size();
 	}
 
-	public Element translateVersion(final Element root, int version)
+	public Element translateVersion(final Element root, final int version)
 	{
 		Element ret = null;
-		if (version == getTranslators().size())
-		{
-			ret = root;
-		}
+		if (version == getTranslators().size()) ret = root;
 		else
 		{
 			log.log(Level.FINER, "Trying to translate to version " + version);
@@ -53,10 +49,7 @@ public class Version
 
 	public static Version getInstance()
 	{
-		if (instance == null)
-		{
-			instance = new Version();
-		}
+		if (instance == null) instance = new Version();
 		return instance;
 	}
 }

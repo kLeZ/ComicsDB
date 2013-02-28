@@ -20,16 +20,14 @@ public class StreamUtils
 		return getResourceAsString(resourceName, ClassLoader.getSystemClassLoader());
 	}
 
-	public static String getResourceAsString(final String resourceName, ClassLoader cl) throws IOException
+	public static String getResourceAsString(final String resourceName, final ClassLoader cl) throws IOException
 	{
 		final InputStream is = cl.getResourceAsStream(resourceName);
 		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		final StringBuilder sb = new StringBuilder();
 		String line;
 		while ((line = br.readLine()) != null)
-		{
 			sb.append(line).append(LS);
-		}
 		return sb.toString();
 	}
 
@@ -38,7 +36,7 @@ public class StreamUtils
 		return new ByteArrayInputStream(s.getBytes());
 	}
 
-	public static String convertInputStreamToString(InputStream is) throws IOException
+	public static String convertInputStreamToString(final InputStream is) throws IOException
 	{
 		//
 		// To convert the InputStream to String we use the
@@ -48,17 +46,15 @@ public class StreamUtils
 		//
 		if (is != null)
 		{
-			Writer writer = new StringWriter();
+			final Writer writer = new StringWriter();
 
-			char[] buffer = new char[1024];
+			final char[] buffer = new char[1024];
 			try
 			{
-				Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+				final Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 				int n;
 				while ((n = reader.read(buffer)) != -1)
-				{
 					writer.write(buffer, 0, n);
-				}
 			}
 			finally
 			{
@@ -66,10 +62,7 @@ public class StreamUtils
 			}
 			return writer.toString();
 		}
-		else
-		{
-			return "";
-		}
+		else return "";
 	}
 
 	/**
@@ -78,12 +71,12 @@ public class StreamUtils
 	 * @throws UnsupportedEncodingException
 	 * @throws IOException
 	 */
-	public static InputStream convertToUTF8InputStream(InputStream is) throws UnsupportedEncodingException, IOException
+	public static InputStream convertToUTF8InputStream(final InputStream is) throws UnsupportedEncodingException, IOException
 	{
 		return new ByteArrayInputStream(convertInputStreamToString(is).getBytes("UTF-8"));
 	}
 
-	public static void writeFile(final String filename, final String content, boolean backupExistent) throws IOException
+	public static void writeFile(final String filename, final String content, final boolean backupExistent) throws IOException
 	{
 		File file = new File(filename);
 		if (file.exists() && backupExistent)
@@ -92,8 +85,8 @@ public class StreamUtils
 			file = new File(filename);
 			file.createNewFile();
 		}
-		FileWriter fw = new FileWriter(file);
-		BufferedWriter bw = new BufferedWriter(fw);
+		final FileWriter fw = new FileWriter(file);
+		final BufferedWriter bw = new BufferedWriter(fw);
 		bw.write(content);
 		bw.close();
 	}
@@ -104,10 +97,10 @@ public class StreamUtils
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public void writeFile(InputStream is, String file) throws FileNotFoundException, IOException
+	public void writeFile(final InputStream is, final String file) throws FileNotFoundException, IOException
 	{
-		FileOutputStream fos = new FileOutputStream(file);
-		byte[] buffer = new byte[4096];
+		final FileOutputStream fos = new FileOutputStream(file);
+		final byte[] buffer = new byte[4096];
 		int offset = 0;
 		while (is.read(buffer, offset, buffer.length) > -1)
 		{
@@ -129,14 +122,12 @@ public class StreamUtils
 
 	private static String readFile(final InputStream file)
 	{
-		StringBuilder ret = new StringBuilder();
-		Scanner scanner = new Scanner(file);
+		final StringBuilder ret = new StringBuilder();
+		final Scanner scanner = new Scanner(file);
 		try
 		{
 			while (scanner.hasNextLine())
-			{
 				ret.append(scanner.nextLine()).append(LS);
-			}
 		}
 		finally
 		{
@@ -160,14 +151,11 @@ public class StreamUtils
 	 * @throws URISyntaxException
 	 * @throws IOException
 	 */
-	public static String[] getResourceListing(Class<?> clazz, String path, String regex) throws URISyntaxException, IOException
+	public static String[] getResourceListing(final Class<?> clazz, final String path, final String regex) throws URISyntaxException, IOException
 	{
 		URL dirURL = clazz.getClassLoader().getResource(path);
-		if ((dirURL != null) && dirURL.getProtocol().equals("file"))
-		{
-			/* A file path: easy enough */
-			return new File(dirURL.toURI()).list();
-		}
+		if (dirURL != null && dirURL.getProtocol().equals("file")) /* A file path: easy enough */
+		return new File(dirURL.toURI()).list();
 
 		if (dirURL == null)
 		{
@@ -175,30 +163,27 @@ public class StreamUtils
 			 * In case of a jar file, we can't actually find a directory.
 			 * Have to assume the same jar as clazz.
 			 */
-			String me = clazz.getName().replace(".", "/") + ".class";
+			final String me = clazz.getName().replace(".", "/") + ".class";
 			dirURL = clazz.getClassLoader().getResource(me);
 		}
 
 		if (dirURL.getProtocol().equals("jar"))
 		{
 			/* A JAR path */
-			String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
-			JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-			Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+			final String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
+			final JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+			final Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
 			jar.close();
-			Set<String> result = new HashSet<String>(); //avoid duplicates in case it is a subdirectory
+			final Set<String> result = new HashSet<String>(); //avoid duplicates in case it is a subdirectory
 			while (entries.hasMoreElements())
 			{
-				String name = entries.nextElement().getName();
+				final String name = entries.nextElement().getName();
 				if (name.startsWith(path) && (regex.isEmpty() || name.matches(regex)))
 				{ //filter according to the path
 					String entry = name.substring(path.length());
-					int checkSubdir = entry.indexOf("/");
-					if (checkSubdir >= 0)
-					{
-						// if it is a subdirectory, we just return the directory name
-						entry = entry.substring(0, checkSubdir);
-					}
+					final int checkSubdir = entry.indexOf("/");
+					if (checkSubdir >= 0) // if it is a subdirectory, we just return the directory name
+					entry = entry.substring(0, checkSubdir);
 					result.add(entry);
 				}
 			}
@@ -207,10 +192,10 @@ public class StreamUtils
 		throw new UnsupportedOperationException("Cannot list files for URL " + dirURL);
 	}
 
-	public static String findPathJar(Class<?> context) throws IllegalStateException, ClassNotFoundException
+	public static String findPathJar(final Class<?> context) throws IllegalStateException, ClassNotFoundException
 	{
-		URL location = ClassLoader.getSystemClassLoader().loadClass(context.getName()).getResource('/' + context.getName().replace(".", "/") + ".class");
-		String jarPath = location.getPath();
+		final URL location = ClassLoader.getSystemClassLoader().loadClass(context.getName()).getResource('/' + context.getName().replace(".", "/") + ".class");
+		final String jarPath = location.getPath();
 		return jarPath.substring("file:".length(), jarPath.lastIndexOf("!"));
 	}
 }

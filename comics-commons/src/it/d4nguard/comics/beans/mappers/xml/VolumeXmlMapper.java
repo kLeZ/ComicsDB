@@ -15,13 +15,10 @@ public class VolumeXmlMapper implements XmlMapper<Volume>
 	 * @see it.d4nguard.comics.beans.mappers.xml.XmlMapper#create(org.w3c.dom.Element)
 	 */
 	@Override
-	public Volume create(final Element elem, Long id)
+	public Volume create(final Element elem, final Long id)
 	{
 		final Volume volume = new Volume(null, StringUtils.clean(elem.getAttribute("nome")));
-		if (elem.hasAttribute("serie"))
-		{
-			volume.setSerie(elem.getAttribute("serie"));
-		}
+		if (elem.hasAttribute("serie")) volume.setSerie(elem.getAttribute("serie"));
 		volume.setEditor(new Editor(elem.getAttribute("editore")));
 		volume.setPrice(new Money(elem.getAttribute("prezzo")));
 		volume.setLast(new Boolean(elem.getAttribute("ultimo")));
@@ -32,9 +29,9 @@ public class VolumeXmlMapper implements XmlMapper<Volume>
 	 * @see it.d4nguard.comics.beans.mappers.xml.XmlMapper#create(java.lang.Object)
 	 */
 	@Override
-	public Element create(Document ownerDocument, Volume obj)
+	public Element create(final Document ownerDocument, final Volume obj)
 	{
-		Element ret = ownerDocument.createElement("volume");
+		final Element ret = ownerDocument.createElement("volume");
 		ret.setAttribute("nome", obj.getName());
 		ret.setAttribute("serie", obj.getSerie());
 		ret.setAttribute("editore", obj.getEditor().getName());

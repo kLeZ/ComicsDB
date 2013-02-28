@@ -34,7 +34,7 @@ public class Money implements Serializable
 		return id;
 	}
 
-	public void setId(Long id)
+	public void setId(final Long id)
 	{
 		this.id = id;
 	}
@@ -49,9 +49,14 @@ public class Money implements Serializable
 
 	public void setValue(final String value)
 	{
-		String num = StringUtils.filterDigits(value), sym = value.replace(num, "").trim();
+		final String num = StringUtils.filterDigits(value), sym = value.replace(num, "").trim();
 		currency = getCurrency(sym);
 		locale = getLocale(sym);
+		if (currency == null || locale == null)
+		{
+			locale = Locale.getDefault();
+			currency = Currency.getInstance(locale);
+		}
 		decimalValue = new BigDecimal(num.replace(',', '.'));
 		this.value = value;
 	}
@@ -74,25 +79,25 @@ public class Money implements Serializable
 	@Override
 	public boolean equals(final Object obj)
 	{
-		if (this == obj) { return true; }
-		if (obj == null) { return false; }
-		if (!(obj instanceof Money)) { return false; }
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Money)) return false;
 		final Money other = (Money) obj;
 		if (currency == null)
 		{
-			if (other.currency != null) { return false; }
+			if (other.currency != null) return false;
 		}
-		else if (!currency.equals(other.currency)) { return false; }
+		else if (!currency.equals(other.currency)) return false;
 		if (locale == null)
 		{
-			if (other.locale != null) { return false; }
+			if (other.locale != null) return false;
 		}
-		else if (!locale.equals(other.locale)) { return false; }
+		else if (!locale.equals(other.locale)) return false;
 		if (decimalValue == null)
 		{
-			if (other.decimalValue != null) { return false; }
+			if (other.decimalValue != null) return false;
 		}
-		else if (!decimalValue.equals(other.decimalValue)) { return false; }
+		else if (!decimalValue.equals(other.decimalValue)) return false;
 		return true;
 	}
 
@@ -101,9 +106,9 @@ public class Money implements Serializable
 	{
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((currency == null) ? 0 : currency.hashCode());
-		result = (prime * result) + ((locale == null) ? 0 : locale.hashCode());
-		result = (prime * result) + ((decimalValue == null) ? 0 : decimalValue.hashCode());
+		result = prime * result + (currency == null ? 0 : currency.hashCode());
+		result = prime * result + (locale == null ? 0 : locale.hashCode());
+		result = prime * result + (decimalValue == null ? 0 : decimalValue.hashCode());
 		return result;
 	}
 
@@ -123,7 +128,6 @@ public class Money implements Serializable
 
 		Pair<Currency, Locale> entry;
 		for (final Locale loc : locs)
-		{
 			try
 			{
 				// Filters IllegalArgumentException given by passing Language Locales instead of Country ones.
@@ -133,33 +137,24 @@ public class Money implements Serializable
 					ret.add(entry);
 				}
 			}
-			catch (IllegalArgumentException e)
+			catch (final IllegalArgumentException e)
 			{
 				Logger.getLogger(Money.class.getName()).log(Level.FINER, e.getLocalizedMessage(), e);
 			}
-		}
 		return ret;
 	}
 
 	public static Currency getCurrency(final String symbol)
 	{
 		Currency ret = null;
-		boolean isDefault = Currency.getInstance(Locale.getDefault()).getSymbol().contentEquals(symbol);
-		if (isDefault)
-		{
-			ret = Currency.getInstance(Locale.getDefault());
-		}
-		else
-		{
-			for (final Map.Entry<Currency, Locale> e : getAllCurrencies())
+		final boolean isDefault = Currency.getInstance(Locale.getDefault()).getSymbol().contentEquals(symbol);
+		if (isDefault) ret = Currency.getInstance(Locale.getDefault());
+		else for (final Map.Entry<Currency, Locale> e : getAllCurrencies())
+			if (e.getKey().getSymbol().contentEquals(symbol))
 			{
-				if (e.getKey().getSymbol().contentEquals(symbol))
-				{
-					ret = e.getKey();
-					break;
-				}
+				ret = e.getKey();
+				break;
 			}
-		}
 		return ret;
 	}
 
@@ -167,21 +162,12 @@ public class Money implements Serializable
 	{
 		Locale ret = null;
 		final Iterator<Map.Entry<Currency, Locale>> it = getAllCurrencies().iterator();
-		boolean isDefault = Currency.getInstance(Locale.getDefault()).getSymbol().contentEquals(symbol);
-		if (isDefault)
+		final boolean isDefault = Currency.getInstance(Locale.getDefault()).getSymbol().contentEquals(symbol);
+		if (isDefault) ret = Locale.getDefault();
+		else while (it.hasNext() && ret == null)
 		{
-			ret = Locale.getDefault();
-		}
-		else
-		{
-			while (it.hasNext() && (ret == null))
-			{
-				final Map.Entry<Currency, Locale> current = it.next();
-				if (current.getKey().getSymbol().contentEquals(symbol))
-				{
-					ret = current.getValue();
-				}
-			}
+			final Map.Entry<Currency, Locale> current = it.next();
+			if (current.getKey().getSymbol().contentEquals(symbol)) ret = current.getValue();
 		}
 		return ret;
 	}

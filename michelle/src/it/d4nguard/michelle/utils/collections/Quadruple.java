@@ -45,10 +45,10 @@ public class Quadruple<S, T, U, V> extends Triple<S, T, U> implements Tuple
 	{
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((s == null) ? 0 : s.hashCode());
-		result = (prime * result) + ((t == null) ? 0 : t.hashCode());
-		result = (prime * result) + ((u == null) ? 0 : u.hashCode());
-		result = (prime * result) + ((v == null) ? 0 : v.hashCode());
+		result = prime * result + (s == null ? 0 : s.hashCode());
+		result = prime * result + (t == null ? 0 : t.hashCode());
+		result = prime * result + (u == null ? 0 : u.hashCode());
+		result = prime * result + (v == null ? 0 : v.hashCode());
 		return result;
 	}
 

@@ -55,7 +55,7 @@ public class WebScraper
 
 	public boolean hasContextVars()
 	{
-		return (contextVars != null) && !contextVars.isEmpty();
+		return contextVars != null && !contextVars.isEmpty();
 	}
 
 	public void scrap()
@@ -67,17 +67,14 @@ public class WebScraper
 		{
 			log.debug("Using a proxy as set, proxyInfos are: " + proxy.toString());
 			scraper.getHttpClientManager().setHttpProxy(proxy.getHostName(), proxy.getHostPort());
-			if (proxy.isUseCredentials())
-			{
-				scraper.getHttpClientManager().setHttpProxyCredentials(proxy.getUsername(), proxy.getPassword(), proxy.getCredentialHost(), proxy.getDomain());
-			}
+			if (proxy.isUseCredentials()) scraper.getHttpClientManager().setHttpProxyCredentials(proxy.getUsername(), proxy.getPassword(), proxy.getCredentialHost(), proxy.getDomain());
 		}
 		if (hasContextVars())
 		{
 			log.debug("Adding variables to the context: { " + StringUtils.join(", ", contextVars) + " }");
 			scraper.addVariablesToContext(contextVars);
 		}
-		TimeElapsed elapsed = new TimeElapsed();
+		final TimeElapsed elapsed = new TimeElapsed();
 		log.trace(elapsed.startFormatted("Scrap"));
 		scraper.execute();
 		log.trace(elapsed.stopFormatted("Scrap"));
@@ -96,7 +93,7 @@ public class WebScraper
 		return current;
 	}
 
-	public static void setCurrent(WebScraper current)
+	public static void setCurrent(final WebScraper current)
 	{
 		WebScraper.current = current;
 	}

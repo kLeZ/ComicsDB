@@ -58,9 +58,9 @@ public class ComicsImporter
 		Version.getInstance().getTranslators().add(new VersionTranslator()
 		{//Version: 1
 			@Override
-			public Element translate(Element root)
+			public Element translate(final Element root)
 			{
-				Element ret = (Element) root.cloneNode(true);
+				final Element ret = (Element) root.cloneNode(true);
 				ret.setAttribute("version", "1");
 				return ret;
 			}
@@ -69,21 +69,21 @@ public class ComicsImporter
 		Version.getInstance().getTranslators().add(new VersionTranslator()
 		{//Version: 2
 			@Override
-			public Element translate(Element root)
+			public Element translate(final Element root)
 			{
-				Element ret = (Element) root.cloneNode(true);
+				final Element ret = (Element) root.cloneNode(true);
 				ret.setAttribute("version", "2");
-				NodeList nodes = ret.getChildNodes();
+				final NodeList nodes = ret.getChildNodes();
 				boolean completa = false, inpatria = false;
 				for (int i = 0; i < nodes.getLength(); i++)
 				{
-					Node node = nodes.item(i);
+					final Node node = nodes.item(i);
 					if (node.getNodeType() == Node.ELEMENT_NODE)
 					{
 						// <fumetto/>
-						Element e = (Element) nodes.item(i);
+						final Element e = (Element) nodes.item(i);
 
-						Element serie = getElement(e, getGQName("serie"));
+						final Element serie = getElement(e, getGQName("serie"));
 
 						if (serie != null)
 						{
@@ -96,7 +96,7 @@ public class ComicsImporter
 							serie.removeAttribute("completa");
 							serie.removeAttribute("completa_in_patria");
 
-							Element e_completa = createElement(new QName("completa"));
+							final Element e_completa = createElement(new QName("completa"));
 							setElementText(e_completa, String.valueOf(completa));
 							e_completa.setAttribute("in_patria", String.valueOf(inpatria));
 
@@ -113,11 +113,8 @@ public class ComicsImporter
 					}
 					else
 					{
-						String xml = StringUtils.clean(XmlUtils.toString(node));
-						if (!xml.isEmpty())
-						{
-							log.trace(xml);
-						}
+						final String xml = StringUtils.clean(XmlUtils.toString(node));
+						if (!xml.isEmpty()) log.trace(xml);
 					}
 				}
 				return ret;
@@ -149,37 +146,37 @@ public class ComicsImporter
 		this.src = !StringUtils.isNullOrWhitespace(cacheFileName) ? src : null;
 	}
 
-	public static String comicsToXml(Comics comics)
+	public static String comicsToXml(final Comics comics)
 	{
 		String ret = "";
 		try
 		{
-			Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-			Element el = new ComicsXmlMapper().create(doc, comics);
+			final Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+			final Element el = new ComicsXmlMapper().create(doc, comics);
 
-			TransformerFactory transfac = TransformerFactory.newInstance();
-			Transformer trans = transfac.newTransformer();
+			final TransformerFactory transfac = TransformerFactory.newInstance();
+			final Transformer trans = transfac.newTransformer();
 			trans.setOutputProperty(OutputKeys.METHOD, "xml");
 			trans.setOutputProperty(OutputKeys.INDENT, "yes");
 			trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
 			trans.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
-			StringWriter sw = new StringWriter();
-			StreamResult result = new StreamResult(sw);
-			DOMSource source = new DOMSource(el);
+			final StringWriter sw = new StringWriter();
+			final StreamResult result = new StreamResult(sw);
+			final DOMSource source = new DOMSource(el);
 
 			trans.transform(source, result);
 			ret = sw.toString();
 		}
-		catch (ParserConfigurationException e)
+		catch (final ParserConfigurationException e)
 		{
 			log.error(e, e);
 		}
-		catch (TransformerConfigurationException e)
+		catch (final TransformerConfigurationException e)
 		{
 			log.error(e, e);
 		}
-		catch (TransformerException e)
+		catch (final TransformerException e)
 		{
 			log.error(e, e);
 		}
@@ -207,7 +204,7 @@ public class ComicsImporter
 		Comics ret = null;
 		if (src == null)
 		{
-			TimeElapsed elapsed = new TimeElapsed();
+			final TimeElapsed elapsed = new TimeElapsed();
 			log.trace(elapsed.startFormatted("Read configuration xml for scraper engine"));
 			final String config = ComicsConfiguration.getInstance().getConfigContent("main-source-crawler.xml");
 			log.trace(elapsed.stopFormatted("Read configuration xml for scraper engine"));
@@ -253,10 +250,10 @@ public class ComicsImporter
 	{
 		final Comics ret = new Comics(totalComics);
 		log.trace("Initialized " + totalComics + " comics");
-		Element root = ensureVersion(doc.getDocumentElement());
+		final Element root = ensureVersion(doc.getDocumentElement());
 		log.debug("Found " + doc.getElementsByTagName("fumetto").getLength() + " comics in cache file");
 		ret.setTotalComics(doc.getElementsByTagName("fumetto").getLength());
-		TimeElapsed elapsed = new TimeElapsed();
+		final TimeElapsed elapsed = new TimeElapsed();
 		log.trace(elapsed.startFormatted("Adding read comics using xml mapper"));
 		ret.addAll(new ComicsXmlMapper().create(root, null));
 		log.trace(elapsed.stopFormatted("Adding read comics using xml mapper"));
@@ -271,14 +268,11 @@ public class ComicsImporter
 	private Element ensureVersion(Element root)
 	{
 		log.trace("Checking version of scraped xml data");
-		Version ver = Version.getInstance();
+		final Version ver = Version.getInstance();
 		int version = 1;
-		if (root.hasAttribute("version"))
-		{
-			version = Convert.toInt(root.getAttribute("version"));
-		}
-		String msg = "Translation from version %d to version %d";
-		TimeElapsed elapsed = new TimeElapsed();
+		if (root.hasAttribute("version")) version = Convert.toInt(root.getAttribute("version"));
+		final String msg = "Translation from version %d to version %d";
+		final TimeElapsed elapsed = new TimeElapsed();
 		log.debug(String.format(msg, version, ver.getLastVersion()));
 		log.trace(elapsed.startFormatted(msg, version, ver.getLastVersion()));
 		root = ver.translateVersion(root, version);
@@ -290,14 +284,12 @@ public class ComicsImporter
 
 	public boolean useCache()
 	{
-		return (cacheFileName != null) && !cacheFileName.isEmpty();
+		return cacheFileName != null && !cacheFileName.isEmpty();
 	}
 
-	public static void sync(Comics comics, final Collection<ComicsSourceParser> collection) throws IOException
+	public static void sync(final Comics comics, final Collection<ComicsSourceParser> collection) throws IOException
 	{
 		for (final ComicsSourceParser parser : collection)
-		{
 			comics.addAll(parser.parse(comics));
-		}
 	}
 }

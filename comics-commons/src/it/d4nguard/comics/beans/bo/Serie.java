@@ -13,12 +13,10 @@ public class Serie extends LinkedHashSet<Volume> implements Serializable
 	{
 	}
 
-	public Serie(Set<Volume> set)
+	public Serie(final Set<Volume> set)
 	{
-		for (Volume volume : set)
-		{
+		for (final Volume volume : set)
 			add(volume);
-		}
 	}
 
 	private static final long serialVersionUID = -5364853841641256846L;
@@ -39,10 +37,7 @@ public class Serie extends LinkedHashSet<Volume> implements Serializable
 	{
 		final Volume searched = searchSingle(searcher);
 		String ret = "";
-		if (searched != null)
-		{
-			ret = adaptNextTitle(searched.getName(), nvol);
-		}
+		if (searched != null) ret = adaptNextTitle(searched.getName(), nvol);
 		return ret;
 	}
 
@@ -54,27 +49,19 @@ public class Serie extends LinkedHashSet<Volume> implements Serializable
 	@Override
 	public boolean add(final Volume v)
 	{
-		if (searchSingle(v) == null)
-		{
-			return super.add(v);
-		}
-		else
-		{
-			return false;
-		}
+		if (searchSingle(v) == null) return super.add(v);
+		else return false;
 	}
 
 	public boolean contains(final String name)
 	{
 		Volume ret = null;
 		for (final Volume v : this)
-		{
 			if (v.getName().contentEquals(name))
 			{
 				ret = v;
 				break;
 			}
-		}
 		return ret != null;
 	}
 
@@ -92,13 +79,10 @@ public class Serie extends LinkedHashSet<Volume> implements Serializable
 	{
 		int cnt = 0;
 		Volume ret = null;
-		for (final Iterator<Volume> it = iterator(); it.hasNext() && (ret == null);)
+		for (final Iterator<Volume> it = iterator(); it.hasNext() && ret == null;)
 		{
 			final Volume v = it.next();
-			if (cnt++ == i)
-			{
-				ret = v;
-			}
+			if (cnt++ == i) ret = v;
 		}
 		return ret;
 	}
@@ -107,17 +91,12 @@ public class Serie extends LinkedHashSet<Volume> implements Serializable
 	{
 		Volume ret = null;
 		for (final Volume v : this)
-		{
 			if (v.isLast())
 			{
 				ret = v;
 				break;
 			}
-		}
-		if (size() > 0)
-		{
-			ret = get(size() - 1);
-		}
+		if (size() > 0) ret = get(size() - 1);
 		return ret;
 	}
 
@@ -125,13 +104,11 @@ public class Serie extends LinkedHashSet<Volume> implements Serializable
 	{
 		Volume ret = null;
 		for (final Volume v : search(searcher))
-		{
 			if (v.isLast())
 			{
 				ret = v;
 				break;
 			}
-		}
 		if (size() > 0)
 		{
 			final List<Volume> res = search(searcher);
@@ -144,74 +121,41 @@ public class Serie extends LinkedHashSet<Volume> implements Serializable
 	{
 		final List<Volume> ret = new ArrayList<Volume>();
 		int op = 0;
-		if ((volume.getName() != null) && !volume.getName().isEmpty())
-		{
-			op += 1;
-		}
-		if ((volume.getEditor() != null) && (volume.getEditor() != null))
-		{
-			op += 2;
-		}
-		if (volume.getPrice() != null)
-		{
-			op += 4;
-		}
+		if (volume.getName() != null && !volume.getName().isEmpty()) op += 1;
+		if (volume.getEditor() != null && volume.getEditor() != null) op += 2;
+		if (volume.getPrice() != null) op += 4;
 
 		Volume v = null;
 		for (final Iterator<Volume> i = iterator(); i.hasNext();)
 		{
 			v = i.next();
-			if (v != null)
+			if (v != null) switch (op)
 			{
-				switch (op)
-				{
-					case 0:
-						break;
-					case 1:
-						if (v.getName().contentEquals(volume.getName()))
-						{
-							ret.add(v);
-						}
-						break;
-					case 2:
-						if (v.getEditor().equals(volume.getEditor()))
-						{
-							ret.add(v);
-						}
-						break;
-					case 3:
-						if (v.getName().contentEquals(volume.getName()) && v.getEditor().equals(volume.getEditor()))
-						{
-							ret.add(v);
-						}
-						break;
-					case 4:
-						if (v.getPrice().equals(volume.getPrice()))
-						{
-							ret.add(v);
-						}
-						break;
-					case 5:
-						if (v.getName().contentEquals(volume.getName()) && v.getPrice().equals(volume.getPrice()))
-						{
-							ret.add(v);
-						}
-						break;
-					case 6:
-						if (v.getEditor().equals(volume.getEditor()) && v.getPrice().equals(volume.getPrice()))
-						{
-							ret.add(v);
-						}
-						break;
-					case 7:
-						if (v.getName().contentEquals(volume.getName()) && v.getEditor().equals(volume.getEditor()) && v.getPrice().equals(volume.getPrice()))
-						{
-							ret.add(v);
-						}
-						break;
-					default:
-						break;
-				}
+				case 0:
+					break;
+				case 1:
+					if (v.getName().contentEquals(volume.getName())) ret.add(v);
+					break;
+				case 2:
+					if (v.getEditor().equals(volume.getEditor())) ret.add(v);
+					break;
+				case 3:
+					if (v.getName().contentEquals(volume.getName()) && v.getEditor().equals(volume.getEditor())) ret.add(v);
+					break;
+				case 4:
+					if (v.getPrice().equals(volume.getPrice())) ret.add(v);
+					break;
+				case 5:
+					if (v.getName().contentEquals(volume.getName()) && v.getPrice().equals(volume.getPrice())) ret.add(v);
+					break;
+				case 6:
+					if (v.getEditor().equals(volume.getEditor()) && v.getPrice().equals(volume.getPrice())) ret.add(v);
+					break;
+				case 7:
+					if (v.getName().contentEquals(volume.getName()) && v.getEditor().equals(volume.getEditor()) && v.getPrice().equals(volume.getPrice())) ret.add(v);
+					break;
+				default:
+					break;
 			}
 		}
 		return ret;
@@ -238,10 +182,7 @@ public class Serie extends LinkedHashSet<Volume> implements Serializable
 			final Volume v = i.next();
 			builder.append(System.getProperty("line.separator"));
 			builder.append(v);
-			if (i.hasNext())
-			{
-				builder.append(",");
-			}
+			if (i.hasNext()) builder.append(",");
 		}
 		builder.append("]");
 		return builder.toString();
@@ -249,11 +190,9 @@ public class Serie extends LinkedHashSet<Volume> implements Serializable
 
 	public Set<Volume> toVolumes()
 	{
-		LinkedHashSet<Volume> ret = new LinkedHashSet<Volume>();
-		for (Volume volume : this)
-		{
+		final LinkedHashSet<Volume> ret = new LinkedHashSet<Volume>();
+		for (final Volume volume : this)
 			ret.add(volume);
-		}
 		return ret;
 	}
 }

@@ -36,8 +36,9 @@
 		<input type="button" id="send" name="send" value="Invia"
 			onclick="postRequest('the_form');" />
 		<input type="button" id="stop" name="stop" value="Stop"
-			onclick="stopPolling('messageStack');" />
+			onclick="stopPolling('the_form', 'messageStack');" />
 	</form>
-	<div id="messageStack"></div>
+	<div id="messageStack"
+		style="padding: 2px; margin: 2px; border: 1px solid black;"></div>
 </body>
 </html>

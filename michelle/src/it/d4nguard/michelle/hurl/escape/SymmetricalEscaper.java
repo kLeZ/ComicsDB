@@ -42,35 +42,25 @@ public class SymmetricalEscaper implements Escaper, EscapeHolder
 	private final Escaper decorated;
 	private volatile boolean enabled = true;
 
-	public SymmetricalEscaper(Escaper decorated)
+	public SymmetricalEscaper(final Escaper decorated)
 	{
 		Arguments.assertNotNull(decorated);
 		this.decorated = decorated;
 	}
 
-	public String escape(String unescaped)
+	@Override
+	public String escape(final String unescaped)
 	{
-		String escaped = decorated.escape(unescaped);
-		if (enabled)
-		{
-			if (!unescaped.equals(decorated.unescape(escaped)))
-			{
-				handleAsymetry(Action.ESCAPING, unescaped);
-			}
-		}
+		final String escaped = decorated.escape(unescaped);
+		if (enabled) if (!unescaped.equals(decorated.unescape(escaped))) handleAsymetry(Action.ESCAPING, unescaped);
 		return escaped;
 	}
 
-	public String unescape(String escaped)
+	@Override
+	public String unescape(final String escaped)
 	{
-		String unescaped = decorated.unescape(escaped);
-		if (enabled)
-		{
-			if (!escaped.equals(decorated.escape(unescaped)))
-			{
-				handleAsymetry(Action.ESCAPING, escaped);
-			}
-		}
+		final String unescaped = decorated.unescape(escaped);
+		if (enabled) if (!escaped.equals(decorated.escape(unescaped))) handleAsymetry(Action.ESCAPING, escaped);
 		return unescaped;
 	}
 
@@ -84,7 +74,7 @@ public class SymmetricalEscaper implements Escaper, EscapeHolder
 	 * @param argument
 	 *            the argument passed to the escaper
 	 */
-	protected void handleAsymetry(Action action, String argument)
+	protected void handleAsymetry(final Action action, final String argument)
 	{
 		throw new IllegalArgumentException(argument);
 	}
@@ -100,7 +90,7 @@ public class SymmetricalEscaper implements Escaper, EscapeHolder
 		return enabled;
 	}
 
-	public void setEnabled(boolean enabled)
+	public void setEnabled(final boolean enabled)
 	{
 		this.enabled = enabled;
 	}
@@ -108,6 +98,7 @@ public class SymmetricalEscaper implements Escaper, EscapeHolder
 	/**
 	 * The decorated Escaper.
 	 */
+	@Override
 	public Escaper getEscaper()
 	{
 		return decorated;

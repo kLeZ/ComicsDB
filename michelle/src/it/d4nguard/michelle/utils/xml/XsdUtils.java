@@ -237,7 +237,7 @@ public class XsdUtils
 				totalTime -= minutes * MS_IN_A_MINUTE;
 			}
 
-			final double seconds = ((double) totalTime) / 1000;
+			final double seconds = (double) totalTime / 1000;
 
 			if (seconds > 1.0)
 			{
@@ -309,7 +309,7 @@ public class XsdUtils
 		end = durationString.indexOf('M');
 		final int time = durationString.indexOf('T');
 
-		if ((end >= 0) && ((time == -1) || (time > end)))
+		if (end >= 0 && (time == -1 || time > end))
 		{
 			final String monthsString = durationString.substring(start, end);
 			months = Integer.parseInt(monthsString);
@@ -360,7 +360,7 @@ public class XsdUtils
 			}
 		}
 
-		double totalMilliseconds = (years * MS_IN_A_YEAR) + (months * MS_IN_A_MONTH) + (days * MS_IN_A_DAY) + (hours * MS_IN_A_HOUR) + (minutes * MS_IN_A_MINUTE) + (seconds * 1000);
+		double totalMilliseconds = years * MS_IN_A_YEAR + months * MS_IN_A_MONTH + days * MS_IN_A_DAY + hours * MS_IN_A_HOUR + minutes * MS_IN_A_MINUTE + seconds * 1000;
 
 		if (isNegative) totalMilliseconds *= -1;
 
@@ -428,7 +428,7 @@ public class XsdUtils
 		// figure out what comes after the +/-
 		// 
 		final long hours = offset / 3600000;
-		final long minutes = (offset % 3600000) / 60000;
+		final long minutes = offset % 3600000 / 60000;
 
 		//
 		// add the +/- suffix and call it a day

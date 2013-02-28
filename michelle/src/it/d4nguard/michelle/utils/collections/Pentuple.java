@@ -41,8 +41,8 @@ public class Pentuple<S, T, U, V, W> extends Triple<S, T, U> implements Tuple
 	{
 		final int prime = 31;
 		int result = super.hashCode();
-		result = (prime * result) + ((v == null) ? 0 : v.hashCode());
-		result = (prime * result) + ((w == null) ? 0 : w.hashCode());
+		result = prime * result + (v == null ? 0 : v.hashCode());
+		result = prime * result + (w == null ? 0 : w.hashCode());
 		return result;
 	}
 

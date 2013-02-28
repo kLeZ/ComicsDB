@@ -13,25 +13,29 @@ import org.hibernate.type.StringType;
 
 public class MoneyType extends GenericHibernateBaseUserType<Money>
 {
+	@Override
 	public int[] sqlTypes()
 	{
 		return new int[]
 		{ Types.VARCHAR };
 	}
 
+	@Override
 	public Class<Money> returnedClass()
 	{
 		return Money.class;
 	}
 
-	public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException
+	@Override
+	public Object nullSafeGet(final ResultSet rs, final String[] names, final SessionImplementor session, final Object owner) throws HibernateException, SQLException
 	{
-		String value = StringType.INSTANCE.nullSafeGet(rs, names[0], session);
-		return ((value != null) ? new Money(value) : null);
+		final String value = StringType.INSTANCE.nullSafeGet(rs, names[0], session);
+		return value != null ? new Money(value) : null;
 	}
 
-	public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException
+	@Override
+	public void nullSafeSet(final PreparedStatement st, final Object value, final int index, final SessionImplementor session) throws HibernateException, SQLException
 	{
-		StringType.INSTANCE.nullSafeSet(st, (value != null) ? value.toString() : null, index, session);
+		StringType.INSTANCE.nullSafeSet(st, value != null ? value.toString() : null, index, session);
 	}
 }
