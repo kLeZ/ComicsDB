@@ -52,7 +52,8 @@ public class JPOPFeedParser extends AbstractFeedParser
 				log.trace("Feed JPOP, Title: \"" + entry.getTitle() + "\"");
 				if (entry.getTitle().startsWith("USCITE J-POP "))
 				{
-					final String feedEntry = getFeedContent(entry.getLink());
+					final String feedContent = getFeedContent(entry.getLink()).replaceAll("(<br\\s*\\/?>)+", "\n");
+					final String feedEntry = feedContent.replaceAll("\\n{2,}", "\n");
 					/*
 					 * Devo cambiare completamente la logica del parser.
 					 * Lo Scanner non va per niente bene, devo fare qualcosa di
@@ -64,56 +65,57 @@ public class JPOPFeedParser extends AbstractFeedParser
 					 * pattern è sempre [NOME VOLUME↑|IMMAGINE↓]
 					 * BaseUrl: http://www.j-pop.it/
 
-
-					VENERDI' 15/02/2013
-
-
-
+					VENERDI&#39; 15/02/2013
 					- GOLDEN BOY #9
-
-					<a href="volumi.php?id=1519"><img src="images/news/GB9_CROPPED.jpg" border="0" width="200"></a> 
-
-					&nbsp;
-
-
+					<a href="volumi.php?id=1519">
+						<img src="images/news/GB9_CROPPED.jpg" border="0" width="200"/>
+					</a>
 					- IL MONDO DI RAN #3
-					<a href="volumi.php?id=1521"><img src="images/news/Ran3_CROPPED.jpg" border="0" width="200"></a> 
-
+					<a href="volumi.php?id=1521">
+						<img src="images/news/Ran3_CROPPED.jpg" border="0" width="200"/>
+					</a>
 					- INSTINCT #1
-					<a href="volumi.php?id=1522"><img src="images/news/INSTINCT1_CROPPED.jpg" border="0" width="200"></a> 
-
+					<a href="volumi.php?id=1522">
+						<img src="images/news/INSTINCT1_CROPPED.jpg" border="0" width="200"/>
+					</a>
 					- MOONLIGHT ACT #14
-					<a href="volumi.php?id=1523"><img src="images/news/moonlight_14_cropped.jpg" border="0" width="200"></a> 
-					&nbsp;
-
+					<a href="volumi.php?id=1523">
+						<img src="images/news/moonlight_14_cropped.jpg" border="0" width="200"/>
+					</a>
 					- RE:BIRTH - THE LUNATIC TAKER #4
-					<a href="volumi.php?id=1525"><img src="images/news/ReBirth4_cropped.jpg" border="0" width="200"></a> 
-
+					<a href="volumi.php?id=1525">
+						<img src="images/news/ReBirth4_cropped.jpg" border="0" width="200"/>
+					</a>
 					- SEKIREI #7
-					<a href="volumi.php?id=1526"><img src="images/news/Sekirei7_cropped.jpg" border="0" width="200"></a> 
-
+					<a href="volumi.php?id=1526">
+						<img src="images/news/Sekirei7_cropped.jpg" border="0" width="200"/>
+					</a>
 					USCITE 01/03/2013
-
 					- HAGANAI - LIGHT NOVEL #1
-					<a href="volumi.php?id=1529"><img src="images/news/Haganai_Novel.jpg" border="0" width="200"></a> 
+					<a href="volumi.php?id=1529">
+						<img src="images/news/Haganai_Novel.jpg" border="0" width="200"/>
+					</a>
 
-					- ARAGO #
-					5
-					<a href="volumi.php?id=1527"><img src="images/news/ARAGO5_cropped.jpg" border="0" width="200"></a> 
-
+					- ARAGO #5
+					<a href="volumi.php?id=1527">
+						<img src="images/news/ARAGO5_cropped.jpg" border="0" width="200"/>
+					</a>
 					- BINBOGAMI! #7
-					<a href="volumi.php?id=1528"><img src="images/news/BBGM7_cropped.jpg" border="0" width="200"></a> 
-					&nbsp;
-
+					<a href="volumi.php?id=1528">
+						<img src="images/news/BBGM7_cropped.jpg" border="0" width="200"/>
+					</a>
 					- MANYU HIKENCHO #2
-					<a href="volumi.php?id=1531"><img src="images/news/MANYUCLAN2_CROPPED.jpg" border="0" width="200"></a> 
-					&nbsp;
-
+					<a href="volumi.php?id=1531">
+						<img src="images/news/MANYUCLAN2_CROPPED.jpg" border="0" width="200"/>
+					</a>
 					- STORIA DI UN VIAGGIO A PARIGI #1
-					<a href="volumi.php?id=1533"><img src="images/news/STORIA_PARIGI_1.jpg" border="0" width="200"></a> 
-
+					<a href="volumi.php?id=1533">
+						<img src="images/news/STORIA_PARIGI_1.jpg" border="0" width="200"/>
+					</a>
 					- SUN KEN ROCK #15
-					<a href="volumi.php?id=1534"><img src="images/news/SKR15_CROPPED.jpg" border="0" width="200"></a> 
+					<a href="volumi.php?id=1534">
+						<img src="images/news/SKR15_CROPPED.jpg" border="0" width="200"/>
+					</a>
 					 */
 					final Scanner scn = new Scanner(feedEntry);
 					int i = 0;

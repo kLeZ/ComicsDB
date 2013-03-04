@@ -27,7 +27,7 @@ public class Main
 		try
 		{
 			final ProgressQueue progressQueue = new ProgressQueue();
-			final SyncDaemon syncer = new SyncDaemon(progressQueue, config, false, config.getCacheFile(), new FileInputStream(config.getCacheFile()));
+			final SyncDaemon syncer = new SyncDaemon(progressQueue, config, true, config.getCacheFile(), new FileInputStream(config.getCacheFile()));
 			syncer.run();
 		}
 		catch (final FileNotFoundException e)
@@ -40,7 +40,7 @@ public class Main
 		comics.addAll(db.findAll(Comic.class));
 		/*
 		 * -------------------------------------------------------
-		*/
+		 */
 		if (config.isSaveCache())
 		{
 			log.trace("Writing the cache xml to " + config.getCacheFile());

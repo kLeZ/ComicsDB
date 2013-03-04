@@ -2,8 +2,8 @@
 <config>
 	<var-def name="debug" overwrite="false">false</var-def>
 	<var-def name="feed">
-		<xpath expression="//div[@id='page-container']/span/text()">
-			<html-to-xml omitcomments="true">
+		<xpath expression="//div[@id='page-container']/span">
+			<html-to-xml omitcomments="true" usecdata="true">
 				<case>
 					<if condition="${debug}">
 						<file action="read" type="text" charset="UTF-8"

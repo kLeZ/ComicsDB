@@ -191,44 +191,50 @@ public class SyncDaemon extends ProgressRunnable
 			System.out.println(comics.toComicsString());
 		}
 
-		log.trace(format("Syncing with feeds providers installed on the system. Feed Providers are: [%s]", StringUtils.join(", ", ParserFactory.getInstalledProviders())));
-		float progress = 60.0F, unit;
-		final Collection<ComicsSourceParser> parsers = ParserFactory.getAll(config.getProperties());
-
-		unit = 20.0F / parsers.size();
-
-		for (final ComicsSourceParser parser : parsers)
+		float progress = 60.0F, maxStep = 20.0F;
+		if (config.isSync())
 		{
-			progress += unit;
+			log.trace(format("Syncing with feeds providers installed on the system. Feed Providers are: [%s]", StringUtils.join(", ", ParserFactory.getInstalledProviders())));
+			final Collection<ComicsSourceParser> parsers = ParserFactory.getAll(config.getProperties());
 
-			elapsed = new TimeElapsed();
+			float unit = maxStep / parsers.size();
 
-			// CHECK IF IT MUST STOP BEFORE DOING THE NEXT OPERATION
-			if (isMustStop()) { return; }
-			final Comics toAdd = new Comics();
-
-			elapsed.start();
-
-			try
+			for (final ComicsSourceParser parser : parsers)
 			{
-				if (!dryRun && config.isSync())
+				progress += unit;
+
+				elapsed = new TimeElapsed();
+
+				// CHECK IF IT MUST STOP BEFORE DOING THE NEXT OPERATION
+				if (isMustStop()) { return; }
+				final Comics toAdd = new Comics();
+
+				elapsed.start();
+
+				try
 				{
-					toAdd.addAll(parser.parse(comics));
+					if (!dryRun)
+					{
+						toAdd.addAll(parser.parse(comics));
+					}
+					comics.addAll(toAdd);
+
+					elapsed.stop();
+					sendAndPrint(elapsed.get(), progress, 2, "Parse comics sources", elapsed.getFormatted("Parse comics source from %s; Fetched #%d comics", parser.getUrl(), toAdd.size()));
 				}
-				comics.addAll(toAdd);
-
-				elapsed.stop();
-				sendAndPrint(elapsed.get(), progress, 2, "Parse comics sources", elapsed.getFormatted("Parse comics source from %s; Fetched #%d comics", parser.getUrl(), toAdd.size()));
+				catch (final IOException e)
+				{
+					log.error(e, e);
+					elapsed.stop();
+					sendAndPrint(elapsed.get(), progress, -2, "Parse comics sources", elapsed.getFormatted("Parse comics source from %s\nError Detail: %s", parser.getUrl(), ExceptionsUtils.stackTraceToString(e)));
+				}
 			}
-			catch (final IOException e)
-			{
-				log.error(e, e);
-				elapsed.stop();
-				sendAndPrint(elapsed.get(), progress, -2, "Parse comics sources", elapsed.getFormatted("Parse comics source from %s\nError Detail: %s", parser.getUrl(), ExceptionsUtils.stackTraceToString(e)));
-			}
+			log.debug(format("After sync has completed the # Comics gained was: %d", comics.size()));
 		}
-		log.debug(format("After sync has completed the # Comics gained was: %d", comics.size()));
-
+		else
+		{
+			progress += maxStep;
+		}
 		progress += 20.0F;
 
 		elapsed = new TimeElapsed();
