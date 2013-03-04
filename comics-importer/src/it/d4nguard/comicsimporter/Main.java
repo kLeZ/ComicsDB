@@ -27,7 +27,7 @@ public class Main
 		try
 		{
 			final ProgressQueue progressQueue = new ProgressQueue();
-			final SyncDaemon syncer = new SyncDaemon(progressQueue, config, true, config.getCacheFile(), new FileInputStream(config.getCacheFile()));
+			final SyncDaemon syncer = new SyncDaemon(progressQueue, config, false, config.getCacheFile(), new FileInputStream(config.getCacheFile()));
 			syncer.run();
 		}
 		catch (final FileNotFoundException e)

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+<web-app
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-	id="WebApp_ID" version="3.0">
+	id="WebApp_ID"
+	version="3.0">
 	<display-name>Comics DB</display-name>
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
@@ -38,22 +41,32 @@
 	<listener>
 		<listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
 	</listener>
-<!-- 	<security-constraint> -->
-<!-- 		<web-resource-collection> -->
-<!-- 			<web-resource-name>Administration Area</web-resource-name> -->
-<!-- 			<url-pattern>/admin/*</url-pattern> -->
-<!-- 			<url-pattern>/ComicsDB/admin/*</url-pattern> -->
-<!-- 			<http-method>GET</http-method> -->
-<!-- 			<http-method>POST</http-method> -->
-<!-- 		</web-resource-collection> -->
-<!-- 		<auth-constraint> -->
-<!-- 			<role-name>Commin</role-name> -->
-<!-- 		</auth-constraint> -->
-<!-- 	</security-constraint> -->
-<!-- 	<security-role> -->
-<!-- 		<role-name>Commin</role-name> -->
-<!-- 	</security-role> -->
-<!-- 	<login-config> -->
-<!-- 		<auth-method>BASIC</auth-method> -->
-<!-- 	</login-config> -->
+
+	<security-role>
+		<role-name>commin</role-name>
+	</security-role>
+
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>Comics Database</realm-name>
+	</login-config>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Administration Area</web-resource-name>
+			<url-pattern>/admin/*</url-pattern>
+			<url-pattern>/ComicsDB/admin/*</url-pattern>
+			<http-method>HEAD</http-method>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+			<http-method>PUT</http-method>
+			<http-method>DELETE</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>commin</role-name>
+		</auth-constraint>
+<!-- 		<user-data-constraint> -->
+<!-- 			<transport-guarantee>CONFIDENTIAL</transport-guarantee> -->
+<!-- 		</user-data-constraint> -->
+	</security-constraint>
 </web-app>

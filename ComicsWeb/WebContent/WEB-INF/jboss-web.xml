@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-web>
+	<security-domain>java:/jaas/DBAuth</security-domain>
+<!-- standalone.xml
+	<security-domain name="DBAuth">
+		<authentication>
+			<login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule" flag="required">
+				<module-option name="dsJndiName" value="java:jboss/datasources/MysqlDS" />
+				<module-option name="principalsQuery" value="select password from PRINCIPLES where principal_id=?" />
+				<module-option name="rolesQuery" value="select user_role, 'Roles' from ROLES where principal_id=?" />
+			</login-module>
+			<login-module code="org.jboss.security.auth.spi.RoleMappingLoginModule" flag="optional">
+				<module-option name="rolesProperties" value="${jboss.server.config.dir}/application-roles.properties" />
+				<module-option name="replaceRole" value="false" />
+			</login-module>
+		</authentication>
+	</security-domain>
+ -->
+</jboss-web>

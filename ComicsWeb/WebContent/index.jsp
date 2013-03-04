@@ -1,3 +1,4 @@
+
 <%
 	TimeElapsed elapsed = new TimeElapsed();
 	elapsed.start();
@@ -24,20 +25,35 @@
 	</div>
 	<div id="col1">
 		<p>
-			<a href="admin/config-man.jsp">DB Configuration page</a><br />
+			<a href="admin/config-man.jsp">DB Configuration page</a>
+			<br />
 			<a href="admin/sync-man.jsp">Syncronization page</a>
 		</p>
 		<ul>
-			<li><a href="./JsonPresenter?type=array&q=/ComicsDB/comics">GetAll</a> | Prints an
-				xml with all the Comics loaded from database (now 3012)</li>
-			<li><a href="javascript:getBy();">GetBy</a><br /> {<input type="radio"
-					name="getBy" id="getById" value="id" checked="checked" /> Id: <input
-					type="text" id="comic_id" onfocus="selectOnFocus('getById');" />}<br /> {<input
-					type="radio" name="getBy" id="getByField" value="field" /> Field:[
+			<li>
+				<a href="./JsonPresenter?type=array&q=/ComicsDB/comics">GetAll</a> | Prints
+				an xml with all the Comics loaded from database
+			</li>
+			<li>
+				<a href="javascript:getBy();">GetBy</a>
+				<br />
+				{
+				<input type="radio" name="getBy" id="getById" value="id" checked="checked" />
+				Id:
+				<input type="text" id="comic_id" onfocus="selectOnFocus('getById');" />
+				}
+				<br />
+				{
+				<input type="radio" name="getBy" id="getByField" value="field" />
+				Field:[
 				<ul>
-					<li>param: <input type="text" id="comic_param"
-							onfocus="selectOnFocus('getByField');" /></li>
-					<li>method: <select id="method">
+					<li>
+						param:
+						<input type="text" id="comic_param" onfocus="selectOnFocus('getByField');" />
+					</li>
+					<li>
+						method:
+						<select id="method">
 							<option value="eq">Equals</option>
 							<option value="ne">Not Equals</option>
 							<option value="like">Like</option>
@@ -51,10 +67,15 @@
 								for collection fields)</option>
 							<option value="isNotEmpty">Not Empty (don't accept value field,
 								only for collection fields)</option>
-					</select></li>
-					<li>value: <input type="text" id="comic_value" />]}
+						</select>
 					</li>
-				</ul></li>
+					<li>
+						value:
+						<input type="text" id="comic_value" />
+						]}
+					</li>
+				</ul>
+			</li>
 		</ul>
 	</div>
 	<div id="col2">

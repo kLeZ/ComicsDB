@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 @Produces(MediaType.APPLICATION_JSON)
 public class ComicsResource
 {
-	private static Logger log = Logger.getLogger(ComicsResource.class);
+	private static final Logger log = Logger.getLogger(ComicsResource.class);
 
 	/**
 	 * Esempio di chiamata rest: http://<url>/<app>/ComicsDB/comics

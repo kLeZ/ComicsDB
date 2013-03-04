@@ -1,27 +1,23 @@
 @CHARSET "UTF-8";
 
-#header
-{
+#header {
 	height: 50px;
 	margin-bottom: 10px;
 }
 
-#gutter
-{
+#gutter {
 	float: left;
 	width: 3%;
 	height: 1px;
 }
 
-#col1
-{
+#col1 {
 	float: left;
 	width: 48%;
 	margin-bottom: 10px;
 }
 
-#col2
-{
+#col2 {
 	float: left;
 	width: 40%;
 	margin-left: 3%;
@@ -29,45 +25,39 @@
 	overflow: visible;
 }
 
-#col3
-{
+#col3 {
 	float: left;
 	width: 20%;
 	margin-left: 3%;
 	margin-bottom: 10px;
 }
 
-#footer
-{
+#footer {
 	clear: both;
 	height: 50px;
 }
 
-table
-{
+table {
+	
 }
 
-table,th,td
-{
+table,th,td {
 	width: 100%;
 	padding-left: 10px;
 	padding-right: 10px;
 }
 
-h1
-{
+h1 {
 	margin: 0;
 	padding: 5px;
 }
 
-h2
-{
+h2 {
 	margin-top: 0;
 	padding-top: 7px;
 }
 
-h2, p
-{
+h2,p {
 	margin-left: 7px;
 	margin-right: 7px;
 }

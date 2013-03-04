@@ -1,49 +1,45 @@
 @CHARSET "UTF-8";
 
-#header
-{
+#header {
 	background-color: #FFDCA8;
 }
 
-#gutter
-{
+#gutter {
+	
 }
 
-#col1
-{
+#col1 {
+	
 }
 
-#col2
-{
+#col2 {
+	
 }
 
-#col3
-{
+#col3 {
+	
 }
 
-#footer
-{
+#footer {
 	border-top: 1px solid black;
 }
 
-table
-{
+table {
 	border-collapse: collapse;
 }
 
-table,th,td
-{
+table,th,td {
 	border: 1px solid black;
 }
 
-h1
-{
+h1 {
+	
 }
 
-h2
-{
+h2 {
+	
 }
 
-h2, p
-{
+h2,p {
+	
 }

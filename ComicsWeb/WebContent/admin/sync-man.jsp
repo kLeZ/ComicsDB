@@ -17,22 +17,27 @@
 		<p style="padding: 2px; margin: 2px; border: 1px solid black;">
 			<span
 				style="padding: 2px; margin: 2px; border-bottom: 1px solid black; border-right: 1px solid black;">Choose
-				a cache file to use in loading comics...</span><br />
+				a cache file to use in loading comics...</span>
+			<br />
 			<input style="padding: 2px; margin: 2px;" type="file" id="cache-file"
 				name="cache-file" />
 		</p>
 		<input type="checkbox" id="openThread" name="openThread" value="true"
 			checked="checked" />
-		Open a thread or do not call it at all.<br />
+		Open a thread or do not call it at all.
+		<br />
 		<input type="checkbox" id="syncFeed" name="syncFeed" value="true"
 			checked="checked" />
 		Synchronize the database with the rss feeds and the news pages provided by the
-		configured publishers.<br />
+		configured publishers.
+		<br />
 		<input type="checkbox" id="wipedb" name="wipedb" value="true" />
-		Choose to wipe database during sync<br />
+		Choose to wipe database during sync
+		<br />
 		<input type="checkbox" id="dryRun" name="dryRun" value="true" />
 		Dry run (does not execute the main capabilities of syncer, import from main
-		source and sync with feeders)<br />
+		source and sync with feeders)
+		<br />
 		<input type="button" id="send" name="send" value="Invia"
 			onclick="postRequest('the_form');" />
 		<input type="button" id="stop" name="stop" value="Stop"
