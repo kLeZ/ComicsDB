@@ -32,7 +32,7 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>ConfMan</servlet-name>
-		<url-pattern>/ConfMan</url-pattern>
+		<url-pattern>/admin/ConfMan</url-pattern>
 	</servlet-mapping>
 	<context-param>
 		<param-name>javax.ws.rs.Application</param-name>

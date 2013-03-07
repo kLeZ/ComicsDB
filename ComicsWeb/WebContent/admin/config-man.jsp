@@ -14,8 +14,7 @@ input[type="text"] {
 </style>
 </head>
 <body>
-	<form action="ConfMan" method="post"
-		enctype="application/x-www-form-urlencoded">
+	<form action="ConfMan" method="post">
 		<h1>Actual Configuration:</h1>
 		<p>
 			<%=ComicsConfiguration.getInstance().dbInfoToString() %>
@@ -40,8 +39,8 @@ input[type="text"] {
 			Type the db password:
 			<input type="password" id="hibernate.connection.password"
 				name="hibernate.connection.password" />
-			<br />
 		</p>
+		<input type="submit" />
 	</form>
 </body>
 </html>
