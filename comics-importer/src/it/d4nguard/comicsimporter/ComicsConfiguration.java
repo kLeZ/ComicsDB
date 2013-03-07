@@ -30,7 +30,6 @@ public class ComicsConfiguration extends ComicsCommands
 	public static final String FS = System.getProperty("file.separator");
 	public static final String MANGA_XML = "manga.xml";
 	public static final String COMICSIMPORTER_DIR = ".comicsimporter";
-	public static final String CONFIG_DIR = HOME.concat(FS).concat(COMICSIMPORTER_DIR).concat(FS);
 	public static final String COMICS_IMPORTER_PROPERTIES = "comics-importer.properties";
 	public static final String CONFIG_FILE_NAME_PROP = ".configFileName";
 	public static final String URL_PROP = ".url";
@@ -38,10 +37,14 @@ public class ComicsConfiguration extends ComicsCommands
 	private final List<String> ConfiguredProperties = new ArrayList<String>();
 	private final Properties DBConnectionInfo;
 	private final Properties config = new Properties();
+	private String baseDir;
 	private int ncomics = -1;
+	private String configDir = "";
+	private String cacheFile = "";
+	private boolean setCacheFile = false;
+	private boolean setConfigDir = false;
 	private boolean printTitles = true;
 	private boolean refresh_cache_file = false;
-	private String cacheFile = CONFIG_DIR.concat(MANGA_XML);
 	private boolean wipeDB = false;
 	private boolean sync = true;
 	private boolean persist = true;
@@ -50,8 +53,9 @@ public class ComicsConfiguration extends ComicsCommands
 	private boolean save_cache = false;
 	private boolean saveConfigToDisk = false;
 
-	private ComicsConfiguration(boolean saveConfigToDisk)
+	private ComicsConfiguration(String baseDir, boolean saveConfigToDisk)
 	{
+		this.baseDir = baseDir;
 		this.saveConfigToDisk = saveConfigToDisk;
 		BasicConfigurator.configure();
 		final Properties log4j = new Properties();
@@ -153,7 +157,30 @@ public class ComicsConfiguration extends ComicsCommands
 
 	public String getCacheFile()
 	{
+		if (!setCacheFile)
+		{
+			cacheFile = getConfigDir().concat(MANGA_XML);
+		}
 		return cacheFile;
+	}
+
+	public String getConfigDir()
+	{
+		if (!setConfigDir)
+		{
+			configDir = getBaseDir().concat(FS).concat(COMICSIMPORTER_DIR).concat(FS);
+		}
+		return configDir;
+	}
+
+	public String getBaseDir()
+	{
+		return StringUtils.isNullOrWhitespace(baseDir) ? HOME : baseDir;
+	}
+
+	public void setBaseDir(String baseDir)
+	{
+		this.baseDir = baseDir;
 	}
 
 	public void setDBConnectionInfo(final Map<String, String[]> map)
@@ -182,7 +209,7 @@ public class ComicsConfiguration extends ComicsCommands
 	{
 		try
 		{
-			reset(this, isSaveConfigToDisk());
+			reset(this, getBaseDir(), isSaveConfigToDisk());
 			config.load(StreamUtils.convertStringToInputStream(getPropertiesContent()));
 
 			log.debug("Internal representation of the Properties object loaded from configuration file: " + config.toString());
@@ -237,8 +264,8 @@ public class ComicsConfiguration extends ComicsCommands
 	public String getConfigContent(final String configName) throws IOException
 	{
 		String ret = "";
-		final File configdir = new File(CONFIG_DIR);
-		log.trace(String.format("Directory in which to search configuration file: %s | Exists: %s", CONFIG_DIR, String.valueOf(configdir.exists())));
+		final File configdir = new File(getConfigDir());
+		log.trace(String.format("Directory in which to search configuration file: %s | Exists: %s", getConfigDir(), String.valueOf(configdir.exists())));
 		if (!configdir.exists())
 		{
 			if (isSaveConfigToDisk())
@@ -366,10 +393,10 @@ public class ComicsConfiguration extends ComicsCommands
 
 	private static ComicsConfiguration instance;
 
-	private static void reset(ComicsConfiguration conf, boolean saveConfigToDisk)
+	private static void reset(ComicsConfiguration conf, String baseDir, boolean saveConfigToDisk)
 	{
 		conf = null;
-		conf = getInstance(saveConfigToDisk);
+		conf = getInstance(baseDir, saveConfigToDisk);
 	}
 
 	public static ComicsConfiguration getInstance()
@@ -379,9 +406,14 @@ public class ComicsConfiguration extends ComicsCommands
 
 	public static ComicsConfiguration getInstance(boolean saveConfigToDisk)
 	{
+		return getInstance(null, saveConfigToDisk);
+	}
+
+	public static ComicsConfiguration getInstance(String baseDir, boolean saveConfigToDisk)
+	{
 		if (instance == null)
 		{
-			instance = new ComicsConfiguration(saveConfigToDisk);
+			instance = new ComicsConfiguration(baseDir, saveConfigToDisk);
 		}
 		return instance;
 	}

@@ -39,6 +39,10 @@ input[type="text"] {
 			Type the db password:
 			<input type="password" id="hibernate.connection.password"
 				name="hibernate.connection.password" />
+			<br />
+			Type the config base directory (default is ~):
+			<input type="text" id="comicsdb.basedir"
+				name="comicsdb.basedir" />
 		</p>
 		<input type="submit" />
 	</form>
