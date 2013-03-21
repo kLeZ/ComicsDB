@@ -16,8 +16,9 @@ import org.w3c.dom.Document;
 
 public class HibernateFactory
 {
-	private static SessionFactory sessionFactory;
 	private static Logger log = Logger.getLogger(HibernateFactory.class);
+
+	private static SessionFactory sessionFactory;
 	private static Configuration configuration;
 
 	public static SessionFactory getSessionFactory()
@@ -27,7 +28,10 @@ public class HibernateFactory
 
 	public static Configuration getConfiguration()
 	{
-		if (configuration == null) configuration = new Configuration();
+		if (configuration == null)
+		{
+			configuration = new Configuration();
+		}
 		return configuration;
 	}
 
@@ -61,35 +65,41 @@ public class HibernateFactory
 
 	public static void closeFactory()
 	{
-		if (sessionFactory != null) try
+		if (sessionFactory != null)
 		{
-			log.trace("Closing sessionFactory session");
-			sessionFactory.close();
-		}
-		catch (final HibernateException e)
-		{
-			log.error("Couldn't close SessionFactory", e);
-		}
-		finally
-		{
-			sessionFactory = null;
+			try
+			{
+				log.trace("Closing sessionFactory session");
+				sessionFactory.close();
+			}
+			catch (final HibernateException e)
+			{
+				log.error("Couldn't close SessionFactory", e);
+			}
+			finally
+			{
+				sessionFactory = null;
+			}
 		}
 	}
 
 	public static void close(Session session)
 	{
-		if (session != null) try
+		if (session != null)
 		{
-			log.trace("Trying to close session object");
-			session.close();
-		}
-		catch (final HibernateException ignored)
-		{
-			log.error("Couldn't close Session", ignored);
-		}
-		finally
-		{
-			session = null;
+			try
+			{
+				log.trace("Trying to close session object");
+				session.close();
+			}
+			catch (final HibernateException ignored)
+			{
+				log.error("Couldn't close Session", ignored);
+			}
+			finally
+			{
+				session = null;
+			}
 		}
 	}
 
@@ -115,18 +125,21 @@ public class HibernateFactory
 	 */
 	private static SessionFactory configureSessionFactory(final Document config, final Properties toOverrideProperties, final Properties extraProperties) throws HibernateException
 	{
-		if (configuration == null) if (config == null)
+		if (configuration == null)
 		{
-			log.trace("Configuring Hibernate with default cfg file: CALLING { configuration.configure() }");
-			getConfiguration().configure();
-		}
-		else
-		{
-			log.trace("Configuring Hibernate with provided cfg file: CALLING { configuration.configure(config) }");
-			getConfiguration().configure(config);
+			if (config == null)
+			{
+				log.trace("Configuring Hibernate with default cfg file: CALLING { configuration.configure() }");
+				getConfiguration().configure();
+			}
+			else
+			{
+				log.trace("Configuring Hibernate with provided cfg file: CALLING { configuration.configure(config) }");
+				getConfiguration().configure(config);
+			}
 		}
 
-		if (toOverrideProperties != null && !toOverrideProperties.isEmpty())
+		if ((toOverrideProperties != null) && !toOverrideProperties.isEmpty())
 		{
 			log.trace("Overriding properties: { " + toOverrideProperties.toString() + " }");
 			// Given the properties structure inside the configuration object,
@@ -154,7 +167,7 @@ public class HibernateFactory
 			getConfiguration().mergeProperties(old);
 		}
 
-		if (extraProperties != null && !extraProperties.isEmpty())
+		if ((extraProperties != null) && !extraProperties.isEmpty())
 		{
 			log.trace("Adding extra properties: { " + extraProperties.toString() + " }");
 			getConfiguration().addProperties(extraProperties);

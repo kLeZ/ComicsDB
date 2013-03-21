@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.cli.*;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.hibernate.cfg.Configuration;
@@ -25,16 +26,16 @@ public class ComicsConfiguration extends ComicsCommands
 {
 	private static Logger log = Logger.getLogger(ComicsConfiguration.class);
 
-	public static final String HOME = System.getProperty("user.home");
+	public static final String HOME = System.getProperty("user.home").concat("app-root").concat(File.pathSeparator).concat("data");
 	public static final String LS = System.getProperty("line.separator");
-	public static final String FS = System.getProperty("file.separator");
 	public static final String MANGA_XML = "manga.xml";
 	public static final String COMICSIMPORTER_DIR = ".comicsimporter";
 	public static final String COMICS_IMPORTER_PROPERTIES = "comics-importer.properties";
+	public static final String LOG4J_PROPERTIES = "log4j.properties";
 	public static final String CONFIG_FILE_NAME_PROP = ".configFileName";
 	public static final String URL_PROP = ".url";
+	public static final String HIBERNATE_PROPERTIES = "comicsimporter.hibernate.properties";
 
-	private final List<String> ConfiguredProperties = new ArrayList<String>();
 	private final Properties DBConnectionInfo;
 	private final Properties config = new Properties();
 	private String baseDir;
@@ -57,37 +58,38 @@ public class ComicsConfiguration extends ComicsCommands
 	{
 		this.baseDir = baseDir;
 		this.saveConfigToDisk = saveConfigToDisk;
+		LogManager.resetConfiguration();
 		BasicConfigurator.configure();
 		final Properties log4j = new Properties();
 		try
 		{
-			log4j.load(StreamUtils.convertStringToInputStream(getConfigContent("log4j.properties")));
+			log4j.load(StreamUtils.convertStringToInputStream(getConfigContent(LOG4J_PROPERTIES)));
 		}
 		catch (final IOException e)
 		{
 			log.error(e, e);
 		}
+		LogManager.resetConfiguration();
 		PropertyConfigurator.configure(log4j);
-
-		ConfiguredProperties.add("hibernate.dialect");
-		ConfiguredProperties.add("hibernate.connection.driver_class");
-		ConfiguredProperties.add("hibernate.connection.url");
-		ConfiguredProperties.add("hibernate.connection.username");
-		ConfiguredProperties.add("hibernate.connection.password");
-
+		log.info(log4j);
 		DBConnectionInfo = new Properties();
-		HibernateFactory.buildIfNeeded(null, null, null, false);
-		HibernateFactory.closeFactory();
-		final Configuration configuration = HibernateFactory.getConfiguration();
-		for (final String prop : getConfiguredProperties())
-		{
-			DBConnectionInfo.setProperty(prop, configuration.getProperty(prop));
-		}
 	}
 
 	public List<String> getConfiguredProperties()
 	{
-		return ConfiguredProperties;
+		ArrayList<String> ret = new ArrayList<String>();
+		String props = config.getProperty(HIBERNATE_PROPERTIES);
+		if ((props != null) && !props.isEmpty())
+		{
+			Scanner scn = new Scanner(props);
+			scn.useDelimiter(";");
+			while (scn.hasNext())
+			{
+				ret.add(scn.next());
+			}
+			scn.close();
+		}
+		return ret;
 	}
 
 	public Properties getDBConnectionInfo()
@@ -168,7 +170,7 @@ public class ComicsConfiguration extends ComicsCommands
 	{
 		if (!setConfigDir)
 		{
-			configDir = getBaseDir().concat(FS).concat(COMICSIMPORTER_DIR).concat(FS);
+			configDir = getBaseDir().concat(File.pathSeparator).concat(COMICSIMPORTER_DIR).concat(File.pathSeparator);
 		}
 		return configDir;
 	}
@@ -211,6 +213,20 @@ public class ComicsConfiguration extends ComicsCommands
 		{
 			reset(this, getBaseDir(), isSaveConfigToDisk());
 			config.load(StreamUtils.convertStringToInputStream(getPropertiesContent()));
+
+			HibernateFactory.buildIfNeeded(null, null, null, false);
+			HibernateFactory.closeFactory();
+			final Configuration configuration = HibernateFactory.getConfiguration();
+			List<String> props = getConfiguredProperties();
+			for (final String prop : props)
+			{
+				String val = config.getProperty(prop);
+				if ((val == null) || val.isEmpty())
+				{
+					val = configuration.getProperty(prop);
+				}
+				DBConnectionInfo.setProperty(prop, val);
+			}
 
 			log.debug("Internal representation of the Properties object loaded from configuration file: " + config.toString());
 
@@ -375,19 +391,42 @@ public class ComicsConfiguration extends ComicsCommands
 	@Override
 	public String toString()
 	{
-		final String sep = ", ";
-		final StringBuilder builder = new StringBuilder();
-		builder.append("ComicsConfiguration [config=").append(config).append(sep);
-		builder.append("ncomics=").append(ncomics).append(sep);
-		builder.append("printTitles=").append(printTitles).append(sep);
-		builder.append("refresh_cache_file=").append(refresh_cache_file).append(sep);
-		builder.append("import_comics=").append(import_comics).append(sep);
-		builder.append("cacheFile=").append(cacheFile).append(sep);
-		builder.append("wipeDB=").append(wipeDB).append(sep);
-		builder.append("sync=").append(sync).append(sep);
-		builder.append("persist=").append(persist).append(sep);
-		builder.append("load_persistence=").append(load_persistence).append(sep);
-		builder.append("save_cache=").append(save_cache).append("]");
+		StringBuilder builder = new StringBuilder();
+		builder.append("ComicsConfiguration [DBConnectionInfo=");
+		builder.append(DBConnectionInfo);
+		builder.append(", config=");
+		builder.append(config);
+		builder.append(", baseDir=");
+		builder.append(baseDir);
+		builder.append(", ncomics=");
+		builder.append(ncomics);
+		builder.append(", configDir=");
+		builder.append(configDir);
+		builder.append(", cacheFile=");
+		builder.append(cacheFile);
+		builder.append(", setCacheFile=");
+		builder.append(setCacheFile);
+		builder.append(", setConfigDir=");
+		builder.append(setConfigDir);
+		builder.append(", printTitles=");
+		builder.append(printTitles);
+		builder.append(", refresh_cache_file=");
+		builder.append(refresh_cache_file);
+		builder.append(", wipeDB=");
+		builder.append(wipeDB);
+		builder.append(", sync=");
+		builder.append(sync);
+		builder.append(", persist=");
+		builder.append(persist);
+		builder.append(", load_persistence=");
+		builder.append(load_persistence);
+		builder.append(", import_comics=");
+		builder.append(import_comics);
+		builder.append(", save_cache=");
+		builder.append(save_cache);
+		builder.append(", saveConfigToDisk=");
+		builder.append(saveConfigToDisk);
+		builder.append("]");
 		return builder.toString();
 	}
 

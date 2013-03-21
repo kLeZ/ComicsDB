@@ -30,7 +30,7 @@ public class ConfManServlet extends HttpServlet
 		conf.load(new String[] {});
 
 		title = "Successful operation: Properties set";
-		message = conf.dbInfoToString();
+		message = conf.toString();
 
 		request.setAttribute("Title", title);
 		request.setAttribute("Message", message);

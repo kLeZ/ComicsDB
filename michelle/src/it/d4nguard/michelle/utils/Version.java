@@ -36,7 +36,10 @@ public class Version
 	public Element translateVersion(final Element root, final int version)
 	{
 		Element ret = null;
-		if (version == getTranslators().size()) ret = root;
+		if (version == getTranslators().size())
+		{
+			ret = root;
+		}
 		else
 		{
 			log.log(Level.FINER, "Trying to translate to version " + version);
@@ -49,7 +52,10 @@ public class Version
 
 	public static Version getInstance()
 	{
-		if (instance == null) instance = new Version();
+		if (instance == null)
+		{
+			instance = new Version();
+		}
 		return instance;
 	}
 }

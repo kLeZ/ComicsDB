@@ -15,7 +15,7 @@ input[type="text"] {
 </head>
 <body>
 	<form action="ConfMan" method="post">
-		<h1>Actual Configuration:</h1>
+		<h1>Current Configuration:</h1>
 		<p>
 			<%=ComicsConfiguration.getInstance().dbInfoToString() %>
 		</p>
@@ -40,7 +40,7 @@ input[type="text"] {
 			<input type="password" id="hibernate.connection.password"
 				name="hibernate.connection.password" />
 			<br />
-			Type the config base directory (default is ~):
+			Type the config base directory (default is ~/app-root/data):
 			<input type="text" id="comicsdb.basedir"
 				name="comicsdb.basedir" />
 		</p>

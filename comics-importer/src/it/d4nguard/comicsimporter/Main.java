@@ -7,6 +7,7 @@ import it.d4nguard.michelle.utils.collections.Pair;
 import it.d4nguard.michelle.utils.collections.ProgressQueue;
 import it.d4nguard.michelle.utils.io.StreamUtils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -71,7 +72,7 @@ public class Main
 					{
 						System.out.println(c.getOriginalTitle());
 					}
-					System.out.println(ComicsConfiguration.FS);
+					System.out.println(File.pathSeparator);
 				}
 			}
 		}
