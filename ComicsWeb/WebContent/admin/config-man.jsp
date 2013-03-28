@@ -14,10 +14,11 @@ input[type="text"] {
 </style>
 </head>
 <body>
+	<a href="/">HOME</a>
 	<form action="ConfMan" method="post">
 		<h1>Current Configuration:</h1>
 		<p>
-			<%=ComicsConfiguration.getInstance().dbInfoToString() %>
+			<%=ComicsConfiguration.getInstance().load(new String[] {}).dbInfoToString()%>
 		</p>
 		<p>
 			Type sql database dialect here (in a hibernate format):
@@ -41,8 +42,10 @@ input[type="text"] {
 				name="hibernate.connection.password" />
 			<br />
 			Type the config base directory (default is ~/app-root/data):
-			<input type="text" id="comicsdb.basedir"
-				name="comicsdb.basedir" />
+			<input type="text" id="comicsdb.basedir" name="comicsdb.basedir" />
+			<br />
+			Type the command line options (pipe '|'-separated):
+			<input type="text" id="comicsdb.cmd" name="comicsdb.cmd" />
 		</p>
 		<input type="submit" />
 	</form>

@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 8-nov-2012 8.48.29 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="it.d4nguard.comics.beans.Comic" table="COMIC"
+		lazy="false">
+		<id name="id" type="java.lang.Long" column="ID">
+			<generator class="increment" />
+		</id>
+		<property name="url" type="java.net.URL" column="URL" />
+		<property name="originalTitle" type="java.lang.String"
+			column="ORIGINALTITLE" />
+		<property name="englishTitle" type="java.lang.String" column="ENGLISHTITLE" />
+		<many-to-one name="artworker" cascade="save-update"
+			class="it.d4nguard.comics.beans.Author" fetch="join" column="ARTWORKER" />
+		<many-to-one name="storywriter" cascade="save-update"
+			class="it.d4nguard.comics.beans.Author" fetch="join" column="STORYWRITER" />
+		<many-to-one name="originalEditor" cascade="save-update"
+			class="it.d4nguard.comics.beans.Editor" fetch="join"
+			column="ORIGINALEDITOR" />
+		<many-to-one name="italianEditor" cascade="save-update"
+			class="it.d4nguard.comics.beans.Editor" fetch="join" column="ITALIANEDITOR" />
+		<many-to-one name="typology" cascade="save-update"
+			class="it.d4nguard.comics.beans.Typology" fetch="join"
+			column="TYPOLOGY" />
+		<set name="genres" table="COMIC_GENRE" cascade="all" lazy="false">
+			<key column="COMICID" not-null="true" />
+			<many-to-many column="GENREID" class="it.d4nguard.comics.beans.Genre" />
+		</set>
+		<property name="year" type="short" column="YEAR" />
+		<property name="complete" type="boolean" column="COMPLETE" />
+		<property name="completeInCountry" type="boolean" column="COMPLETEINCOUNTRY" />
+		<set name="serie" table="VOLUME" cascade="save-update, delete"
+			lazy="false">
+			<key column="VOLUMEID" not-null="true" />
+			<one-to-many class="it.d4nguard.comics.beans.Volume" />
+		</set>
+	</class>
+</hibernate-mapping>

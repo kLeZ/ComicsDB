@@ -25,7 +25,7 @@
 	</div>
 	<div id="col1">
 		<p>
-			<a href="admin/config-man.jsp">DB Configuration page</a>
+			<a href="admin/config-man.jsp">Configuration page</a>
 			<br />
 			<a href="admin/sync-man.jsp">Syncronization page</a>
 		</p>

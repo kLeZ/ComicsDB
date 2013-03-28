@@ -26,7 +26,7 @@ public class ComicsConfiguration extends ComicsCommands
 {
 	private static Logger log = Logger.getLogger(ComicsConfiguration.class);
 
-	public static final String HOME = System.getProperty("user.home").concat("app-root").concat(File.pathSeparator).concat("data");
+	public static final String HOME = System.getProperty("user.home");
 	public static final String LS = System.getProperty("line.separator");
 	public static final String MANGA_XML = "manga.xml";
 	public static final String COMICSIMPORTER_DIR = ".comicsimporter";
@@ -58,19 +58,19 @@ public class ComicsConfiguration extends ComicsCommands
 	{
 		this.baseDir = baseDir;
 		this.saveConfigToDisk = saveConfigToDisk;
+		LogManager.shutdown();
 		LogManager.resetConfiguration();
-		BasicConfigurator.configure();
 		final Properties log4j = new Properties();
 		try
 		{
 			log4j.load(StreamUtils.convertStringToInputStream(getConfigContent(LOG4J_PROPERTIES)));
+			PropertyConfigurator.configure(log4j);
 		}
 		catch (final IOException e)
 		{
+			BasicConfigurator.configure();
 			log.error(e, e);
 		}
-		LogManager.resetConfiguration();
-		PropertyConfigurator.configure(log4j);
 		log.info(log4j);
 		DBConnectionInfo = new Properties();
 	}
@@ -170,14 +170,23 @@ public class ComicsConfiguration extends ComicsCommands
 	{
 		if (!setConfigDir)
 		{
-			configDir = getBaseDir().concat(File.pathSeparator).concat(COMICSIMPORTER_DIR).concat(File.pathSeparator);
+			configDir = getBaseDir().concat(File.separator).concat(COMICSIMPORTER_DIR).concat(File.separator);
 		}
 		return configDir;
 	}
 
 	public String getBaseDir()
 	{
-		return StringUtils.isNullOrWhitespace(baseDir) ? HOME : baseDir;
+		String ret = "";
+		if (StringUtils.isNullOrWhitespace(baseDir))
+		{
+			ret = HOME.concat(File.separator).concat("app-root").concat(File.separator).concat("data");
+		}
+		else
+		{
+			ret = baseDir;
+		}
+		return ret;
 	}
 
 	public void setBaseDir(String baseDir)
@@ -338,6 +347,10 @@ public class ComicsConfiguration extends ComicsCommands
 		if (cmd.hasOption(getShortOpt(removePrefix(valueName), cmd)) || cmd.hasOption(removePrefix(valueName)))
 		{
 			value = cmd.getOptionValue(removePrefix(valueName));
+			if (value == null)
+			{
+				value = "";
+			}
 		}
 
 		value = BlankRemover.trim(value).toString();

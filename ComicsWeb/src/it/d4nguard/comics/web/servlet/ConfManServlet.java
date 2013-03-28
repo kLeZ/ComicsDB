@@ -27,7 +27,12 @@ public class ConfManServlet extends HttpServlet
 		String title = "", message = "";
 		conf.setDBConnectionInfo(request.getParameterMap());
 		conf.setBaseDir(request.getParameter("comicsdb.basedir"));
-		conf.load(new String[] {});
+		String cmd = request.getParameter("comicsdb.cmd");
+		if (cmd == null)
+		{
+			cmd = "";
+		}
+		conf.load(cmd.split("\\|"));
 
 		title = "Successful operation: Properties set";
 		message = conf.toString();

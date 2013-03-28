@@ -1,6 +1,6 @@
 package it.d4nguard.comics.rs.webservices;
 
-import static it.d4nguard.comicsimporter.ComicsCommands.REFRESH_CACHE_FILE_CMD;
+import static it.d4nguard.comicsimporter.ComicsCommands.IMPORT_COMICS_CMD;
 import static it.d4nguard.comicsimporter.ComicsCommands.SYNC_CMD;
 import static it.d4nguard.comicsimporter.ComicsCommands.WIPE_DB_CMD;
 import static it.d4nguard.comicsimporter.ComicsCommands.createEntry;
@@ -67,7 +67,7 @@ public class AdminResource
 
 		String fileName = "";
 		InputStream cacheFile = null;
-		boolean wipedb = false, dryRun = false, openThread = false, syncFeed = false, refreshCacheFile = false;
+		boolean wipedb = false, dryRun = false, openThread = false, syncFeed = false, importComics = false;
 		final Map<String, List<InputPart>> form = input.getFormDataMap();
 
 		try
@@ -81,20 +81,20 @@ public class AdminResource
 			openThread = WebUtils.getValue(form, "openThread", Boolean.class, false);
 			syncFeed = WebUtils.getValue(form, "syncFeed", Boolean.class, false);
 			fileName = WebUtils.getFileName(form, "cache-file");
-			refreshCacheFile = StringUtils.isNullOrWhitespace(fileName) && cacheFile != null;
+			importComics = StringUtils.isNullOrWhitespace(fileName) && (cacheFile == null);
 
-			if ((syncThread == null || !syncThread.getKey().isAlive()) && openThread)
+			if (((syncThread == null) || !syncThread.getKey().isAlive()) && openThread)
 			{
 				Map<String, Entry<String, Boolean>> cmd;
 				cmd = new HashMap<String, Entry<String, Boolean>>();
 
 				final String wdb_s = String.valueOf(wipedb);
 				final String sf_s = String.valueOf(syncFeed);
-				final String rcf_s = String.valueOf(refreshCacheFile);
+				final String rcf_s = String.valueOf(importComics);
 
 				cmd.put(WIPE_DB_CMD, createEntry(WIPE_DB_CMD, wdb_s, false).getValue());
 				cmd.put(SYNC_CMD, createEntry(SYNC_CMD, sf_s, false).getValue());
-				cmd.put(REFRESH_CACHE_FILE_CMD, createEntry(REFRESH_CACHE_FILE_CMD, rcf_s, false).getValue());
+				cmd.put(IMPORT_COMICS_CMD, createEntry(IMPORT_COMICS_CMD, rcf_s, false).getValue());
 
 				final ComicsConfiguration conf = ComicsConfiguration.getInstance().load(cmd);
 				syncThread = null;
@@ -115,7 +115,10 @@ public class AdminResource
 				});
 				syncThread.getKey().start();
 			}
-			else progressQueue.add(new Progress(0, 0, -5, "Illegal State Exception", "Another thread just running!"));
+			else
+			{
+				progressQueue.add(new Progress(0, 0, -5, "Illegal State Exception", "Another thread just running!"));
+			}
 		}
 		catch (final IOException e)
 		{

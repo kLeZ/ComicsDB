@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost/comics</property>
+		<property name="hibernate.connection.username">comics</property>
+		<property name="hibernate.connection.password">ComicsDB001</property>
+
+		<property name="hibernate.default_schema">comics</property>
+		<property name="hibernate.format_sql">false</property>
+		<property name="hibernate.show_sql">false</property>
+
+		<mapping resource="Author.hbm.xml" />
+		<mapping resource="Comic.hbm.xml" />
+		<mapping resource="Editor.hbm.xml" />
+		<mapping resource="Genre.hbm.xml" />
+		<mapping resource="Typology.hbm.xml" />
+		<mapping resource="Volume.hbm.xml" />
+	</session-factory>
+</hibernate-configuration>
