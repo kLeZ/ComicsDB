@@ -15,6 +15,7 @@ public class ProxyInfo
 	private String credentialHost;
 	private String domain;
 	private boolean useCredentials;
+	private boolean isNT;
 
 	public ProxyInfo(final String hostName, final int hostPort)
 	{
@@ -78,6 +79,11 @@ public class ProxyInfo
 		return useCredentials;
 	}
 
+	public boolean isNT()
+	{
+		return isNT;
+	}
+
 	public void setUsername(final String username)
 	{
 		this.username = username;
@@ -103,10 +109,15 @@ public class ProxyInfo
 		this.useCredentials = useCredentials;
 	}
 
+	public void setNT(boolean isNT)
+	{
+		this.isNT = isNT;
+	}
+
 	@Override
 	public String toString()
 	{
-		final StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder();
 		builder.append("ProxyInfo [hostName=");
 		builder.append(hostName);
 		builder.append(", hostPort=");
@@ -121,6 +132,8 @@ public class ProxyInfo
 		builder.append(domain);
 		builder.append(", useCredentials=");
 		builder.append(useCredentials);
+		builder.append(", isNT=");
+		builder.append(isNT);
 		builder.append("]");
 		return builder.toString();
 	}
@@ -135,7 +148,10 @@ public class ProxyInfo
 			try
 			{
 				String httpProxy = env.get("http_proxy");
-				if (StringUtils.isNullOrWhitespace(httpProxy)) httpProxy = env.get("HTTP_PROXY");
+				if (StringUtils.isNullOrWhitespace(httpProxy))
+				{
+					httpProxy = env.get("HTTP_PROXY");
+				}
 				http_proxy = new URI(httpProxy);
 			}
 			catch (final URISyntaxException e)
@@ -158,12 +174,25 @@ public class ProxyInfo
 						pass = split[1];
 						userDomain = getUserDomain(split[0]);
 					}
-					else if (split.length == 1) userDomain = getUserDomain(split[0]);
+					else if (split.length == 1)
+					{
+						userDomain = getUserDomain(split[0]);
+					}
 					ret.setUsername(userDomain.getKey());
-					if (!StringUtils.isNullOrWhitespace(userDomain.getValue())) ret.setDomain(userDomain.getValue());
-					if (!StringUtils.isNullOrWhitespace(pass)) ret.setPassword(pass);
+					if (!StringUtils.isNullOrWhitespace(userDomain.getValue()))
+					{
+						ret.setDomain(userDomain.getValue());
+						ret.setNT(true);
+					}
+					if (!StringUtils.isNullOrWhitespace(pass))
+					{
+						ret.setPassword(pass);
+					}
 				}
-				else ret.setUseCredentials(false);
+				else
+				{
+					ret.setUseCredentials(false);
+				}
 			}
 		}
 		return ret;
@@ -182,7 +211,10 @@ public class ProxyInfo
 			domain = domusr[0];
 			user = domusr[1];
 		}
-		else if (domusr.length == 1) user = domusr[0];
+		else if (domusr.length == 1)
+		{
+			user = domusr[0];
+		}
 		return new Pair<String, String>(user, domain);
 	}
 }
