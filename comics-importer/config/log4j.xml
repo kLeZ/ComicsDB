@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//LOGGER" 
+"http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd"
+[
+<!ENTITY perc "&#37;">
+<!ENTITY osqbr "&#x005B;">
+<!ENTITY csqbr "&#x005D;">
+<!ENTITY datestamp "yyyy-MM-dd/HH:mm:ss.SSS/zzz">
+<!ENTITY conv.pattern "&perc;d{&datestamp;} &osqbr;&perc;t&csqbr; &perc;-5p &perc;m&perc;n">
+<!ENTITY conv.pattern.debug "&perc;d{&datestamp;} | &perc;C &osqbr;&perc;t&csqbr; &perc;-5p &perc;m&perc;n">
+<!ENTITY conv.pattern.trace "&perc;d{&datestamp;} | &perc;C#&perc;M:&perc;L &osqbr;&perc;t&csqbr; &perc;-5p &perc;m&perc;n">
+]>
+<log4j:configuration
+	xmlns:log4j="http://jakarta.apache.org/log4j/"
+	reset="true">
+	<appender
+		name="stdout"
+		class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param
+				name="ConversionPattern"
+				value="&conv.pattern.trace;" />
+		</layout>
+	</appender>
+	<appender
+		name="rollingComicsdbFile"
+		class="org.apache.log4j.DailyRollingFileAppender">
+		<param
+			name="DatePattern"
+			value="'.'yyyy-MM-dd" />
+		<param
+			name="File"
+			value="/home/kLeZ-hAcK/app-root/data/.comicsimporter/comicsdb.log" />
+		<param
+			name="Append"
+			value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param
+				name="ConversionPattern"
+				value="&conv.pattern.trace;" />
+		</layout>
+	</appender>
+	<appender
+		name="rollingFile"
+		class="org.apache.log4j.DailyRollingFileAppender">
+		<param
+			name="DatePattern"
+			value="'.'yyyy-MM-dd" />
+		<param
+			name="File"
+			value="/home/kLeZ-hAcK/app-root/data/.comicsimporter/comicsWeb.log" />
+		<param
+			name="Append"
+			value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param
+				name="ConversionPattern"
+				value="&conv.pattern.trace;" />
+		</layout>
+	</appender>
+	<appender
+		name="FILE"
+		class="org.apache.log4j.FileAppender">
+		<param
+			name="File"
+			value="/home/kLeZ-hAcK/app-root/data/.comicsimporter/comicsDB-full.log" />
+		<param
+			name="Append"
+			value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param
+				name="ConversionPattern"
+				value="&conv.pattern.trace;" />
+		</layout>
+	</appender>
+	<category name="org">
+		<priority value="ERROR">
+		</priority>
+		<appender-ref ref="FILE" />
+		<appender-ref ref="stdout" />
+		<appender-ref ref="rollingFile" />
+	</category>
+	<category name="it.d4nguard">
+		<priority value="ALL">
+		</priority>
+		<appender-ref ref="FILE" />
+		<appender-ref ref="stdout" />
+		<appender-ref ref="rollingComicsdbFile" />
+	</category>
+	<root>
+		<level value="ALL">
+		</level>
+		<appender-ref ref="stdout" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="rollingFile" />
+		<appender-ref ref="rollingComicsdbFile" />
+	</root>
+</log4j:configuration>

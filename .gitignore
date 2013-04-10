@@ -4,6 +4,14 @@
 .*swp
 *bak
 .*bak
+*.tmp
+
+## Generic folders
+dist/
+dist/**
+dist/**/*
+tmp/**
+tmp/**/*
 
 #java binaries
 *.class
@@ -19,20 +27,25 @@
 bin/
 bin/**
 bin/**/*
-dist/
-dist/**
-dist/**/*
-tmp/**
-tmp/**/*
 ucdetector_reports/
 ucdetector_reports/**
 ucdetector_reports/**/*
-*.tmp
 *~.nib
 local.properties
 .classpath
 .settings/
 .loadpath
+
+
+## Maven build folders
+target/
+target/**
+target/**/*
+build/
+build/**
+build/**/*
+
+
 
 # External tool builders
 .externalToolBuilders/

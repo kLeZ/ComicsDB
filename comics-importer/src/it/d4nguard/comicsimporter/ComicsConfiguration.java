@@ -7,20 +7,23 @@ import it.d4nguard.michelle.utils.StringComparator;
 import it.d4nguard.michelle.utils.StringUtils;
 import it.d4nguard.michelle.utils.io.DeepCopy;
 import it.d4nguard.michelle.utils.io.StreamUtils;
+import it.d4nguard.michelle.utils.xml.StdXmlUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import org.apache.commons.cli.*;
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.hibernate.cfg.Configuration;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public class ComicsConfiguration extends ComicsCommands
 {
@@ -31,6 +34,8 @@ public class ComicsConfiguration extends ComicsCommands
 	public static final String MANGA_XML = "manga.xml";
 	public static final String COMICSIMPORTER_DIR = ".comicsimporter";
 	public static final String COMICS_IMPORTER_PROPERTIES = "comics-importer.properties";
+	public static final String LOG4J_XML = "log4j.xml";
+	@Deprecated
 	public static final String LOG4J_PROPERTIES = "log4j.properties";
 	public static final String CONFIG_FILE_NAME_PROP = ".configFileName";
 	public static final String URL_PROP = ".url";
@@ -58,21 +63,61 @@ public class ComicsConfiguration extends ComicsCommands
 	{
 		this.baseDir = baseDir;
 		this.saveConfigToDisk = saveConfigToDisk;
-		LogManager.shutdown();
-		LogManager.resetConfiguration();
-		final Properties log4j = new Properties();
+		initLogger();
+		DBConnectionInfo = new Properties();
+	}
+
+	private void initLogger()
+	{
+		InputStream logConf = null;
+		boolean useXml = true;
 		try
 		{
-			log4j.load(StreamUtils.convertStringToInputStream(getConfigContent(LOG4J_PROPERTIES)));
-			PropertyConfigurator.configure(log4j);
+			String cfg = getConfigContent(LOG4J_XML);
+			if (StringUtils.isNullOrWhitespace(cfg))
+			{
+				cfg = getConfigContent(LOG4J_PROPERTIES);
+				useXml = false;
+			}
+			if (StringUtils.isNullOrWhitespace(cfg)) { throw new IOException("Configuration not found!"); }
+			logConf = StreamUtils.convertStringToInputStream(cfg);
+			if (logConf != null)
+			{
+				if (useXml)
+				{
+					Document doc = StdXmlUtils.parse(logConf);
+					DOMConfigurator.configure(doc.getDocumentElement());
+					log.info(StdXmlUtils.xmlToString(doc));
+				}
+				else
+				{
+					final Properties log4j = new Properties();
+					log4j.load(logConf);
+					PropertyConfigurator.configure(log4j);
+					log.info(log4j);
+				}
+			}
 		}
 		catch (final IOException e)
 		{
 			BasicConfigurator.configure();
 			log.error(e, e);
 		}
-		log.info(log4j);
-		DBConnectionInfo = new Properties();
+		catch (SAXException e)
+		{
+			BasicConfigurator.configure();
+			log.error(e, e);
+		}
+		catch (ParserConfigurationException e)
+		{
+			BasicConfigurator.configure();
+			log.error(e, e);
+		}
+		catch (TransformerException e)
+		{
+			BasicConfigurator.configure();
+			log.error(e, e);
+		}
 	}
 
 	public List<String> getConfiguredProperties()
@@ -295,7 +340,14 @@ public class ComicsConfiguration extends ComicsCommands
 		{
 			if (isSaveConfigToDisk())
 			{
-				configdir.mkdir();
+				if (!configdir.getParentFile().exists())
+				{
+					configdir.mkdirs();
+				}
+				else
+				{
+					configdir.mkdir();
+				}
 			}
 		}
 		final File f = new File(configdir, configName);
@@ -308,7 +360,7 @@ public class ComicsConfiguration extends ComicsCommands
 		{
 			log.trace("ComicsConfiguration file on disk is empty or doesn't exists, reading the file in package as resource");
 			ret = StreamUtils.getResourceAsString(configName, getClass().getClassLoader());
-			if (isSaveConfigToDisk())
+			if (isSaveConfigToDisk() && !StringUtils.isNullOrWhitespace(ret))
 			{
 				log.trace(String.format("Writing read resource to disk in '%s'", f.toString()));
 				StreamUtils.writeFile(f.toString(), ret, false);
@@ -447,7 +499,7 @@ public class ComicsConfiguration extends ComicsCommands
 
 	private static void reset(ComicsConfiguration conf, String baseDir, boolean saveConfigToDisk)
 	{
-		conf = null;
+		instance = null;
 		conf = getInstance(baseDir, saveConfigToDisk);
 	}
 

@@ -10,6 +10,7 @@ import it.d4nguard.comicsimporter.ComicsConfiguration;
 import it.d4nguard.michelle.utils.DateUtils;
 import it.d4nguard.michelle.utils.collections.Pair;
 import it.d4nguard.michelle.utils.io.StreamUtils;
+import it.d4nguard.michelle.utils.xml.StdXmlUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.text.StrBuilder;
@@ -54,6 +54,7 @@ public class PlanetMangaParser implements ComicsSourceParser
 			sb.appendln(src);
 			final List<Volume> volumes = readVolumes(src);
 			for (final Volume v : volumes)
+			{
 				if (comics.contains(v.getSerie()))
 				{
 					final Comic c = comics.get(v.getSerie());
@@ -71,6 +72,7 @@ public class PlanetMangaParser implements ComicsSourceParser
 					c.setSerie(s.toVolumes());
 					ret.add(c);
 				}
+			}
 		}
 		return ret;
 	}
@@ -121,10 +123,12 @@ public class PlanetMangaParser implements ComicsSourceParser
 		final List<Volume> ret = new ArrayList<Volume>();
 		try
 		{
-			if (!hasRootElement) volumesXml = "<root>".concat(volumesXml).concat("</root>");
+			if (!hasRootElement)
+			{
+				volumesXml = "<root>".concat(volumesXml).concat("</root>");
+			}
 			final InputStream is = StreamUtils.convertStringToInputStream(volumesXml);
-			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			final Document doc = dbf.newDocumentBuilder().parse(is);
+			final Document doc = StdXmlUtils.parse(is);
 			doc.getDocumentElement().normalize();
 			final NodeList volumes = doc.getDocumentElement().getChildNodes();
 			for (int i = 0; i < volumes.getLength(); i++)

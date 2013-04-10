@@ -1,37 +1,58 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>michelle</groupId>
-  <artifactId>michelle</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>D4nguard Michelle</name>
-  <description>D4nguard Michelle is a common utilities library written during my work on java. She can handle various common works that normally are rewritten by hand every time by a java programmer.
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>michelle</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>D4nguard Michelle</name>
+	<description>D4nguard Michelle is a common utilities library written during my work on java. She can handle various common works that normally are rewritten by hand every time by a java programmer.
 I've called her Michelle because I like this name and it seems like miscellaneous, the target whe fits in.</description>
-  <dependencies>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>1.4</version>
-    </dependency>
-  </dependencies>
-  <build>
-    <sourceDirectory>src</sourceDirectory>
-    <resources>
-      <resource>
-        <directory>src</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </resource>
-    </resources>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.0</version>
-        <configuration>
-          <source/>
-          <target/>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<groupId>it.d4nguard</groupId>
+	<url>http://comicsdb-d4nguard.rhcloud.com</url>
+	<organization>
+		<name>D4nguard</name>
+	</organization>
+	<scm>
+		<url>http://github.com/kLeZ/ComicsDB.git</url>
+		<developerConnection>Alessandro Accardo</developerConnection>
+	</scm>
+	<developers>
+		<developer>
+			<name>Alessandro Accardo</name>
+			<email>julius8774@gmail.com</email>
+			<roles>
+				<role>Founder</role>
+				<role>Developer</role>
+			</roles>
+		</developer>
+	</developers>
+	<dependencies>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>1.4</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

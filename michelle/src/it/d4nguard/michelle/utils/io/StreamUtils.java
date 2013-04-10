@@ -22,12 +22,17 @@ public class StreamUtils
 
 	public static String getResourceAsString(final String resourceName, final ClassLoader cl) throws IOException
 	{
-		final InputStream is = cl.getResourceAsStream(resourceName);
-		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		final StringBuilder sb = new StringBuilder();
-		String line;
-		while ((line = br.readLine()) != null)
-			sb.append(line).append(LS);
+		final InputStream is = cl.getResourceAsStream(resourceName);
+		if (is != null)
+		{
+			final BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			String line;
+			while ((line = br.readLine()) != null)
+			{
+				sb.append(line).append(LS);
+			}
+		}
 		return sb.toString();
 	}
 
@@ -54,7 +59,9 @@ public class StreamUtils
 				final Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 				int n;
 				while ((n = reader.read(buffer)) != -1)
+				{
 					writer.write(buffer, 0, n);
+				}
 			}
 			finally
 			{
@@ -62,7 +69,10 @@ public class StreamUtils
 			}
 			return writer.toString();
 		}
-		else return "";
+		else
+		{
+			return "";
+		}
 	}
 
 	/**
@@ -127,7 +137,9 @@ public class StreamUtils
 		try
 		{
 			while (scanner.hasNextLine())
+			{
 				ret.append(scanner.nextLine()).append(LS);
+			}
 		}
 		finally
 		{
@@ -154,8 +166,7 @@ public class StreamUtils
 	public static String[] getResourceListing(final Class<?> clazz, final String path, final String regex) throws URISyntaxException, IOException
 	{
 		URL dirURL = clazz.getClassLoader().getResource(path);
-		if (dirURL != null && dirURL.getProtocol().equals("file")) /* A file path: easy enough */
-		return new File(dirURL.toURI()).list();
+		if ((dirURL != null) && dirURL.getProtocol().equals("file")) { return new File(dirURL.toURI()).list(); }
 
 		if (dirURL == null)
 		{
@@ -182,8 +193,10 @@ public class StreamUtils
 				{ //filter according to the path
 					String entry = name.substring(path.length());
 					final int checkSubdir = entry.indexOf("/");
-					if (checkSubdir >= 0) // if it is a subdirectory, we just return the directory name
-					entry = entry.substring(0, checkSubdir);
+					if (checkSubdir >= 0)
+					{
+						entry = entry.substring(0, checkSubdir);
+					}
 					result.add(entry);
 				}
 			}

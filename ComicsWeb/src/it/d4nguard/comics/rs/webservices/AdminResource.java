@@ -72,7 +72,6 @@ public class AdminResource
 
 		try
 		{
-
 			final InputStream is = WebUtils.getValue(form, "cache-file", InputStream.class, null);
 			cacheFile = StreamUtils.convertToUTF8InputStream(is);
 

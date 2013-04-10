@@ -3,8 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>comics-parsers</artifactId>
+	<artifactId>comics-commons</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<name>Comics Commons</name>
 	<groupId>it.d4nguard</groupId>
 	<url>http://comicsdb-d4nguard.rhcloud.com</url>
 	<organization>
@@ -26,20 +27,6 @@
 	</developers>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-			<resource>
-				<directory>config</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -54,28 +41,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>it.d4nguard</groupId>
-			<artifactId>comics-commons</artifactId>
+			<artifactId>michelle</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>it.d4nguard</groupId>
-			<artifactId>comics-importer</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.13</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-		</dependency>
-		<dependency>
-			<groupId>rome</groupId>
-			<artifactId>rome</artifactId>
-			<version>1.0</version>
 		</dependency>
 	</dependencies>
 </project>

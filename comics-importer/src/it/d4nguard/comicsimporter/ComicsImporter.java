@@ -10,18 +10,20 @@ import it.d4nguard.comicsimporter.parsers.ComicsSourceParser;
 import it.d4nguard.michelle.utils.*;
 import it.d4nguard.michelle.utils.collections.Pair;
 import it.d4nguard.michelle.utils.io.StreamUtils;
+import it.d4nguard.michelle.utils.xml.StdXmlUtils;
 import it.d4nguard.michelle.utils.xml.XmlUtils;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -114,7 +116,10 @@ public class ComicsImporter
 					else
 					{
 						final String xml = StringUtils.clean(XmlUtils.toString(node));
-						if (!xml.isEmpty()) log.trace(xml);
+						if (!xml.isEmpty())
+						{
+							log.trace(xml);
+						}
 					}
 				}
 				return ret;
@@ -151,22 +156,8 @@ public class ComicsImporter
 		String ret = "";
 		try
 		{
-			final Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-			final Element el = new ComicsXmlMapper().create(doc, comics);
-
-			final TransformerFactory transfac = TransformerFactory.newInstance();
-			final Transformer trans = transfac.newTransformer();
-			trans.setOutputProperty(OutputKeys.METHOD, "xml");
-			trans.setOutputProperty(OutputKeys.INDENT, "yes");
-			trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-			trans.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-
-			final StringWriter sw = new StringWriter();
-			final StreamResult result = new StreamResult(sw);
-			final DOMSource source = new DOMSource(el);
-
-			trans.transform(source, result);
-			ret = sw.toString();
+			final Element el = new ComicsXmlMapper().create(StdXmlUtils.newDocument(), comics);
+			ret = StdXmlUtils.xmlToString(el.getOwnerDocument());
 		}
 		catch (final ParserConfigurationException e)
 		{
@@ -226,7 +217,7 @@ public class ComicsImporter
 		}
 		try
 		{
-			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
+			doc = StdXmlUtils.parse(src);
 			doc.getDocumentElement().normalize();
 			ret = loadComics(ncomics);
 		}
@@ -270,7 +261,10 @@ public class ComicsImporter
 		log.trace("Checking version of scraped xml data");
 		final Version ver = Version.getInstance();
 		int version = 1;
-		if (root.hasAttribute("version")) version = Convert.toInt(root.getAttribute("version"));
+		if (root.hasAttribute("version"))
+		{
+			version = Convert.toInt(root.getAttribute("version"));
+		}
 		final String msg = "Translation from version %d to version %d";
 		final TimeElapsed elapsed = new TimeElapsed();
 		log.debug(String.format(msg, version, ver.getLastVersion()));
@@ -284,12 +278,14 @@ public class ComicsImporter
 
 	public boolean useCache()
 	{
-		return cacheFileName != null && !cacheFileName.isEmpty();
+		return (cacheFileName != null) && !cacheFileName.isEmpty();
 	}
 
 	public static void sync(final Comics comics, final Collection<ComicsSourceParser> collection) throws IOException
 	{
 		for (final ComicsSourceParser parser : collection)
+		{
 			comics.addAll(parser.parse(comics));
+		}
 	}
 }
