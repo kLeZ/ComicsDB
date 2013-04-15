@@ -83,7 +83,16 @@ public class StreamUtils
 	 */
 	public static InputStream convertToUTF8InputStream(final InputStream is) throws UnsupportedEncodingException, IOException
 	{
-		return new ByteArrayInputStream(convertInputStreamToString(is).getBytes("UTF-8"));
+		InputStream ret = null;
+		if (is != null)
+		{
+			ret = new ByteArrayInputStream(convertInputStreamToString(is).getBytes("UTF-8"));
+			if (ret.available() <= 0) //BAIS handles the available() method correctly, returning 'count - pos' as a result.
+			{
+				ret = null;
+			}
+		}
+		return ret;
 	}
 
 	public static void writeFile(final String filename, final String content, final boolean backupExistent) throws IOException

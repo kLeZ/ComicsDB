@@ -26,17 +26,21 @@
 			checked="checked" />
 		Open a thread or do not call it at all.
 		<br />
-		<input type="checkbox" id="syncFeed" name="syncFeed" value="true"
-			checked="checked" />
-		Synchronize the database with the rss feeds and the news pages provided by the
-		configured publishers.
+		<input type="checkbox" id="dryRun" name="dryRun" value="true" />
+		Dry run (does not execute the main capabilities of syncer, import from main
+		source and sync with feeders)
 		<br />
 		<input type="checkbox" id="wipedb" name="wipedb" value="true" />
 		Choose to wipe database during sync
 		<br />
-		<input type="checkbox" id="dryRun" name="dryRun" value="true" />
-		Dry run (does not execute the main capabilities of syncer, import from main
-		source and sync with feeders)
+		<input type="checkbox" id="importComics" name="importComics" value="true"
+			checked="checked" />
+		Import comics from the choosen source, either passed cache file or the main
+		crawl source. If not selected, it will not import from any main source.
+		<br />
+		<input type="checkbox" id="syncFeed" name="syncFeed" value="true" />
+		Synchronize the database with the rss feeds and the news pages provided by the
+		configured publishers.
 		<br />
 		<input type="button" id="send" name="send" value="Invia"
 			onclick="postRequest('the_form');" />

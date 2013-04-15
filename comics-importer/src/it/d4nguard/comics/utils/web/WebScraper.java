@@ -80,7 +80,7 @@ public class WebScraper
 		XMLConfig config = new XMLConfig(new BufferConfigSource(src));
 
 		final HttpModule proxySettings = new HttpModule(translateProxyInfo());
-		ScraperModule scraperModule = new ScraperModule(System.getProperty("work.dir"));
+		ScraperModule scraperModule = new ScraperModule(System.getProperty("user.dir"));
 		final Injector injector = Guice.createInjector(scraperModule, proxySettings);
 
 		final Harvest harvest = injector.getInstance(Harvest.class);

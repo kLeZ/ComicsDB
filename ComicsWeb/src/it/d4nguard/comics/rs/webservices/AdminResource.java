@@ -1,9 +1,6 @@
 package it.d4nguard.comics.rs.webservices;
 
-import static it.d4nguard.comicsimporter.ComicsCommands.IMPORT_COMICS_CMD;
-import static it.d4nguard.comicsimporter.ComicsCommands.SYNC_CMD;
-import static it.d4nguard.comicsimporter.ComicsCommands.WIPE_DB_CMD;
-import static it.d4nguard.comicsimporter.ComicsCommands.createEntry;
+import static it.d4nguard.comicsimporter.ComicsCommands.*;
 import it.d4nguard.comics.WebUtils;
 import it.d4nguard.comicsimporter.ComicsConfiguration;
 import it.d4nguard.comicsimporter.SyncDaemon;
@@ -67,7 +64,7 @@ public class AdminResource
 
 		String fileName = "";
 		InputStream cacheFile = null;
-		boolean wipedb = false, dryRun = false, openThread = false, syncFeed = false, importComics = false;
+		boolean wipedb = false, dryRun = false, openThread = false, syncFeed = false, refreshCache = false, importComics = false;
 		final Map<String, List<InputPart>> form = input.getFormDataMap();
 
 		try
@@ -79,8 +76,9 @@ public class AdminResource
 			dryRun = WebUtils.getValue(form, "dryRun", Boolean.class, false);
 			openThread = WebUtils.getValue(form, "openThread", Boolean.class, false);
 			syncFeed = WebUtils.getValue(form, "syncFeed", Boolean.class, false);
+			importComics = WebUtils.getValue(form, "importComics", Boolean.class, false);
 			fileName = WebUtils.getFileName(form, "cache-file");
-			importComics = StringUtils.isNullOrWhitespace(fileName) && (cacheFile == null);
+			refreshCache = StringUtils.isNullOrWhitespace(fileName) && (cacheFile == null);
 
 			if (((syncThread == null) || !syncThread.getKey().isAlive()) && openThread)
 			{
@@ -89,11 +87,13 @@ public class AdminResource
 
 				final String wdb_s = String.valueOf(wipedb);
 				final String sf_s = String.valueOf(syncFeed);
-				final String rcf_s = String.valueOf(importComics);
+				final String rcf_s = String.valueOf(refreshCache);
+				final String ic_s = String.valueOf(importComics);
 
 				cmd.put(WIPE_DB_CMD, createEntry(WIPE_DB_CMD, wdb_s, false).getValue());
 				cmd.put(SYNC_CMD, createEntry(SYNC_CMD, sf_s, false).getValue());
-				cmd.put(IMPORT_COMICS_CMD, createEntry(IMPORT_COMICS_CMD, rcf_s, false).getValue());
+				cmd.put(REFRESH_CACHE_FILE_CMD, createEntry(REFRESH_CACHE_FILE_CMD, rcf_s, false).getValue());
+				cmd.put(IMPORT_COMICS_CMD, createEntry(IMPORT_COMICS_CMD, ic_s, false).getValue());
 
 				final ComicsConfiguration conf = ComicsConfiguration.getInstance().load(cmd);
 				syncThread = null;
