@@ -22,7 +22,8 @@ tmp/**/*
 
 ## Eclipse specific
 *.pydevproject
-.project
+#.project
+#.classpath
 .metadata
 bin/
 bin/**
@@ -32,7 +33,6 @@ ucdetector_reports/**
 ucdetector_reports/**/*
 *~.nib
 local.properties
-.classpath
 .settings/
 .loadpath
 
