@@ -108,7 +108,7 @@
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
-			<version>0.9.9-SNAPSHOT</version>
+			<version>0.9.9-RC1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.inject</groupId>
