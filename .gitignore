@@ -28,6 +28,12 @@ tmp/**/*
 bin/
 bin/**
 bin/**/*
+RemoteSystemsTempFiles/
+RemoteSystemsTempFiles/**
+RemoteSystemsTempFiles/**/*
+Servers/
+Servers/**
+Servers/**/*
 ucdetector_reports/
 ucdetector_reports/**
 ucdetector_reports/**/*
