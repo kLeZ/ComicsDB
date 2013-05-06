@@ -5,6 +5,9 @@
 	<projects>
 		<project>WebHarvest</project>
 		<project>comics-parsers</project>
+		<project>michelle</project>
+		<project>comics-commons</project>
+		<project>comics-importer</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

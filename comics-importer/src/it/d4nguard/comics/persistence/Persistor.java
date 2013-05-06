@@ -2,14 +2,13 @@ package it.d4nguard.comics.persistence;
 
 import it.d4nguard.comics.utils.data.StatefulWork;
 import it.d4nguard.comicsimporter.exceptions.PersistorException;
+import it.d4nguard.michelle.utils.data.BooleanOperatorType;
 
 import java.util.*;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.hibernate.*;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
 import org.w3c.dom.Document;
 
 public class Persistor<E>
@@ -148,7 +147,7 @@ public class Persistor<E>
 			for (final E e : list)
 			{
 				session.save(e);
-				if (i++ % 20 == 0)
+				if ((i++ % 20) == 0)
 				{
 					session.flush();
 					session.clear();
@@ -175,7 +174,7 @@ public class Persistor<E>
 			for (final E e : list)
 			{
 				session.update(e);
-				if (i++ % 20 == 0)
+				if ((i++ % 20) == 0)
 				{
 					session.flush();
 					session.clear();
@@ -202,7 +201,7 @@ public class Persistor<E>
 			for (final E e : list)
 			{
 				session.saveOrUpdate(e);
-				if (i++ % 20 == 0)
+				if ((i++ % 20) == 0)
 				{
 					session.flush();
 					session.clear();
@@ -261,16 +260,16 @@ public class Persistor<E>
 
 	public List<E> findByEqField(final Class<E> clazz, final String fieldName, final Object fieldValue)
 	{
-		return findByCriterion(clazz, Restrictions.eq(fieldName, fieldValue));
+		return findByCriterion(clazz, new HibernateRestriction(BooleanOperatorType.eq, fieldName, fieldValue));
 	}
 
-	public List<E> findByCriterion(final Class<E> clazz, final Criterion... criterions)
+	public List<E> findByCriterion(final Class<E> clazz, final HibernateRestriction... restrictions)
 	{
-		return findByCriterion(clazz, new HashMap<String, String>(), criterions);
+		return findByCriterion(clazz, new HashMap<String, String>(), restrictions);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<E> findByCriterion(final Class<E> clazz, final HashMap<String, String> aliases, final Criterion... criterions)
+	public List<E> findByCriterion(final Class<E> clazz, final HashMap<String, String> aliases, final HibernateRestriction... restrictions)
 	{
 		List<E> objs = null;
 		try
@@ -278,10 +277,14 @@ public class Persistor<E>
 			startOperation();
 			final Criteria c = session.createCriteria(clazz);
 			for (final Entry<String, String> entry : aliases.entrySet())
+			{
 				c.createAlias(entry.getKey(), entry.getValue());
+			}
 
-			for (final Criterion crit : criterions)
-				c.add(crit);
+			for (final HibernateRestriction restr : restrictions)
+			{
+				c.add(restr.toCriterion());
+			}
 			objs = c.list();
 			tx.commit();
 		}

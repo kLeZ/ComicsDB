@@ -9,20 +9,37 @@ import org.hibernate.criterion.Restrictions;
 
 public class HibernateRestriction
 {
-	public static <T> Criterion getCriterion(final String method, final String field, final T value) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException
+	private static final Class<Restrictions> rsc = Restrictions.class;
+	private static final Class<String> str = String.class;
+	private static final Class<Object> obj = Object.class;
+
+	private final BooleanOperatorType operator;
+	private final String field;
+	private final Object value;
+
+	public HibernateRestriction(final String method, final String field, final Object value)
 	{
-		return getCriterion(BooleanOperatorType.valueOf(method), field, value);
+		this(BooleanOperatorType.valueOf(method), field, value);
 	}
 
-	public static <T> Criterion getCriterion(final BooleanOperatorType res, final String field, final T value) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException
+	public HibernateRestriction(final BooleanOperatorType operator, final String field, final Object value)
+	{
+		this.operator = operator;
+		this.field = field;
+		this.value = value;
+	}
+
+	public Criterion toCriterion() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException
 	{
 		Criterion crit = null;
-		final Class<Restrictions> rsc = Restrictions.class;
-		final Class<String> str = String.class;
-		final Class<Object> obj = Object.class;
-
-		if (res.name().startsWith("is")) crit = (Criterion) rsc.getMethod(res.name(), str).invoke(null, field);
-		else crit = (Criterion) rsc.getMethod(res.name(), str, obj).invoke(null, field, value);
+		if (operator.name().startsWith("is"))
+		{
+			crit = (Criterion) rsc.getMethod(operator.name(), str).invoke(null, field);
+		}
+		else
+		{
+			crit = (Criterion) rsc.getMethod(operator.name(), str, obj).invoke(null, field, value);
+		}
 		return crit;
 	}
 }
